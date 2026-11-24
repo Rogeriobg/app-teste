@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useApp, MedicalRecord } from '../context/AppContext';
 import { Button, Input, Card, AppModal } from '../components';
 import {
@@ -11,6 +12,7 @@ import {
   Plus,
   Edit2,
   Lock,
+  Calendar,
 } from 'lucide-react-native';
 
 export type PatientReportsScreenParams = {
@@ -61,6 +63,15 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
   const [date, setDate] = React.useState('');
   const [content, setContent] = React.useState('');
   const [privateNotes, setPrivateNotes] = React.useState('');
+  const [datePickerVisible, setDatePickerVisible] = React.useState(false);
+
+  const handleOpenDatePicker = () => setDatePickerVisible(true);
+  const handleDateChange = (_event: any, selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setDate(selectedDate.toISOString().slice(0, 10));
+    }
+    setDatePickerVisible(false);
+  };
 
   const handleOpenAdd = () => {
     setIsEditing(false);
@@ -243,14 +254,30 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
           accessibilityLabel="Título do relatório"
         />
 
-        <Input
-          label="Data da Sessão"
-          placeholder="AAAA-MM-DD"
-          placeholderTextColor="#94A3B8"
-          value={date}
-          onChangeText={setDate}
-          accessibilityLabel="Data da sessão"
-        />
+        <TouchableOpacity
+          style={styles.datePickerInput}
+          onPress={handleOpenDatePicker}
+          activeOpacity={0.8}
+          accessibilityLabel="Selecionar data da sessão"
+        >
+          <Calendar size={18} color="#94A3B8" style={styles.datePickerIcon} />
+          <Text style={[styles.datePickerText, !date && styles.datePickerPlaceholder]}>
+            {date || 'AAAA-MM-DD'}
+          </Text>
+        </TouchableOpacity>
+
+        {datePickerVisible && (
+          <View style={styles.datePickerWrapper}>
+            <DateTimePicker
+              value={date ? new Date(date) : new Date()}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+              minimumDate={new Date(1900, 0, 1)}
+              maximumDate={new Date()}
+            />
+          </View>
+        )}
 
         <Input
           label="Conteúdo do Prontuário (evolução)"
@@ -355,5 +382,21 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 6,
   },
+  datePickerInput: {
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    backgroundColor: '#F8FAFC',
+    marginBottom: 14,
+  },
+  datePickerIcon: { marginRight: 8 },
+  datePickerText: { fontSize: 14, color: '#1E293B', flex: 1 },
+  datePickerPlaceholder: { color: '#94A3B8' },
+  datePickerWrapper: { height: 200 },
   label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
 });

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
 import { useApp, Patient } from '../context/AppContext';
 import { Button, Input, Card, StatusBadge, AppModal } from '../components';
 import {
@@ -13,6 +14,7 @@ import {
   Mail,
   Phone,
   FileText,
+  Calendar,
 } from 'lucide-react-native';
 
 const tabs = [
@@ -46,6 +48,7 @@ export default function PatientsScreen() {
   const [birthDate, setBirthDate] = useState('');
   const [anamnesis, setAnamnesis] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const filteredPatients = db.patients.filter(p => {
     if (activeTab === 'ativos') return p.status === 'Ativo';
@@ -69,6 +72,14 @@ export default function PatientsScreen() {
     setBirthDate('');
     setAnamnesis('');
     setModalVisible(true);
+  };
+
+  const handleOpenDatePicker = () => setDatePickerVisible(true);
+  const handleDateChange = (_event: any, selectedDate: Date | undefined) => {
+    if (selectedDate) {
+      setBirthDate(selectedDate.toISOString().slice(0, 10));
+    }
+    setDatePickerVisible(false);
   };
 
   const handleOpenEdit = (p: Patient) => {
@@ -307,14 +318,30 @@ export default function PatientsScreen() {
           accessibilityLabel="Telefone do paciente"
         />
 
-        <Input
-          label="Data de Nascimento"
-          placeholder="AAAA-MM-DD"
-          placeholderTextColor="#94A3B8"
-          value={birthDate}
-          onChangeText={setBirthDate}
-          accessibilityLabel="Data de nascimento do paciente"
-        />
+        <TouchableOpacity
+          style={styles.datePickerInput}
+          onPress={handleOpenDatePicker}
+          activeOpacity={0.8}
+          accessibilityLabel="Selecionar data de nascimento"
+        >
+          <Calendar size={18} color="#94A3B8" style={styles.datePickerIcon} />
+          <Text style={[styles.datePickerText, !birthDate && styles.datePickerPlaceholder]}>
+            {birthDate || 'AAAA-MM-DD'}
+          </Text>
+        </TouchableOpacity>
+
+        {datePickerVisible && (
+          <View style={styles.datePickerWrapper}>
+            <DateTimePicker
+              value={birthDate ? new Date(birthDate) : new Date()}
+              mode="date"
+              display="default"
+              onChange={handleDateChange}
+              minimumDate={new Date(1900, 0, 1)}
+              maximumDate={new Date()}
+            />
+          </View>
+)}
 
         <Input
           label="Anamnese (resumo inicial)"
@@ -354,6 +381,22 @@ const styles = StyleSheet.create({
 
   tabsContainer: { flexDirection: 'row', margin: 16, gap: 8 },
   searchContainer: { marginHorizontal: 16, marginBottom: 12 },
+  datePickerInput: {
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 11,
+    backgroundColor: '#F8FAFC',
+    marginBottom: 14,
+  },
+  datePickerIcon: { marginRight: 8 },
+  datePickerText: { fontSize: 14, color: '#1E293B', flex: 1 },
+  datePickerPlaceholder: { color: '#94A3B8' },
+  datePickerWrapper: { height: 200 },
   tabBtn: {
     paddingHorizontal: 14,
     paddingVertical: 8,
