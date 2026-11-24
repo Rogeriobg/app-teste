@@ -79,11 +79,18 @@ src/
 
 ## 📅 Backlog de tarefas (prioridade)
 
+### ✅ Tarefas concluídas (esta sessão)
+
+| # | Tarefa | Status | Detalhes |
+|---|--------|--------|----------|
+| 1 | Adicionar busca de pacientes | ✅ Feito | Campo de texto no `PatientsScreen` filtrando por nome e e-mail, funciona em combinação com filtros por status |
+
+---
+
 ### 🔴 Alta — Próximo a fazer
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 1 | Adicionar busca de pacientes | Campo de texto no `PatientsScreen` para filtrar por nome/e-mail. | `src/screens/PatientsScreen.tsx` |
 | 2 | Date picker nativo | Substituir `TextInput` de datas (`AAAA-MM-DD`) por um picker real (ex: `@react-native-community/datetimepicker`). | `src/screens/PatientsScreen.tsx`, `src/screens/PatientReportsScreen.tsx` |
 
 ### 🟡 Média
