@@ -84,6 +84,7 @@ src/
 | # | Tarefa | Status | Detalhes |
 |---|--------|--------|----------|
 | 1 | Adicionar busca de pacientes | ✅ Feito | Campo de texto no `PatientsScreen` filtrando por nome e e-mail, funciona em combinação com filtros por status |
+| 2 | Date picker nativo | ✅ Feito | Substituir `TextInput` de datas por `@react-native-community/datetimepicker` em PatientsScreen (Data de Nascimento) e PatientReportsScreen (Data da Sessão) |
 
 ---
 
@@ -91,7 +92,8 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 2 | Date picker nativo | Substituir `TextInput` de datas (`AAAA-MM-DD`) por um picker real (ex: `@react-native-community/datetimepicker`). | `src/screens/PatientsScreen.tsx`, `src/screens/PatientReportsScreen.tsx` |
+| 3 | Migrar navegação para Expo Router | Substituir a navegação condicional de `App.tsx` por rotas em `src/app/`. | `src/app/`, `App.tsx` |
+| 4 | Tela de perfil/configurações | Dados do psicólogo, trocar e-mail, exportar dados. | `src/screens/`, `src/context/` |
 
 ### 🟡 Média
 
