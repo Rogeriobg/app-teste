@@ -68,15 +68,23 @@ src/
 
 ---
 
+## ✅ Tarefas concluídas
+
+| # | Tarefa | Status | Detalhes |
+|---|--------|--------|----------|
+| C1 | Criar componentes compartilhados (`src/components/`) | ✅ Feito | `Button`, `Input`, `Card`, `StatusBadge`, `AppModal` + `index.ts` |
+| C2 | Refatorar telas para usar `src/components/` | ✅ Feito | `PatientsScreen.tsx` e `PatientReportsScreen.tsx` agora usam `Button`, `Input`, `Card`, `AppModal` |
+
+---
+
 ## 📅 Backlog de tarefas (prioridade)
 
 ### 🔴 Alta — Próximo a fazer
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 1 | Refatorar telas para usar `src/components/` | Substituir `TouchableOpacity`, `TextInput`, `View` de card/badge/modal repetidos pelas novas componentes. Começar por `PatientsScreen.tsx` e `PatientReportsScreen.tsx`. | `src/screens/*`, `src/components/*` |
-| 2 | Adicionar busca de pacientes | Campo de texto no `PatientsScreen` para filtrar por nome/e-mail. | `src/screens/PatientsScreen.tsx` |
-| 3 | Date picker nativo | Substituir `TextInput` de datas (`AAAA-MM-DD`) por um picker real (ex: `@react-native-community/datetimepicker`). | `src/screens/PatientsScreen.tsx`, `src/screens/PatientReportsScreen.tsx` |
+| 1 | Adicionar busca de pacientes | Campo de texto no `PatientsScreen` para filtrar por nome/e-mail. | `src/screens/PatientsScreen.tsx` |
+| 2 | Date picker nativo | Substituir `TextInput` de datas (`AAAA-MM-DD`) por um picker real (ex: `@react-native-community/datetimepicker`). | `src/screens/PatientsScreen.tsx`, `src/screens/PatientReportsScreen.tsx` |
 
 ### 🟡 Média
 
