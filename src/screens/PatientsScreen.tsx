@@ -45,12 +45,19 @@ export default function PatientsScreen() {
   const [phone, setPhone] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [anamnesis, setAnamnesis] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
   const filteredPatients = db.patients.filter(p => {
     if (activeTab === 'ativos') return p.status === 'Ativo';
     if (activeTab === 'inativos') return p.status === 'Inativo';
     if (activeTab === 'arquivados') return p.status === 'Arquivado';
     return true;
+  }).filter(p => {
+    const query = searchQuery.toLowerCase();
+    return (
+      p.name.toLowerCase().includes(query) ||
+      p.email.toLowerCase().includes(query)
+    );
   });
 
   const handleOpenAdd = () => {
@@ -177,6 +184,18 @@ export default function PatientsScreen() {
             <Text style={[styles.tabText, activeTab === key && styles.tabTextActive]}>{label}</Text>
           </TouchableOpacity>
         ))}
+      </View>
+
+      {/* Busca */}
+      <View style={styles.searchContainer}>
+        <Input
+          label="Buscar paciente"
+          placeholder="Nome ou e-mail..."
+          placeholderTextColor="#94A3B8"
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+          accessibilityLabel="Buscar paciente por nome ou e-mail"
+        />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -334,6 +353,7 @@ const styles = StyleSheet.create({
   headerSubtitle: { fontSize: 12, color: '#0D9488', fontWeight: '600', marginTop: 2 },
 
   tabsContainer: { flexDirection: 'row', margin: 16, gap: 8 },
+  searchContainer: { marginHorizontal: 16, marginBottom: 12 },
   tabBtn: {
     paddingHorizontal: 14,
     paddingVertical: 8,
