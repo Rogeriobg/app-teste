@@ -1,17 +1,7 @@
 import React, { useState } from 'react';
-import {
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Alert,
-  Platform,
-  KeyboardAvoidingView,
-} from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useApp, Patient } from '../context/AppContext';
+import { Button, Input, Card, StatusBadge, AppModal } from '../components';
 import {
   Users,
   Plus,
@@ -25,17 +15,12 @@ import {
   FileText,
 } from 'lucide-react-native';
 
-const STATUS_COLOR: Record<string, string> = {
-  Ativo: '#0D9488',
-  Inativo: '#F59E0B',
-  Arquivado: '#94A3B8',
-};
-
-const STATUS_LABEL: Record<string, string> = {
-  Ativo: 'Ativo',
-  Inativo: 'Inativo',
-  Arquivado: 'Arquivado',
-};
+const tabs = [
+  { key: 'todos' as const, label: 'Todos' },
+  { key: 'ativos' as const, label: 'Ativos' },
+  { key: 'inativos' as const, label: 'Inativos' },
+  { key: 'arquivados' as const, label: 'Arquivados' },
+];
 
 export default function PatientsScreen() {
   const {
@@ -163,22 +148,6 @@ export default function PatientsScreen() {
     );
   };
 
-  const statusBadge = (status: Patient['status']) => {
-    const color = STATUS_COLOR[status];
-    return (
-      <View style={[styles.statusBadge, { backgroundColor: color + '15', borderColor: color + '40' }]}>
-        <Text style={[styles.statusText, { color }]}>{STATUS_LABEL[status]}</Text>
-      </View>
-    );
-  };
-
-  const tabs = [
-    { key: 'todos' as const, label: 'Todos' },
-    { key: 'ativos' as const, label: 'Ativos' },
-    { key: 'inativos' as const, label: 'Inativos' },
-    { key: 'arquivados' as const, label: 'Arquivados' },
-  ];
-
   return (
     <View style={styles.container}>
       <View style={styles.header}>
@@ -186,10 +155,14 @@ export default function PatientsScreen() {
           <Text style={styles.headerTitle}>Meus Pacientes</Text>
           <Text style={styles.headerSubtitle}>Cadastro, edição e prontuário</Text>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleOpenAdd} activeOpacity={0.85}>
-          <Plus size={18} color="#FFFFFF" />
-          <Text style={styles.addButtonText}>Novo Paciente</Text>
-        </TouchableOpacity>
+        <Button
+          variant="primary"
+          onPress={handleOpenAdd}
+          iconLeft={<Plus size={18} color="#FFFFFF" />}
+          accessibilityLabel="Cadastrar novo paciente"
+        >
+          Novo Paciente
+        </Button>
       </View>
 
       {/* Filtros por status */}
@@ -208,16 +181,16 @@ export default function PatientsScreen() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {filteredPatients.length === 0 ? (
-          <View style={styles.emptyCard}>
+          <Card style={styles.emptyCard} elevated>
             <Archive size={36} color="#94A3B8" />
             <Text style={styles.emptyTitle}>Nenhum paciente neste filtro</Text>
             {activeTab === 'todos' ? (
               <Text style={styles.emptySub}>Toque em &quot;Novo Paciente&quot; para cadastrar seu primeiro atendimento.</Text>
             ) : null}
-          </View>
+          </Card>
         ) : (
           filteredPatients.map(p => (
-            <View key={p.id} style={styles.patientCard}>
+            <Card key={p.id} style={styles.patientCard} elevated>
               <View style={styles.patientInfo}>
                 <View style={styles.avatarCircle}>
                   <Users size={22} color="#0D9488" />
@@ -233,7 +206,7 @@ export default function PatientsScreen() {
                     <Text style={styles.patientMeta}>{p.phone}</Text>
                   </View>
                 </View>
-                {statusBadge(p.status)}
+                <StatusBadge status={p.status} small />
               </View>
 
               <View style={styles.patientActions}>
@@ -272,87 +245,69 @@ export default function PatientsScreen() {
                   <Trash2 size={16} color="#EF4444" />
                 </TouchableOpacity>
               </View>
-            </View>
+            </Card>
           ))
         )}
       </ScrollView>
 
       {/* Modal Cadastro / Edição */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalKeyboard}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {isEditing ? 'Editar Paciente' : 'Cadastrar Novo Paciente'}
-              </Text>
+      <AppModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        title={isEditing ? 'Editar Paciente' : 'Cadastrar Novo Paciente'}
+        cancelTitle="Cancelar"
+        confirmTitle={isEditing ? 'Salvar Alterações' : 'Cadastrar'}
+        onConfirm={handleSavePatient}
+      >
+        <Input
+          label="Nome Completo"
+          placeholder="Ex: Maria Oliveira"
+          placeholderTextColor="#94A3B8"
+          value={name}
+          onChangeText={setName}
+          accessibilityLabel="Nome completo do paciente"
+        />
 
-              <Text style={styles.label}>Nome Completo</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: Maria Oliveira"
-                placeholderTextColor="#94A3B8"
-                value={name}
-                onChangeText={setName}
-              />
+        <Input
+          label="E-mail"
+          placeholder="Ex: maria@email.com"
+          placeholderTextColor="#94A3B8"
+          keyboardType="email-address"
+          autoCapitalize="none"
+          value={email}
+          onChangeText={setEmail}
+          accessibilityLabel="E-mail do paciente"
+        />
 
-              <Text style={styles.label}>E-mail</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: maria@email.com"
-                placeholderTextColor="#94A3B8"
-                keyboardType="email-address"
-                autoCapitalize="none"
-                value={email}
-                onChangeText={setEmail}
-              />
+        <Input
+          label="Telefone"
+          placeholder="Ex: (11) 98888-7777"
+          placeholderTextColor="#94A3B8"
+          value={phone}
+          onChangeText={setPhone}
+          accessibilityLabel="Telefone do paciente"
+        />
 
-              <Text style={styles.label}>Telefone</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: (11) 98888-7777"
-                placeholderTextColor="#94A3B8"
-                value={phone}
-                onChangeText={setPhone}
-              />
+        <Input
+          label="Data de Nascimento"
+          placeholder="AAAA-MM-DD"
+          placeholderTextColor="#94A3B8"
+          value={birthDate}
+          onChangeText={setBirthDate}
+          accessibilityLabel="Data de nascimento do paciente"
+        />
 
-              <Text style={styles.label}>Data de Nascimento</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="AAAA-MM-DD"
-                placeholderTextColor="#94A3B8"
-                value={birthDate}
-                onChangeText={setBirthDate}
-              />
-
-              <Text style={styles.label}>Anamnese (resumo inicial)</Text>
-              <TextInput
-                style={[styles.input, styles.inputMultiline]}
-                placeholder="Queixa principal, histórico, observações..."
-                placeholderTextColor="#94A3B8"
-                value={anamnesis}
-                onChangeText={setAnamnesis}
-                multiline
-                numberOfLines={3}
-              />
-
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalBtn, styles.cancelModalBtn]}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.cancelModalText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalBtn, styles.saveModalBtn]}
-                  onPress={handleSavePatient}
-                >
-                  <Text style={styles.saveModalText}>{isEditing ? 'Salvar Alterações' : 'Cadastrar'}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </KeyboardAvoidingView>
-        </View>
-      </Modal>
+        <Input
+          label="Anamnese (resumo inicial)"
+          placeholder="Queixa principal, histórico, observações..."
+          placeholderTextColor="#94A3B8"
+          value={anamnesis}
+          onChangeText={setAnamnesis}
+          multiline
+          numberOfLines={3}
+          accessibilityLabel="Anamnese do paciente"
+        />
+      </AppModal>
     </View>
   );
 }
@@ -377,21 +332,6 @@ const styles = StyleSheet.create({
   },
   headerTitle: { fontSize: 20, fontWeight: '800', color: '#133E2B' },
   headerSubtitle: { fontSize: 12, color: '#0D9488', fontWeight: '600', marginTop: 2 },
-  addButton: {
-    backgroundColor: '#0D9488',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
-    gap: 6,
-    shadowColor: '#0D9488',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  addButtonText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 },
 
   tabsContainer: { flexDirection: 'row', margin: 16, gap: 8 },
   tabBtn: {
@@ -408,32 +348,19 @@ const styles = StyleSheet.create({
 
   scroll: { padding: 16, paddingBottom: 20 },
   emptyCard: {
-    backgroundColor: '#FFFFFF',
     padding: 40,
     borderRadius: 24,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginHorizontal: 16,
   },
   emptyTitle: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginTop: 12, marginBottom: 6 },
   emptySub: { fontSize: 13, color: '#64748B', textAlign: 'center' },
 
   patientCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 18,
     marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
   },
   patientInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 14 },
   avatarCircle: {
@@ -449,10 +376,7 @@ const styles = StyleSheet.create({
   patientTexts: { flex: 1 },
   patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginBottom: 4 },
   patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 },
-  metaIcon: { color: '#94A3B8' },
   patientMeta: { fontSize: 12, color: '#64748B' },
-  statusBadge: { paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, borderWidth: 1, alignSelf: 'flex-start' },
-  statusText: { fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
 
   patientActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
   iconBtn: { padding: 8, borderRadius: 10, backgroundColor: '#F8FAFC' },
@@ -460,38 +384,4 @@ const styles = StyleSheet.create({
   btnToggleInactive: { backgroundColor: '#D1FAE5' },
   btnArchive: { backgroundColor: '#E5E7EB' },
   btnDelete: { backgroundColor: '#FEE2E2' },
-
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', padding: 20 },
-  modalKeyboard: { flex: 1 },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 22,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 8,
-    maxHeight: '85%',
-  },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#133E2B', marginBottom: 18, textAlign: 'center' },
-  label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    fontSize: 14,
-    color: '#1E293B',
-    backgroundColor: '#F8FAFC',
-    marginBottom: 14,
-  },
-  inputMultiline: { height: 96, textAlignVertical: 'top' },
-  modalButtons: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
-  cancelModalBtn: { backgroundColor: '#F1F5F9' },
-  cancelModalText: { color: '#64748B', fontWeight: 'bold', fontSize: 14 },
-  saveModalBtn: { backgroundColor: '#0D9488' },
-  saveModalText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 },
 });

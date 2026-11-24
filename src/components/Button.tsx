@@ -4,8 +4,10 @@ import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, View, ViewStyle,
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
 
 export interface ButtonProps {
-  /** Texto do botão */
-  title: string;
+  /** Texto do botão (usado como fallback se children não for fornecido) */
+  title?: string;
+  /** Conteúdo do botão (texto ou elementos) */
+  children?: React.ReactNode;
   /** Variante visual */
   variant?: ButtonVariant;
   /** Ação ao pressionar */
@@ -36,6 +38,7 @@ const VARIANT_STYLES: Record<ButtonVariant, { bg: string; border: string; color:
 
 export function Button({
   title,
+  children,
   variant = 'primary',
   onPress,
   disabled = false,
@@ -64,7 +67,7 @@ export function Button({
       ) : (
         <>
           {iconLeft && <View style={styles.iconWrapper}>{iconLeft}</View>}
-          <Text style={[styles.text, { color }, textStyle]}>{title}</Text>
+          <Text style={[styles.text, { color }, textStyle]}>{children ?? title}</Text>
           {iconRight && <View style={styles.iconWrapper}>{iconRight}</View>}
         </>
       )}

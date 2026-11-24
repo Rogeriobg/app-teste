@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useApp, MedicalRecord } from '../context/AppContext';
+import { Button, Input, Card, AppModal } from '../components';
 import {
   FileText,
   Archive,
@@ -126,7 +127,7 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
   };
 
   const recordCard = (rec: MedicalRecord, isArchived: boolean) => (
-    <View key={rec.id} style={styles.recordCard}>
+    <Card key={rec.id} style={styles.recordCard} elevated>
       <View style={styles.recordHeader}>
         <View style={styles.recordIconRow}>
           <FileText size={18} color={isArchived ? '#94A3B8' : '#0D9488'} />
@@ -158,7 +159,7 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
           <Text style={styles.actionText}>Excluir</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </Card>
   );
 
   return (
@@ -168,10 +169,14 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
           <Text style={styles.headerTitle}>Relatórios de {patientName}</Text>
           <Text style={styles.headerSubtitle}>Prontuário e histórico de sessões</Text>
         </View>
-        <TouchableOpacity style={styles.addButton} onPress={handleOpenAdd} activeOpacity={0.85}>
-          <Plus size={18} color="#FFFFFF" />
-          <Text style={styles.addButtonText}>Novo Relatório</Text>
-        </TouchableOpacity>
+        <Button
+          variant="primary"
+          onPress={handleOpenAdd}
+          iconLeft={<Plus size={18} color="#FFFFFF" />}
+          accessibilityLabel="Cadastrar novo relatório"
+        >
+          Novo Relatório
+        </Button>
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -194,11 +199,11 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
         {/* Relatórios Ativos */}
         <Text style={styles.sectionTitle}>Prontuários Ativos</Text>
         {activeRecords.length === 0 ? (
-          <View style={styles.emptyCard}>
+          <Card style={styles.emptyCard} elevated>
             <CheckCircle2 size={28} color="#0D9488" />
             <Text style={styles.emptyTitle}>Nenhum relatório ativo</Text>
             <Text style={styles.emptySub}>Todos os prontuários deste paciente estão arquivados.</Text>
-          </View>
+          </Card>
         ) : (
           activeRecords.map(rec => recordCard(rec, false))
         )}
@@ -212,83 +217,67 @@ export default function PatientReportsScreen({ route }: { route: { params: Patie
         )}
 
         {records.length === 0 && (
-          <View style={styles.emptyCard}>
+          <Card style={styles.emptyCard} elevated>
             <FileText size={36} color="#94A3B8" />
             <Text style={styles.emptyTitle}>Nenhum relatório cadastrado</Text>
             <Text style={styles.emptySub}>Inicie o prontuário deste paciente nas próximas sessões.</Text>
-          </View>
+          </Card>
         )}
       </ScrollView>
 
       {/* Modal Criar / Editar Prontuário */}
-      <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalOverlay}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.modalKeyboard}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>
-                {isEditing ? 'Editar Relatório / Prontuário' : 'Novo Relatório de Sessão'}
-              </Text>
+      <AppModal
+        visible={modalVisible}
+        onDismiss={() => setModalVisible(false)}
+        title={isEditing ? 'Editar Relatório / Prontuário' : 'Novo Relatório de Sessão'}
+        cancelTitle="Cancelar"
+        confirmTitle={isEditing ? 'Salvar Alterações' : 'Criar Relatório'}
+        onConfirm={handleSaveRecord}
+      >
+        <Input
+          label="Título da Sessão / Relatório"
+          placeholder="Ex: Sessão 01 - Anamnese e Vínculo"
+          placeholderTextColor="#94A3B8"
+          value={title}
+          onChangeText={setTitle}
+          accessibilityLabel="Título do relatório"
+        />
 
-              <Text style={styles.label}>Título da Sessão / Relatório</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Ex: Sessão 01 - Anamnese e Vínculo"
-                placeholderTextColor="#94A3B8"
-                value={title}
-                onChangeText={setTitle}
-              />
+        <Input
+          label="Data da Sessão"
+          placeholder="AAAA-MM-DD"
+          placeholderTextColor="#94A3B8"
+          value={date}
+          onChangeText={setDate}
+          accessibilityLabel="Data da sessão"
+        />
 
-              <Text style={styles.label}>Data da Sessão</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="AAAA-MM-DD"
-                placeholderTextColor="#94A3B8"
-                value={date}
-                onChangeText={setDate}
-              />
+        <Input
+          label="Conteúdo do Prontuário (evolução)"
+          placeholder="Relato da sessão, evolução clínica, intervenções realizadas..."
+          placeholderTextColor="#94A3B8"
+          value={content}
+          onChangeText={setContent}
+          multiline
+          numberOfLines={4}
+          accessibilityLabel="Conteúdo do prontuário"
+        />
 
-              <Text style={styles.label}>Conteúdo do Prontuário (evolução)</Text>
-              <TextInput
-                style={[styles.input, styles.inputMultiline]}
-                placeholder="Relato da sessão, evolução clínica, intervenções realizadas..."
-                placeholderTextColor="#94A3B8"
-                value={content}
-                onChangeText={setContent}
-                multiline
-                numberOfLines={4}
-              />
-
-              <Text style={styles.label}>
-                <Lock size={12} color="#0D9488" /> Notas Privadas do Psicólogo
-              </Text>
-              <TextInput
-                style={[styles.input, styles.inputMultilineSmall]}
-                placeholder="Observações sigilosas, hipóteses diagnósticas..."
-                placeholderTextColor="#94A3B8"
-                value={privateNotes}
-                onChangeText={setPrivateNotes}
-                multiline
-                numberOfLines={2}
-              />
-
-              <View style={styles.modalButtons}>
-                <TouchableOpacity
-                  style={[styles.modalBtn, styles.cancelModalBtn]}
-                  onPress={() => setModalVisible(false)}
-                >
-                  <Text style={styles.cancelModalText}>Cancelar</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.modalBtn, styles.saveModalBtn]}
-                  onPress={handleSaveRecord}
-                >
-                  <Text style={styles.saveModalText}>{isEditing ? 'Salvar Alterações' : 'Criar Relatório'}</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </KeyboardAvoidingView>
+        <View style={styles.privateNotesLabelRow}>
+          <Lock size={12} color="#0D9488" />
+          <Text style={styles.label}>Notas Privadas do Psicólogo</Text>
         </View>
-      </Modal>
+        <Input
+          label=" "
+          placeholder="Observações sigilosas, hipóteses diagnósticas..."
+          placeholderTextColor="#94A3B8"
+          value={privateNotes}
+          onChangeText={setPrivateNotes}
+          multiline
+          numberOfLines={2}
+          accessibilityLabel="Notas privadas do psicólogo"
+        />
+      </AppModal>
     </View>
   );
 }
@@ -300,6 +289,9 @@ const styles = StyleSheet.create({
     paddingTop: 52,
     paddingHorizontal: 20,
     paddingBottom: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
     borderBottomWidth: 1,
     borderColor: '#E2E8F0',
     shadowColor: '#0F766E',
@@ -323,17 +315,7 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#133E2B', marginVertical: 14, marginLeft: 4 },
 
   recordCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 18,
     marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
   },
   recordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
   recordIconRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
@@ -341,7 +323,6 @@ const styles = StyleSheet.create({
   recordTitleArchived: { color: '#94A3B8', textDecorationLine: 'line-through' },
   viewBtn: { padding: 6 },
   recordDate: { flexDirection: 'row', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B', marginBottom: 10 },
-  metaIcon: { color: '#94A3B8' },
   recordContent: { fontSize: 13, color: '#374151', lineHeight: 20, marginBottom: 14 },
   recordActions: { flexDirection: 'row', gap: 10 },
   actionBtn: {
@@ -360,67 +341,19 @@ const styles = StyleSheet.create({
   actionText: { fontSize: 11, fontWeight: '700' },
 
   emptyCard: {
-    backgroundColor: '#FFFFFF',
     padding: 36,
     borderRadius: 24,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
     marginHorizontal: 16,
   },
   emptyTitle: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginTop: 12, marginBottom: 6 },
   emptySub: { fontSize: 13, color: '#64748B', textAlign: 'center' },
 
-  // Header ações
-  addButton: {
-    backgroundColor: '#0D9488',
+  privateNotesLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-    borderRadius: 12,
     gap: 6,
-    shadowColor: '#0D9488',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    marginBottom: 6,
   },
-  addButtonText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 },
-
-  // Modal
-  modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', padding: 20 },
-  modalKeyboard: { flex: 1 },
-  modalContent: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 22,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.25,
-    shadowRadius: 12,
-    elevation: 8,
-    maxHeight: '85%',
-  },
-  modalTitle: { fontSize: 18, fontWeight: 'bold', color: '#133E2B', marginBottom: 18, textAlign: 'center' },
   label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
-  input: {
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    fontSize: 14,
-    color: '#1E293B',
-    backgroundColor: '#F8FAFC',
-    marginBottom: 14,
-  },
-  inputMultiline: { height: 96, textAlignVertical: 'top' },
-  inputMultilineSmall: { height: 64, textAlignVertical: 'top' },
-  modalButtons: { flexDirection: 'row', gap: 10, marginTop: 6 },
-  modalBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },
-  cancelModalBtn: { backgroundColor: '#F1F5F9' },
-  cancelModalText: { color: '#64748B', fontWeight: 'bold', fontSize: 14 },
-  saveModalBtn: { backgroundColor: '#0D9488' },
-  saveModalText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 },
 });
