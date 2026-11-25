@@ -42,3 +42,33 @@ jobs:
 
       - name: Expo Doctor (diagnóstico de dependências)
         run: npx --yes expo-doctor@latest
+
+  build-preview:
+    name: EAS Build (preview)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    needs: quality
+    # só executa se o secret EXPO_TOKEN estiver configurado no repositório
+    if: ${{ secrets.EXPO_TOKEN != '' }}
+    # evita builds duplicados a cada push enquanto um anterior está em andamento
+    concurrency:
+      group: eas-build-preview
+      cancel-in-progress: false
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar dependências
+        run: npm ci
+
+      - name: EAS Build (preview • Android APK • distribuição interna)
+        env:
+          EXPO_TOKEN: ${{ secrets.EXPO_TOKEN }}
+        run: npx eas-cli@latest build --profile preview --platform android --non-interactive
