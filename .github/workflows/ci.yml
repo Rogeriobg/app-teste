@@ -61,7 +61,11 @@ jobs:
     # O contexto `secrets` NÃO é permitido em jobs.<job_id>.if (só github, needs,
     # vars e inputs). Por isso o gate usa a repository variable EAS_BUILD_ENABLED
     # e o token é injetado via env no step.
-    if: ${{ vars.EAS_BUILD_ENABLED == 'true' }}
+    #
+    # O build só dispara em execução MANUAL (Actions → EAS Build (preview) →
+    # Run workflow). Um build por push custaria ~30 min de nuvem a cada commit
+    # e não é necessário para o dia a dia, que roda o app localmente.
+    if: ${{ github.event_name == 'workflow_dispatch' && vars.EAS_BUILD_ENABLED == 'true' }}
     # evita builds duplicados a cada push enquanto um anterior está em andamento
     concurrency:
       group: eas-build-preview

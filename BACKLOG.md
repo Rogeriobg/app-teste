@@ -102,17 +102,18 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 11 | Primeiro build real no EAS | O CI já dispara o build `preview` a cada push na `main` (job "EAS Build (preview)"). Acompanhar o run e baixar o APK. | GitHub Actions → EAS Build |
+| 20 | Rodar o app localmente no celular | `npx expo start --go --clear` e abrir `exp://192.168.0.111:8081` no Expo Go. | — |
 
 ### 🟡 Média
 
 | # | Tarefa | Detalhes |
 |---|--------|----------|
-| 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (29,9%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
+| 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (28,6%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
 | 15 | Corrigir entry point do Expo Router | ✅ Feito | O app registrava `src/app/_layout` como root (`main: "index.ts"` + `App.tsx`), o que **pulava o `ExpoRoot`** do expo-router e derrubava os providers internos dele: `useLinkPreviewContext must be used within a LinkPreviewContextProvider`. Correção: `package.json` → `"main": "expo-router/entry"` (entry oficial), remoção de `App.tsx` e `index.ts`, e `AppProvider` movido para fora do `<Stack>` em `_layout.tsx`. Validado no browser: as 6 rotas renderizam sem nenhum erro de console. |
 | 16 | Remover código morto e corrigir nome duplicado | ✅ Feito | `src/screens/` (4 telas da arquitetura pré-Expo Router) removido — nada importava dele. O dashboard exibia "Dr(a). **Dr(a).** Psicólogo(a)" porque o seed já traz o título; corrigido com `src/utils/nome.ts` (`formatarNome`) + 5 testes. |
 | 17 | Redesign do dashboard (BoardUI) | ✅ Feito | Ver seção "🎨 Design system (BoardUI)" abaixo. |
 | 18 | Redesign da página do paciente (BoardUI) | ✅ Feito | Mesma linguagem do dashboard. Top bar com botão voltar (antes não havia), hero do paciente com status único (corrigido bug de "ATIVO ATIVO" duplicado), contato em chips, prontuários com `StatSummary`, cards de prontuário com as ações no cabeçalho, e as 6 ações em grade 2×3 de `ActionTile` horizontal (antes eram 6 botões coloridos full-width). `ActionTile` estendido com `layout="horizontal"` e `tone="danger"`. Corrigido HTML inválido (`<button>` dentro de `<button>`) reestruturando os cards de prontuário. |
+| 11 | Primeiro build real no EAS | ✅ Feito | Dois builds `preview` (Android APK) concluíram com sucesso: `d853a5cb-3c25-4b74-94b6-fd155e1da350` e `9fe1a11c-f7ed-41e8-b307-d9e835c80031`. Configuração completa e funcional (`eas.json`, `projectId`, `owner`, secret `EXPO_TOKEN`, variable `EAS_BUILD_ENABLED`). **O job de build foi então desligado do fluxo automático** — agora só roda em execução manual (Actions → Run workflow), porque cada push custava ~30 min de nuvem e o dia a dia é local. |
 
 ---
 
@@ -202,7 +203,7 @@ Documentado em `src/components/StatSummary.tsx`.
 
 ---
 
-Última atualização: redesign da página do paciente no padrão BoardUI (tarefa #18). A tela ganhou top bar com botão voltar, hero com status único (corrigido o "ATIVO ATIVO" duplicado), contato em chips, cards de prontuário com as ações no cabeçalho e as 6 ações em grade 2×3 no mesmo `ActionTile` do dashboard (novos props `layout="horizontal"` e `tone="danger"`). Corrigido também HTML inválido (`<button>` aninhado). `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 89/89 ✅. Próximo passo: primeiro build real no EAS (tarefa #11).
+Última atualização: página do paciente redesenhada (tarefa #18) e EAS build validado (tarefa #11). O job de build EAS saiu do fluxo automático — agora só dispara em execução manual, porque o app é visualizado localmente. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 89/89 ✅. Próximo passo: rodar o app localmente no celular (tarefa #20).
 
 ### 📱 Rodar localmente
 
@@ -243,9 +244,13 @@ Pré-requisitos: conta Expo (`npx eas-cli@latest login`) e `EXPO_TOKEN` como sec
 ### 🔀 Repositório e CI
 O repositório está em `https://github.com/Rogeriobg/app-teste` (branch `main`) e o workflow `CI` roda a cada push/PR.
 
-O job de build EAS é controlado por:
-- **Variable:** `EAS_BUILD_ENABLED` = `true` ✅ (já criada)
-- **Secret:** `EXPO_TOKEN` ⏳ (token pessoal do Expo)
+**O job "EAS Build (preview)" só roda em execução manual** — em
+Actions → *EAS Build (preview)* → **Run workflow**. Pushes apenas rodam
+typecheck, lint, testes, cobertura e expo-doctor.
+
+Para habilitar o build EAS no CI, configure no repositório:
+- **Secret:** `EXPO_TOKEN` (Settings → Secrets and variables → Actions → Secrets)
+- **Variable:** `EAS_BUILD_ENABLED` = `true` (Settings → Secrets and variables → Actions → Variables)
 
 > O gate do job usa `vars.EAS_BUILD_ENABLED` porque o contexto `secrets` não é permitido em `jobs.<job_id>.if` — usá-lo faz o GitHub rejeitar o workflow inteiro sem criar jobs.
 
