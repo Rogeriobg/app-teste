@@ -12,3 +12,15 @@ export type { StatusBadgeProps, PatientStatus, RecordStatus } from './StatusBadg
 
 export { AppModal } from './Modal';
 export type { ModalProps } from './Modal';
+
+export { Chip } from './Chip';
+export type { ChipProps, ChipTone } from './Chip';
+
+export { StatCard } from './StatCard';
+export type { StatCardProps } from './StatCard';
+
+export { StatSummary } from './StatSummary';
+export type { StatSummaryProps, StatSummarySegment } from './StatSummary';
+
+export { ActionTile } from './ActionTile';
+export type { ActionTileProps } from './ActionTile';

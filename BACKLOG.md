@@ -111,10 +111,70 @@ src/
 | 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (29,9%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
 | 15 | Corrigir entry point do Expo Router | ✅ Feito | O app registrava `src/app/_layout` como root (`main: "index.ts"` + `App.tsx`), o que **pulava o `ExpoRoot`** do expo-router e derrubava os providers internos dele: `useLinkPreviewContext must be used within a LinkPreviewContextProvider`. Correção: `package.json` → `"main": "expo-router/entry"` (entry oficial), remoção de `App.tsx` e `index.ts`, e `AppProvider` movido para fora do `<Stack>` em `_layout.tsx`. Validado no browser: as 6 rotas renderizam sem nenhum erro de console. |
 | 16 | Remover código morto e corrigir nome duplicado | ✅ Feito | `src/screens/` (4 telas da arquitetura pré-Expo Router) removido — nada importava dele. O dashboard exibia "Dr(a). **Dr(a).** Psicólogo(a)" porque o seed já traz o título; corrigido com `src/utils/nome.ts` (`formatarNome`) + 5 testes. |
+| 17 | Redesign do dashboard (BoardUI) | ✅ Feito | Ver seção "🎨 Design system (BoardUI)" abaixo. |
 
 ---
 
-## 🧠 Notas técnicas importantes
+## 🎨 Design system (BoardUI)
+
+### ⚠️ Limitação encontrada
+
+O **BoardUI não tem distribuição para React Native / Expo**. Verificado na
+documentação oficial:
+
+- *"BoardUI is a React + Tailwind CSS v4 design system"* (https://www.boardui.com/llms.txt)
+- Requisitos: *"React 19+, Tailwind CSS v4 — Next.js (first-class), Vite, React Router, or Astro"*
+- Dependências dos componentes: `react-aria-components` e `@remixicon/react` (web only)
+- O CLI (`npx boardui init`) instala Tailwind v4 + PostCSS + `globals.css`
+
+Ou seja: rodar `npx boardui init` num app Expo instalaria Tailwind num projeto
+React Native — quebraria a arquitetura e não renderizaria nada.
+
+**Decisão (conforme a skill `mobile-designer` §3.2 e §1.B):** portar o *recipe*
+e os *tokens* oficiais do BoardUI para `StyleSheet`, que é a arquitetura já
+usada no projeto. Fontes oficiais consultadas:
+`https://www.boardui.com/r/stat-cards.json` e `https://www.boardui.com/r/theme.json`.
+
+### O que foi portado
+
+| BoardUI (React/Tailwind) | PsiApp (React Native) |
+|---|---|
+| `StatCards` (variant `plain`) | `src/components/StatCard.tsx` |
+| Stat card com faixa de rodapé | `src/components/StatSummary.tsx` |
+| `Chip` (variant `bold`) | `src/components/Chip.tsx` |
+| Tokens de tema (`theme.css`) | `src/theme/tokens.ts` |
+| Grade `grid-cols-2` no mobile | `flexDirection: 'row'` + `gap` (2 colunas) |
+
+### Problemas resolvidos
+
+1. **4 estatísticas espremidas em uma linha** → grade 2×2 (`StatCard`)
+2. **Prontuários em 3 cards soltos** → card único com barra de proporção (`StatSummary`)
+3. **"Cadastrar, editar, ativar/desativar e arquivar" estourando o card** →
+   layout vertical (`ActionTile`) com o chevron em posição absoluta
+4. **Header com `paddingTop: 52` fixo** → `useSafeAreaInsets()`
+5. **Nome duplicado no cabeçalho** → `formatarNome()`
+6. **Telas de prontuários/exportação** com resumos diferentes → mesmo `StatSummary`
+
+### 🐛 Footgun do Babel do Worklets
+
+O plugin `react-native-worklets/plugin` insere um `console.warn` que faz
+`require('react-native-reanimated')` sempre que uma **member expression
+terminada em `.value`** aparece dentro de um **objeto literal de `style`**:
+
+```tsx
+// ❌ quebra o app em dev e o ambiente de teste
+style={[styles.barSegment, { flexGrow: segment.value }]}
+
+// ✅ correto
+const estilo = { flexGrow: segment.count, backgroundColor: segment.color };
+<View style={estilo} />
+```
+
+Por isso o campo do segmento se chama **`count`**, e nunca `value`.
+Documentado em `src/components/StatSummary.tsx`.
+
+---
+
 
 - **AsyncStorage keys:** `@psi_app_db_json_v1` (banco), `@psi_app_current_user_v1` (usuário logado)
 - **Seed:** `database.json` é importado como `defaultDb` no `AppContext.tsx`
@@ -133,7 +193,7 @@ src/
 
 ---
 
-Última atualização: EAS totalmente configurado (tarefa #13). Secret `EXPO_TOKEN` e variable `EAS_BUILD_ENABLED` gravados no repositório, e o projeto vinculado ao EAS (`extra.eas.projectId` + `owner` no `app.json`). O CI agora dispara o build `preview` automaticamente em cada push na `main`. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 82/82 ✅, `eas.json` e workflow válidos contra os schemas oficiais. Próximo passo: acompanhar o primeiro build EAS (tarefa #11).
+Última atualização: redesign do dashboard no padrão BoardUI (tarefa #17). Novo design system em `src/theme/tokens.ts` + componentes `StatCard`, `StatSummary`, `Chip` e `ActionTile`. As 4 estatísticas de pacientes passaram de 1 linha espremida para uma grade 2×2, os prontuários viraram um card único com barra de proporção, e o card de "Ações Rápidas" foi refeito em layout vertical (a descrição estourava). Documentada a limitação: **BoardUI não tem distribuição React Native/Expo** — é React + Tailwind v4 — então o recipe e os tokens oficiais foram portados para `StyleSheet`. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 89/89 ✅. Próximo passo: primeiro build real no EAS (tarefa #11).
 
 ### 📱 Rodar localmente
 

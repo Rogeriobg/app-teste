@@ -69,7 +69,29 @@ describe('Telas', () => {
         expect(screen.getByText('Arquivados')).toBeTruthy();
       });
 
-      expect(screen.getByText('Relatórios Totais')).toBeTruthy();
+      // os prontuários migraram para um card único com barra de proporção
+      expect(screen.getByText('Prontuários do paciente')).toBeTruthy();
+      expect(screen.getByText('Prontuários ativos')).toBeTruthy();
+      expect(screen.getByText('Prontuários arquivados')).toBeTruthy();
+    });
+
+    it('deve agrupar as estatísticas de pacientes em uma grade de 2 colunas', async () => {
+      await renderWithProvider(<DashboardScreen />);
+
+      await waitFor(() => expect(screen.getByText('Total de Pacientes')).toBeTruthy());
+
+      // cada stat card é um agrupamento acessível com rótulo e valor
+      const statCards = screen.getAllByRole('summary');
+      const rotulos = statCards.map((card) => card.props.accessibilityLabel);
+
+      expect(rotulos).toEqual(
+        expect.arrayContaining([
+          expect.stringContaining('Total de Pacientes'),
+          expect.stringContaining('Ativos'),
+          expect.stringContaining('Inativos'),
+          expect.stringContaining('Arquivados'),
+        ])
+      );
     });
 
     it('deve exibir o nome do psicólogo logado', async () => {
@@ -77,6 +99,14 @@ describe('Telas', () => {
 
       await waitFor(() => {
         expect(screen.getByText(/Dr\(a\)\./)).toBeTruthy();
+      });
+    });
+
+    it('deve exibir saudação e data no cabeçalho', async () => {
+      await renderWithProvider(<DashboardScreen />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Bom dia|Boa tarde|Boa noite/)).toBeTruthy();
       });
     });
 

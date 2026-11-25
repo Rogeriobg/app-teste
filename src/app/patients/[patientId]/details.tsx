@@ -12,7 +12,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
-import { Button, Card, Input, StatusBadge, AppModal } from '@/components';
+import { Button, Card, Input, StatusBadge, AppModal, StatSummary } from '@/components';
+import { colors } from '@/theme/tokens';
 import {
   Users,
   Mail,
@@ -341,20 +342,14 @@ export default function PatientDetailsScreen() {
             </Button>
           </View>
 
-          <View style={styles.summaryRow}>
-            <View style={[styles.summaryBox, styles.summaryTotal]}>
-              <Text style={styles.summaryNum}>{records.length}</Text>
-              <Text style={styles.summaryLabel}>Total</Text>
-            </View>
-            <View style={[styles.summaryBox, styles.summaryActive]}>
-              <Text style={styles.summaryNum}>{activeRecords.length}</Text>
-              <Text style={styles.summaryLabel}>Ativos</Text>
-            </View>
-            <View style={[styles.summaryBox, styles.summaryArchived]}>
-              <Text style={styles.summaryNum}>{archivedRecords.length}</Text>
-              <Text style={styles.summaryLabel}>Arquivados</Text>
-            </View>
-          </View>
+          <StatSummary
+            title="Resumo dos prontuários"
+            total={records.length}
+            segments={[
+              { label: 'Ativos', count: activeRecords.length, color: colors.brand },
+              { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
+            ]}
+          />
 
           {/* Lista de relatórios */}
           {records.length === 0 ? (
@@ -793,49 +788,6 @@ const styles = StyleSheet.create({
     height: 1,
     backgroundColor: '#F1F5F9',
     marginVertical: 4,
-  },
-  summaryRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    gap: 8,
-    marginBottom: 16,
-  },
-  summaryBox: {
-    flex: 1,
-    borderRadius: 16,
-    padding: 14,
-    backgroundColor: CARD,
-    borderWidth: 1,
-    borderColor: BORDER,
-    alignItems: 'center',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  summaryTotal: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
-  },
-  summaryActive: {
-    borderColor: ACCENT,
-    backgroundColor: '#E6F4ED',
-  },
-  summaryArchived: {
-    borderColor: '#94A3B8',
-    backgroundColor: '#F3F4F6',
-  },
-  summaryNum: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: TEXT_DARK,
-    marginBottom: 2,
-  },
-  summaryLabel: {
-    fontSize: 11,
-    color: TEXT_MUTED,
-    fontWeight: '600',
   },
   recordsList: {
     gap: 10,

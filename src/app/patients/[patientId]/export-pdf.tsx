@@ -12,12 +12,10 @@ import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
-import { Button, Card } from '@/components';
+import { Button, Card, StatSummary } from '@/components';
 import {
   FileText,
-  Users,
   Download,
-  Archive,
   ChevronRight,
   AlertCircle,
 } from 'lucide-react-native';
@@ -364,25 +362,14 @@ export default function ExportPdfScreen() {
         {/* Resumo */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Resumo</Text>
-          <Card style={styles.summaryCard} elevated>
-            <View style={styles.summaryRow}>
-              <View style={[styles.summaryBox, styles.summaryTotal]}>
-                <FileText size={22} color="#2563EB" />
-                <Text style={styles.summaryNum}>{records.length}</Text>
-                <Text style={styles.summaryLabel}>Prontuários</Text>
-              </View>
-              <View style={[styles.summaryBox, styles.summaryActive]}>
-                <Users size={22} color={ACCENT} />
-                <Text style={styles.summaryNum}>{activeRecords.length}</Text>
-                <Text style={styles.summaryLabel}>Ativos</Text>
-              </View>
-              <View style={[styles.summaryBox, styles.summaryArchived]}>
-                <Archive size={22} color="#94A3B8" />
-                <Text style={styles.summaryNum}>{archivedRecords.length}</Text>
-                <Text style={styles.summaryLabel}>Arquivados</Text>
-              </View>
-            </View>
-          </Card>
+          <StatSummary
+            title="Prontuários"
+            total={records.length}
+            segments={[
+              { label: 'Ativos', count: activeRecords.length, color: ACCENT },
+              { label: 'Arquivados', count: archivedRecords.length, color: '#94A3B8' },
+            ]}
+          />
 
           {/* Informações do paciente */}
           <Card style={styles.infoCard} elevated>

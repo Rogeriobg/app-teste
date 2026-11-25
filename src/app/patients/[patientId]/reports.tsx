@@ -2,7 +2,8 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useApp, MedicalRecord } from '@/context/AppContext';
 import { useLocalSearchParams } from 'expo-router';
-import { Button, Input, Card, AppModal } from '@/components';
+import { Button, Input, Card, AppModal, StatSummary } from '@/components';
+import { colors } from '@/theme/tokens';
 import {
   FileText,
   Archive,
@@ -202,20 +203,14 @@ export default function PatientReportsScreen() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {/* Resumo */}
-        <View style={styles.summaryRow}>
-          <View style={[styles.summaryBox, styles.summaryTotal]}>
-            <Text style={styles.summaryNum}>{records.length}</Text>
-            <Text style={styles.summaryLabel}>Relatórios</Text>
-          </View>
-          <View style={[styles.summaryBox, styles.summaryActive]}>
-            <Text style={styles.summaryNum}>{activeRecords.length}</Text>
-            <Text style={styles.summaryLabel}>Ativos</Text>
-          </View>
-          <View style={[styles.summaryBox, styles.summaryArchived]}>
-            <Text style={styles.summaryNum}>{archivedRecords.length}</Text>
-            <Text style={styles.summaryLabel}>Arquivados</Text>
-          </View>
-        </View>
+        <StatSummary
+          title="Relatórios"
+          total={records.length}
+          segments={[
+            { label: 'Ativos', count: activeRecords.length, color: colors.brand },
+            { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
+          ]}
+        />
 
         {/* Relatórios Ativos */}
         <Text style={styles.sectionTitle}>Prontuários Ativos</Text>
@@ -339,13 +334,6 @@ const styles = StyleSheet.create({
   headerSubtitle: { fontSize: 12, color: '#0D9488', fontWeight: '600', marginTop: 2 },
 
   scroll: { padding: 16, paddingBottom: 20 },
-  summaryRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 20, gap: 10 },
-  summaryBox: { flex: 1, borderRadius: 18, padding: 16, backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#E2E8F0', alignItems: 'center' },
-  summaryTotal: { borderColor: '#2563EB', backgroundColor: '#EFF6FF' },
-  summaryActive: { borderColor: '#0D9488', backgroundColor: '#E6F4ED' },
-  summaryArchived: { borderColor: '#94A3B8', backgroundColor: '#F3F4F6' },
-  summaryNum: { fontSize: 22, fontWeight: '800', color: '#133E2B' },
-  summaryLabel: { fontSize: 11, color: '#64748B', fontWeight: '600', marginTop: 4 },
 
   sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#133E2B', marginVertical: 14, marginLeft: 4 },
 
