@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-nati
 import { useApp, MedicalRecord, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { Users, Calendar as CalendarIcon, FileText, Sparkles, LogOut, ArrowRight, Settings } from 'lucide-react-native';
+import { formatarNome } from '@/utils/nome';
 
 export default function PsychologistDashboard() {
   const { db, currentUser, logout, getPatientsByStatus } = useApp();
@@ -25,7 +26,7 @@ export default function PsychologistDashboard() {
             <Sparkles size={16} color="#0D9488" />
           </View>
           <View>
-            <Text style={styles.welcomeText}>Dr(a). {currentUser?.name}</Text>
+            <Text style={styles.welcomeText}>{formatarNome(currentUser?.name)}</Text>
             <Text style={styles.roleSubtext}>Consultório Psicológico • PsiApp</Text>
           </View>
         </View>

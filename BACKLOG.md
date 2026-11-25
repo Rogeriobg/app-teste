@@ -109,6 +109,8 @@ src/
 | # | Tarefa | Detalhes |
 |---|--------|----------|
 | 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (29,9%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
+| 15 | Corrigir entry point do Expo Router | ✅ Feito | O app registrava `src/app/_layout` como root (`main: "index.ts"` + `App.tsx`), o que **pulava o `ExpoRoot`** do expo-router e derrubava os providers internos dele: `useLinkPreviewContext must be used within a LinkPreviewContextProvider`. Correção: `package.json` → `"main": "expo-router/entry"` (entry oficial), remoção de `App.tsx` e `index.ts`, e `AppProvider` movido para fora do `<Stack>` em `_layout.tsx`. Validado no browser: as 6 rotas renderizam sem nenhum erro de console. |
+| 16 | Remover código morto e corrigir nome duplicado | ✅ Feito | `src/screens/` (4 telas da arquitetura pré-Expo Router) removido — nada importava dele. O dashboard exibia "Dr(a). **Dr(a).** Psicólogo(a)" porque o seed já traz o título; corrigido com `src/utils/nome.ts` (`formatarNome`) + 5 testes. |
 
 ---
 
@@ -137,14 +139,16 @@ src/
 
 ```bash
 cd F:\08-MOBILE\psi-app
-npx expo start --go      # modo Expo Go (celular)
-npx expo start --android # abre no emulador/dispositivo via adb
+npx expo start --go --clear    # modo Expo Go (celular) — usar --clear após mexer no entry point
+npx expo start --android       # abre no emulador/dispositivo via adb
 ```
 
 > **⚠️ Use `--go`!** Como o projeto tem `expo-dev-client` instalado, o `npx expo start` sem flag assume o **development build** e imprime um QR `exp+psi-app://` que **não abre no Expo Go** (`@expo/cli/src/start/resolveOptions.js:75` → `isAutoDevClient`). O `--go` força o esquema `exp://`.
 
 **URL do Expo Go (rede `CLAUDIA`):** `exp://192.168.0.111:8081`
 **URL via Ethernet:** `exp://192.168.0.118:8081`
+
+> **Emulador local bloqueado por falta de disco:** o AVD precisa de ~7,4 GB (system image do android-35 + userdata) e os drives têm C: 2,4 GB · F: 4,6 GB · G: 1 GB livres. Para usar o emulador, libere ~8 GB e rode `avdmanager create avd -n PsiApp_API35 -k "system-images;android-35;google_apis;x86_64" -d pixel_6`.
 
 ### 🧪 Como rodar os testes
 ```bash
