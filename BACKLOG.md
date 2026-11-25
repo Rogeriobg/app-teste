@@ -85,6 +85,12 @@ src/
 |---|--------|--------|----------|
 | 1 | Adicionar busca de pacientes | ✅ Feito | Campo de texto no `PatientsScreen` filtrando por nome e e-mail, funciona em combinação com filtros por status |
 | 2 | Date picker nativo | ✅ Feito | Substituir `TextInput` de datas por `@react-native-community/datetimepicker` em PatientsScreen (Data de Nascimento) e PatientReportsScreen (Data da Sessão) |
+| 3 | Migrar navegação para Expo Router | ✅ Feito | `App.tsx` reexporta `src/app/_layout`; rotas em `src/app/` usam `expo-router`. |
+| 4 | Tela de perfil/configurações | ✅ Feito | Nova rota `src/app/profile.tsx` com SafeArea, dados editáveis do psicólogo, `updateUser` no AppContext, exportação de dados JSON via `expo-sharing` + `expo-file-system`, feedback háptico via `expo-haptics`, acessibilidade, thumb zone para logout. Link adicionado no dashboard. |
+| 5 | Tela de detalhes do paciente | ✅ Feito | Nova rota `src/app/patients/[patientId]/details.tsx` com SafeAreaView, useSafeAreaInsets, avatar grande, cards de informações (nascimento, anamnese, email, telefone), resumo de prontuários (ativos/arquivados), lista de prontuários com editar/arquivar/excluir, modal de novo prontuário, ações na thumb zone (editar, inativar/reativar, arquivar/restaurar, prontuários, excluir), feedback háptico via expo-haptics, acessibilidade completa (accessibilityLabel/role/hint), estados vazios. `updateUser`, `addMedicalRecord`, etc. expostos no AppContext. |
+| 6 | Exportar relatório (PDF/compartilhar) | ✅ Feito | Nova rota `src/app/patients/[patientId]/export-pdf.tsx` usando `expo-print` (`printToFileAsync`) com HTML/CSS estilizado para A4 (cabeçalho, dados do paciente, prontuários, notas privadas, rodapé) + `expo-sharing` para compartilhar. Botão "Exportar PDF" adicionado na thumb zone da tela de detalhes. Bug corrigido: `DateTimePicker` agora renderiza condicionalmente (`datePickerVisible &&`) em `patients.tsx` e `reports.tsx` — antes aparecia sempre dentro do modal. |
+| 7 | Testes (Jest / React Native Testing Library) | ✅ Feito | `jest-expo` + Jest 30 + `@testing-library/react-native` v14. `jest.config.js` (preset, alias `@/`, mocks de `lucide-react-native` ESM, `testTimeout`), `jest.setup.ts` (mocks de AsyncStorage, safe-area-context, haptics, sharing, print, file-system, datetimepicker, expo-router), `__tests__/` com 61 testes: `AppContext-test.tsx` (autenticação, updateUser, CRUD de pacientes e prontuários, helpers, exportData), `components-test.tsx` (Button, Input, Card, StatusBadge, AppModal), `screens-test.tsx` (Login, Dashboard, Patients, Profile, PatientDetails). Scripts `npm test`, `npm run test:watch`, `npm run test:coverage`, `npm run typecheck`. |
+| 8 | Configurar ESLint/Prettier no CI | ✅ Feito | Workflow `.github/workflows/ci.yml` (push/PR em master+main, concurrency, Node 22 com cache npm): `npm ci` → `npm run typecheck` → `npm run lint` → `npm test` → `expo-doctor`. Bugs corrigidos: `expo-haptics` e `expo-print` removidos dos `plugins` do `app.json` (não possuem config plugin e quebravam `expo config`); peer deps `expo-constants`, `expo-linking` e `react-native-svg` instaladas (expo-doctor: 20/20 ✅). |
 
 ---
 
@@ -92,15 +98,14 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 3 | Migrar navegação para Expo Router | Substituir a navegação condicional de `App.tsx` por rotas em `src/app/`. | `src/app/`, `App.tsx` |
-| 4 | Tela de perfil/configurações | Dados do psicólogo, trocar e-mail, exportar dados. | `src/screens/`, `src/context/` |
+| 9 | EAS Build | Configurar `eas.json` e build de desenvolvimento/produção. | `eas.json`, `app.json` |
 
 ### 🟡 Média
 
 | # | Tarefa | Detalhes |
 |---|--------|----------|
-| 4 | Migrar navegação para Expo Router | Substituir a navegação condicional de `App.tsx` por rotas em `src/app/`. |
-| 5 | Tela de perfil/configurações | Dados do psicólogo, trocar e-mail, exportar dados. |
+| 10 | Cobertura de testes | Ampliar cobertura para `src/app/patients/[patientId]/reports.tsx` e `export-pdf.tsx`. |
+| 11 | Publicar o repositório no GitHub | O repositório local ainda não tem remote configurado — sem isso o CI não roda. |
 | 6 | Exportar relatório (PDF/compartilhar) | Gerar PDF do prontuário ou compartilhar via `expo-sharing`. |
 | 7 | Tela de detalhes do paciente | Abrir paciente para ver informações completas + lista de relatórios. |
 
@@ -133,4 +138,22 @@ src/
 
 ---
 
-Última atualização: componentes compartilhados criados e verificados (TS + lint limpos). Próximo passo: refatorar telas para usar `src/components/`.
+Última atualização: CI no GitHub Actions concluído (tarefa #8). Workflow `.github/workflows/ci.yml` roda typecheck + lint + jest + expo-doctor em cada push/PR. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅. Próximo passo: EAS Build (tarefa #9).
+
+### 🧪 Como rodar os testes
+```bash
+cd F:\08-MOBILE\psi-app
+npm test              # uma vez (CI)
+npm run test:watch    # modo watch
+npm run test:coverage # relatório de cobertura
+npm run typecheck     # tsc --noEmit
+npx expo-doctor       # diagnóstico de dependências
+```
+
+### 🔀 Ativar o CI
+O repositório local ainda não tem remote configurado. Para o GitHub Actions rodar:
+```bash
+cd F:\08-MOBILE\psi-app
+git remote add origin https://github.com/<usuario>/psi-app.git
+git push -u origin master
+```

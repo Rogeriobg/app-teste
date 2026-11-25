@@ -1,5 +1,7 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { shareAsync } from 'expo-sharing';
+import { writeAsStringAsync, Paths } from 'expo-file-system';
 import defaultDbData from '../../database.json';
 
 export interface User {
@@ -42,11 +44,13 @@ export interface Database {
 
 const defaultDb: Database = defaultDbData as unknown as Database;
 
-interface AppContextData {
+export interface AppContextData {
   db: Database;
   currentUser: User | null;
   login: (email: string) => Promise<boolean>;
   logout: () => Promise<void>;
+  updateUser: (updates: Partial<Pick<User, 'name' | 'email'>>) => Promise<void>;
+  exportData: () => Promise<void>;
   /* Navegação entre telas */
   activeScreen: 'login' | 'dashboard' | 'patients' | 'reports';
   setActiveScreen: (screen: 'login' | 'dashboard' | 'patients' | 'reports') => void;
@@ -140,6 +144,35 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     try {
       await AsyncStorage.removeItem(CURRENT_USER_KEY);
     } catch {}
+  };
+
+  const updateUser = async (updates: Partial<Pick<User, 'name' | 'email'>>) => {
+    if (!currentUser) return;
+    const updatedUser: User = { ...currentUser, ...updates };
+    setCurrentUser(updatedUser);
+    try {
+      await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(updatedUser));
+    } catch (e) {
+      console.warn('AsyncStorage save user error', e);
+    }
+  };
+
+  const exportData = async () => {
+    const json = JSON.stringify(db, null, 2);
+    const fileName = `psi_app_export_${new Date().toISOString().slice(0, 10)}.json`;
+    const filePath = `${Paths.cache.uri}${fileName}`;
+    try {
+      await writeAsStringAsync(filePath, json, {
+        encoding: 'utf8',
+      });
+      await shareAsync(filePath, {
+        mimeType: 'application/json',
+        dialogTitle: 'Exportar dados do PsiApp',
+      });
+    } catch (e) {
+      console.warn('Export error', e);
+      throw e;
+    }
   };
 
   const setSelectedPatient = (id: string | null, name: string | null) => {
@@ -248,6 +281,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         currentUser,
         login,
         logout,
+        updateUser,
+        exportData,
         activeScreen,
         setActiveScreen,
         selectedPatientId,
