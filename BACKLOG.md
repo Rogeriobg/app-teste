@@ -91,6 +91,7 @@ src/
 | 6 | Exportar relatório (PDF/compartilhar) | ✅ Feito | Nova rota `src/app/patients/[patientId]/export-pdf.tsx` usando `expo-print` (`printToFileAsync`) com HTML/CSS estilizado para A4 (cabeçalho, dados do paciente, prontuários, notas privadas, rodapé) + `expo-sharing` para compartilhar. Botão "Exportar PDF" adicionado na thumb zone da tela de detalhes. Bug corrigido: `DateTimePicker` agora renderiza condicionalmente (`datePickerVisible &&`) em `patients.tsx` e `reports.tsx` — antes aparecia sempre dentro do modal. |
 | 7 | Testes (Jest / React Native Testing Library) | ✅ Feito | `jest-expo` + Jest 30 + `@testing-library/react-native` v14. `jest.config.js` (preset, alias `@/`, mocks de `lucide-react-native` ESM, `testTimeout`), `jest.setup.ts` (mocks de AsyncStorage, safe-area-context, haptics, sharing, print, file-system, datetimepicker, expo-router), `__tests__/` com 61 testes: `AppContext-test.tsx` (autenticação, updateUser, CRUD de pacientes e prontuários, helpers, exportData), `components-test.tsx` (Button, Input, Card, StatusBadge, AppModal), `screens-test.tsx` (Login, Dashboard, Patients, Profile, PatientDetails). Scripts `npm test`, `npm run test:watch`, `npm run test:coverage`, `npm run typecheck`. |
 | 8 | Configurar ESLint/Prettier no CI | ✅ Feito | Workflow `.github/workflows/ci.yml` (push/PR em master+main, concurrency, Node 22 com cache npm): `npm ci` → `npm run typecheck` → `npm run lint` → `npm test` → `expo-doctor`. Bugs corrigidos: `expo-haptics` e `expo-print` removidos dos `plugins` do `app.json` (não possuem config plugin e quebravam `expo config`); peer deps `expo-constants`, `expo-linking` e `react-native-svg` instaladas (expo-doctor: 20/20 ✅). |
+| 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI (protegido por `EXPO_TOKEN`). Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
 
 ---
 
@@ -98,14 +99,14 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 9 | EAS Build | Configurar `eas.json` e build de desenvolvimento/produção. | `eas.json`, `app.json` |
+| 12 | Publicar o repositório no GitHub | O repositório local ainda não tem remote configurado — sem isso o CI não roda. | — |
 
 ### 🟡 Média
 
 | # | Tarefa | Detalhes |
 |---|--------|----------|
 | 10 | Cobertura de testes | Ampliar cobertura para `src/app/patients/[patientId]/reports.tsx` e `export-pdf.tsx`. |
-| 11 | Publicar o repositório no GitHub | O repositório local ainda não tem remote configurado — sem isso o CI não roda. |
+| 11 | Primeiro build real no EAS | Rodar `npm run eas:build:preview` após configurar a conta Expo e o `EXPO_TOKEN` no GitHub. |
 | 6 | Exportar relatório (PDF/compartilhar) | Gerar PDF do prontuário ou compartilhar via `expo-sharing`. |
 | 7 | Tela de detalhes do paciente | Abrir paciente para ver informações completas + lista de relatórios. |
 
@@ -138,7 +139,7 @@ src/
 
 ---
 
-Última atualização: CI no GitHub Actions concluído (tarefa #8). Workflow `.github/workflows/ci.yml` roda typecheck + lint + jest + expo-doctor em cada push/PR. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅. Próximo passo: EAS Build (tarefa #9).
+Última atualização: EAS Build configurado (tarefa #9). `eas.json` com perfis `development`/`preview`/`production`, identificadores nativos no `app.json`, `expo-dev-client` instalado e job de build no CI. `expo-doctor` 20/20 ✅, `expo config` ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅, `eas.json` válido contra o schema oficial. Próximo passo: publicar o repositório no GitHub (tarefa #12).
 
 ### 🧪 Como rodar os testes
 ```bash
@@ -149,6 +150,17 @@ npm run test:coverage # relatório de cobertura
 npm run typecheck     # tsc --noEmit
 npx expo-doctor       # diagnóstico de dependências
 ```
+
+### 📦 EAS Build
+```bash
+npm run eas:config          # inspecionar a config resolvida (requer login Expo)
+npm run eas:build:dev       # perfil development  → dev client (Android APK / iOS simulator)
+npm run eas:build:preview   # perfil preview      → APK/IPA de distribuição interna
+npm run eas:build:prod      # perfil production  → AAB/IPA para as lojas
+npm run eas:submit          # envia o build de production para as lojas
+npm run validate:eas        # valida o eas.json contra o schema oficial do EAS
+```
+Pré-requisitos: conta Expo (`npx eas-cli@latest login`) e `EXPO_TOKEN` como secret do repositório para builds via CI.
 
 ### 🔀 Ativar o CI
 O repositório local ainda não tem remote configurado. Para o GitHub Actions rodar:
