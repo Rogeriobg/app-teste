@@ -133,6 +133,19 @@ src/
 
 Última atualização: EAS totalmente configurado (tarefa #13). Secret `EXPO_TOKEN` e variable `EAS_BUILD_ENABLED` gravados no repositório, e o projeto vinculado ao EAS (`extra.eas.projectId` + `owner` no `app.json`). O CI agora dispara o build `preview` automaticamente em cada push na `main`. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 82/82 ✅, `eas.json` e workflow válidos contra os schemas oficiais. Próximo passo: acompanhar o primeiro build EAS (tarefa #11).
 
+### 📱 Rodar localmente
+
+```bash
+cd F:\08-MOBILE\psi-app
+npx expo start --go      # modo Expo Go (celular)
+npx expo start --android # abre no emulador/dispositivo via adb
+```
+
+> **⚠️ Use `--go`!** Como o projeto tem `expo-dev-client` instalado, o `npx expo start` sem flag assume o **development build** e imprime um QR `exp+psi-app://` que **não abre no Expo Go** (`@expo/cli/src/start/resolveOptions.js:75` → `isAutoDevClient`). O `--go` força o esquema `exp://`.
+
+**URL do Expo Go (rede `CLAUDIA`):** `exp://192.168.0.111:8081`
+**URL via Ethernet:** `exp://192.168.0.118:8081`
+
 ### 🧪 Como rodar os testes
 ```bash
 cd F:\08-MOBILE\psi-app
