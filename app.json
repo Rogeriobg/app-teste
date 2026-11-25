@@ -1,15 +1,20 @@
 {
   "expo": {
-    "name": "psi-app",
+    "name": "PsiApp",
     "slug": "psi-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
+    "scheme": "psiapp",
     "userInterfaceStyle": "light",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.psicowave.psiapp",
+      "buildNumber": "1"
     },
     "android": {
+      "package": "com.psicowave.psiapp",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/android-icon-foreground.png",
@@ -24,7 +29,15 @@
     "plugins": [
       "@react-native-community/datetimepicker",
       "expo-router",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "resizeMode": "contain",
+          "backgroundColor": "#F4FBF7"
+        }
+      ]
     ]
   }
 }
