@@ -91,7 +91,8 @@ src/
 | 6 | Exportar relatório (PDF/compartilhar) | ✅ Feito | Nova rota `src/app/patients/[patientId]/export-pdf.tsx` usando `expo-print` (`printToFileAsync`) com HTML/CSS estilizado para A4 (cabeçalho, dados do paciente, prontuários, notas privadas, rodapé) + `expo-sharing` para compartilhar. Botão "Exportar PDF" adicionado na thumb zone da tela de detalhes. Bug corrigido: `DateTimePicker` agora renderiza condicionalmente (`datePickerVisible &&`) em `patients.tsx` e `reports.tsx` — antes aparecia sempre dentro do modal. |
 | 7 | Testes (Jest / React Native Testing Library) | ✅ Feito | `jest-expo` + Jest 30 + `@testing-library/react-native` v14. `jest.config.js` (preset, alias `@/`, mocks de `lucide-react-native` ESM, `testTimeout`), `jest.setup.ts` (mocks de AsyncStorage, safe-area-context, haptics, sharing, print, file-system, datetimepicker, expo-router), `__tests__/` com 61 testes: `AppContext-test.tsx` (autenticação, updateUser, CRUD de pacientes e prontuários, helpers, exportData), `components-test.tsx` (Button, Input, Card, StatusBadge, AppModal), `screens-test.tsx` (Login, Dashboard, Patients, Profile, PatientDetails). Scripts `npm test`, `npm run test:watch`, `npm run test:coverage`, `npm run typecheck`. |
 | 8 | Configurar ESLint/Prettier no CI | ✅ Feito | Workflow `.github/workflows/ci.yml` (push/PR em master+main, concurrency, Node 22 com cache npm): `npm ci` → `npm run typecheck` → `npm run lint` → `npm test` → `expo-doctor`. Bugs corrigidos: `expo-haptics` e `expo-print` removidos dos `plugins` do `app.json` (não possuem config plugin e quebravam `expo config`); peer deps `expo-constants`, `expo-linking` e `react-native-svg` instaladas (expo-doctor: 20/20 ✅). |
-| 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI (protegido por `EXPO_TOKEN`). Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
+| 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI. Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
+| 12 | Publicar o repositório no GitHub | ✅ Feito | Repositório `Rogeriobg/app-teste` (branch `main`) sincronizado. CI validado no GitHub Actions: bug corrigido em `jobs.<id>.if` (contexto `secrets` não é permitido nesse ponto — causava "Invalid workflow file" sem criar jobs). Validador local `scripts/validate-workflow.cjs` (schema oficial do GitHub + checagem de contextos) adicionado ao CI. |
 
 ---
 
@@ -99,7 +100,7 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 12 | Publicar o repositório no GitHub | O repositório local ainda não tem remote configurado — sem isso o CI não roda. | — |
+| 13 | Configurar secret e variable no GitHub | Criar `EXPO_TOKEN` (secret) e `EAS_BUILD_ENABLED=true` (variable) para habilitar o build EAS no CI. | GitHub → Settings |
 
 ### 🟡 Média
 
@@ -139,7 +140,7 @@ src/
 
 ---
 
-Última atualização: EAS Build configurado (tarefa #9). `eas.json` com perfis `development`/`preview`/`production`, identificadores nativos no `app.json`, `expo-dev-client` instalado e job de build no CI. `expo-doctor` 20/20 ✅, `expo config` ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅, `eas.json` válido contra o schema oficial. Próximo passo: publicar o repositório no GitHub (tarefa #12).
+Última atualização: repositório publicado e CI validado no GitHub (tarefa #12). O workflow `CI` roda em `Rogeriobg/app-teste` (main). Corrigido o bug "Invalid workflow file" — o contexto `secrets` não é permitido em `jobs.<id>.if`; o gate agora usa a variable `vars.EAS_BUILD_ENABLED` e o token é injetado via `env` no step. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅, `eas.json` e workflow válidos contra os schemas oficiais. Próximo passo: configurar `EXPO_TOKEN` e `EAS_BUILD_ENABLED` no GitHub (tarefa #13).
 
 ### 🧪 Como rodar os testes
 ```bash
@@ -162,10 +163,11 @@ npm run validate:eas        # valida o eas.json contra o schema oficial do EAS
 ```
 Pré-requisitos: conta Expo (`npx eas-cli@latest login`) e `EXPO_TOKEN` como secret do repositório para builds via CI.
 
-### 🔀 Ativar o CI
-O repositório local ainda não tem remote configurado. Para o GitHub Actions rodar:
-```bash
-cd F:\08-MOBILE\psi-app
-git remote add origin https://github.com/<usuario>/psi-app.git
-git push -u origin master
-```
+### 🔀 Repositório e CI
+O repositório está em `https://github.com/Rogeriobg/app-teste` (branch `main`) e o workflow `CI` roda a cada push/PR.
+
+Para habilitar o build EAS no CI, configure no repositório:
+- **Secret:** `EXPO_TOKEN` (Settings → Secrets and variables → Actions → Secrets)
+- **Variable:** `EAS_BUILD_ENABLED` = `true` (Settings → Secrets and variables → Actions → Variables)
+
+> O gate do job usa `vars.EAS_BUILD_ENABLED` porque o contexto `secrets` não é permitido em `jobs.<job_id>.if` — usá-lo faz o GitHub rejeitar o workflow inteiro sem criar jobs.
