@@ -70,11 +70,13 @@ jest.mock('expo-file-system', () => ({
 }));
 
 /* ---------- @react-native-community/datetimepicker ---------- */
+// expõe um testID para que os testes possam encontrar e acionar o picker
 jest.mock('@react-native-community/datetimepicker', () => {
   const React = require('react');
   return {
     __esModule: true,
-    default: (props: Record<string, unknown>) => React.createElement('DateTimePicker', props),
+    default: (props: Record<string, unknown>) =>
+      React.createElement('DateTimePicker', { testID: 'date-time-picker', ...props }),
   };
 });
 

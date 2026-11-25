@@ -30,4 +30,21 @@ module.exports = {
     '!**/coverage/**',
     '!**/node_modules/**',
   ],
+  // Piso de cobertura para as telas com testes dedicados.
+  // O `*` no lugar de `[patientId]` evita que o glob interprete os colchetes
+  // como uma classe de caracteres.
+  coverageThreshold: {
+    './src/app/patients/*/reports.tsx': {
+      statements: 90,
+      branches: 70,
+      functions: 90,
+      lines: 90,
+    },
+    './src/app/patients/*/export-pdf.tsx': {
+      statements: 85,
+      branches: 60,
+      functions: 90,
+      lines: 85,
+    },
+  },
 };

@@ -74,7 +74,11 @@ export interface AppContextData {
   getRecordsByPatient: (patientId: string) => MedicalRecord[];
 }
 
-const AppContext = createContext<AppContextData>({} as AppContextData);
+/**
+ * Contexto exposto para que testes (e integrações) possam sobrescrever
+ * comportamentos específicos sem alterar a implementação do AppProvider.
+ */
+export const AppContext = createContext<AppContextData>({} as AppContextData);
 const STORAGE_KEY = '@psi_app_db_json_v1';
 const CURRENT_USER_KEY = '@psi_app_current_user_v1';
 

@@ -93,6 +93,7 @@ src/
 | 8 | Configurar ESLint/Prettier no CI | ✅ Feito | Workflow `.github/workflows/ci.yml` (push/PR em master+main, concurrency, Node 22 com cache npm): `npm ci` → `npm run typecheck` → `npm run lint` → `npm test` → `expo-doctor`. Bugs corrigidos: `expo-haptics` e `expo-print` removidos dos `plugins` do `app.json` (não possuem config plugin e quebravam `expo config`); peer deps `expo-constants`, `expo-linking` e `react-native-svg` instaladas (expo-doctor: 20/20 ✅). |
 | 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI. Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
 | 12 | Publicar o repositório no GitHub | ✅ Feito | Repositório `Rogeriobg/app-teste` (branch `main`) sincronizado. CI validado no GitHub Actions: bug corrigido em `jobs.<id>.if` (contexto `secrets` não é permitido nesse ponto — causava "Invalid workflow file" sem criar jobs). Validador local `scripts/validate-workflow.cjs` (schema oficial do GitHub + checagem de contextos) adicionado ao CI. |
+| 10 | Cobertura de testes | ✅ Feito | Novo `__tests__/reports-test.tsx` com 21 testes cobrindo `reports.tsx` (cabeçalho, resumo, listagem, estado vazio, modal de criação com validações, criação, edição, arquivar, restaurar, excluir com confirmação/cancelamento, date picker e caminho de erro) e `export-pdf.tsx` (cabeçalho, resumo, geração do PDF, compartilhamento, erros de impressão/compartilhamento e paciente inexistente). Cobertura: `reports.tsx` 98,7% stmts / 95,4% funcs · `export-pdf.tsx` 95% stmts / 100% funcs. `coverageThreshold` no `jest.config.js` impede regressão e o CI agora roda `npm run test:coverage` e publica o relatório como artifact. |
 
 ---
 
@@ -106,18 +107,8 @@ src/
 
 | # | Tarefa | Detalhes |
 |---|--------|----------|
-| 10 | Cobertura de testes | Ampliar cobertura para `src/app/patients/[patientId]/reports.tsx` e `export-pdf.tsx`. |
 | 11 | Primeiro build real no EAS | Rodar `npm run eas:build:preview` após configurar a conta Expo e o `EXPO_TOKEN` no GitHub. |
-| 6 | Exportar relatório (PDF/compartilhar) | Gerar PDF do prontuário ou compartilhar via `expo-sharing`. |
-| 7 | Tela de detalhes do paciente | Abrir paciente para ver informações completas + lista de relatórios. |
-
-### 🟢 Baixa / Futuro
-
-| # | Tarefa | Detalhes |
-|---|--------|----------|
-| 8 | Testes (Jest / React Native Testing Library) | Cobrir `AppContext` e componentes críticos. |
-| 9 | Configurar ESLint/Prettier no CI | GitHub Actions para rodar lint + tsc em cada PR. |
-| 10 | EAS Build | Configurar `eas.json` e build de desenvolvimento/produção. |
+| 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (29,9%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
 
 ---
 
@@ -140,14 +131,14 @@ src/
 
 ---
 
-Última atualização: repositório publicado e CI validado no GitHub (tarefa #12). O workflow `CI` roda em `Rogeriobg/app-teste` (main). Corrigido o bug "Invalid workflow file" — o contexto `secrets` não é permitido em `jobs.<id>.if`; o gate agora usa a variable `vars.EAS_BUILD_ENABLED` e o token é injetado via `env` no step. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 61/61 ✅, `eas.json` e workflow válidos contra os schemas oficiais. Próximo passo: configurar `EXPO_TOKEN` e `EAS_BUILD_ENABLED` no GitHub (tarefa #13).
+Última atualização: cobertura de testes ampliada (tarefa #10). Novo `__tests__/reports-test.tsx` com 21 testes para `reports.tsx` e `export-pdf.tsx` — total da suíte: **82 testes passando**. `reports.tsx` com 98,7% de statements e `export-pdf.tsx` com 95%, ambos com `coverageThreshold` configurado no `jest.config.js` para bloquear regressões. O CI agora roda `npm run test:coverage` e publica o relatório de cobertura como artifact. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 82/82 ✅. Próximo passo: configurar `EXPO_TOKEN` e `EAS_BUILD_ENABLED` no GitHub (tarefa #13).
 
 ### 🧪 Como rodar os testes
 ```bash
 cd F:\08-MOBILE\psi-app
 npm test              # uma vez (CI)
 npm run test:watch    # modo watch
-npm run test:coverage # relatório de cobertura
+npm run test:coverage # relatório de cobertura + coverageThreshold
 npm run typecheck     # tsc --noEmit
 npx expo-doctor       # diagnóstico de dependências
 ```

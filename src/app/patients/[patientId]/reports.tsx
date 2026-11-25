@@ -148,7 +148,13 @@ export default function PatientReportsScreen() {
           <FileText size={18} color={isArchived ? '#94A3B8' : '#0D9488'} />
           <Text style={[styles.recordTitle, isArchived && styles.recordTitleArchived]}>{rec.title}</Text>
         </View>
-        <TouchableOpacity style={styles.viewBtn} onPress={() => handleOpenEdit(rec)} activeOpacity={0.8}>
+        <TouchableOpacity
+          style={styles.viewBtn}
+          onPress={() => handleOpenEdit(rec)}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel={`Editar relatório ${rec.title}`}
+        >
           <Edit2 size={16} color="#2563EB" />
         </TouchableOpacity>
       </View>
