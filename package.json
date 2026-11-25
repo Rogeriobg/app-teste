@@ -53,7 +53,8 @@
     "eas:build:preview": "npx eas-cli@latest build --profile preview --platform android",
     "eas:build:prod": "npx eas-cli@latest build --profile production --platform all",
     "eas:submit": "npx eas-cli@latest submit --profile production --platform android",
-    "validate:eas": "node scripts/validate-eas-json.cjs"
+    "validate:eas": "node scripts/validate-eas-json.cjs",
+    "validate:workflow": "node scripts/validate-workflow.cjs"
   },
   "private": true
 }
