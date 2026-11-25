@@ -94,6 +94,7 @@ src/
 | 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI. Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
 | 12 | Publicar o repositório no GitHub | ✅ Feito | Repositório `Rogeriobg/app-teste` (branch `main`) sincronizado. CI validado no GitHub Actions: bug corrigido em `jobs.<id>.if` (contexto `secrets` não é permitido nesse ponto — causava "Invalid workflow file" sem criar jobs). Validador local `scripts/validate-workflow.cjs` (schema oficial do GitHub + checagem de contextos) adicionado ao CI. |
 | 10 | Cobertura de testes | ✅ Feito | Novo `__tests__/reports-test.tsx` com 21 testes cobrindo `reports.tsx` (cabeçalho, resumo, listagem, estado vazio, modal de criação com validações, criação, edição, arquivar, restaurar, excluir com confirmação/cancelamento, date picker e caminho de erro) e `export-pdf.tsx` (cabeçalho, resumo, geração do PDF, compartilhamento, erros de impressão/compartilhamento e paciente inexistente). Cobertura: `reports.tsx` 98,7% stmts / 95,4% funcs · `export-pdf.tsx` 95% stmts / 100% funcs. `coverageThreshold` no `jest.config.js` impede regressão e o CI agora roda `npm run test:coverage` e publica o relatório como artifact. |
+| 13 | Configurar secret e variable no GitHub | 🟡 Parcial | ✅ **Variable** `EAS_BUILD_ENABLED=true` criada no repositório via API. ✅ Script `scripts/set-github-secret.mjs` criado e **validado** (grava secrets com criptografia libsodium exigida pela API do GitHub) — executado com sucesso e removido em teste. ⏳ **Secret** `EXPO_TOKEN` pendente: exige um *personal access token* do Expo (criado em https://expo.dev/settings/access-tokens), que só o usuário pode gerar na sua conta. Dependência adicional: `extra.eas.projectId` no `app.json` (exigido pelo EAS para builds via token — `eas init --force --non-interactive`). |
 
 ---
 
@@ -101,7 +102,7 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 13 | Configurar secret e variable no GitHub | Criar `EXPO_TOKEN` (secret) e `EAS_BUILD_ENABLED=true` (variable) para habilitar o build EAS no CI. | GitHub → Settings |
+| 13 | Concluir o secret `EXPO_TOKEN` no GitHub | Criar o *personal access token* em https://expo.dev/settings/access-tokens e rodar `npm run secret:github -- EXPO_TOKEN`. Depois `npx eas-cli@latest init --force --non-interactive` para gravar `extra.eas.projectId` no `app.json` (obrigatório para builds via token). | `app.json`, GitHub → Settings |
 
 ### 🟡 Média
 
@@ -157,8 +158,17 @@ Pré-requisitos: conta Expo (`npx eas-cli@latest login`) e `EXPO_TOKEN` como sec
 ### 🔀 Repositório e CI
 O repositório está em `https://github.com/Rogeriobg/app-teste` (branch `main`) e o workflow `CI` roda a cada push/PR.
 
-Para habilitar o build EAS no CI, configure no repositório:
-- **Secret:** `EXPO_TOKEN` (Settings → Secrets and variables → Actions → Secrets)
-- **Variable:** `EAS_BUILD_ENABLED` = `true` (Settings → Secrets and variables → Actions → Variables)
+O job de build EAS é controlado por:
+- **Variable:** `EAS_BUILD_ENABLED` = `true` ✅ (já criada)
+- **Secret:** `EXPO_TOKEN` ⏳ (token pessoal do Expo)
 
 > O gate do job usa `vars.EAS_BUILD_ENABLED` porque o contexto `secrets` não é permitido em `jobs.<job_id>.if` — usá-lo faz o GitHub rejeitar o workflow inteiro sem criar jobs.
+
+**Gravando o secret sem expor o token no histórico do shell:**
+```bash
+cd F:\08-MOBILE\psi-app
+$env:EXPO_TOKEN = "seu-token-expo"
+npm run secret:github -- EXPO_TOKEN   # criptografa (libsodium) e grava via API do GitHub
+```
+
+**⚠️ O token do Expo (`EXPO_TOKEN`) não é o login por QR code.** O QR code (`eas login`) cria uma sessão local na sua máquina — ela expira e não funciona no CI. O `EXPO_TOKEN` é um *personal access token* criado em https://expo.dev/settings/access-tokens.
