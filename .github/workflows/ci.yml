@@ -54,7 +54,9 @@ jobs:
   build-preview:
     name: EAS Build (preview)
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    # o primeiro build Android do EAS compila código nativo (NDK) e pode passar
+    # de 60 min — builds via `eas build --wait` aguardam o resultado no CI
+    timeout-minutes: 120
     needs: quality
     # O contexto `secrets` NÃO é permitido em jobs.<job_id>.if (só github, needs,
     # vars e inputs). Por isso o gate usa a repository variable EAS_BUILD_ENABLED
