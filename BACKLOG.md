@@ -112,6 +112,7 @@ src/
 | 15 | Corrigir entry point do Expo Router | ✅ Feito | O app registrava `src/app/_layout` como root (`main: "index.ts"` + `App.tsx`), o que **pulava o `ExpoRoot`** do expo-router e derrubava os providers internos dele: `useLinkPreviewContext must be used within a LinkPreviewContextProvider`. Correção: `package.json` → `"main": "expo-router/entry"` (entry oficial), remoção de `App.tsx` e `index.ts`, e `AppProvider` movido para fora do `<Stack>` em `_layout.tsx`. Validado no browser: as 6 rotas renderizam sem nenhum erro de console. |
 | 16 | Remover código morto e corrigir nome duplicado | ✅ Feito | `src/screens/` (4 telas da arquitetura pré-Expo Router) removido — nada importava dele. O dashboard exibia "Dr(a). **Dr(a).** Psicólogo(a)" porque o seed já traz o título; corrigido com `src/utils/nome.ts` (`formatarNome`) + 5 testes. |
 | 17 | Redesign do dashboard (BoardUI) | ✅ Feito | Ver seção "🎨 Design system (BoardUI)" abaixo. |
+| 18 | Redesign da página do paciente (BoardUI) | ✅ Feito | Mesma linguagem do dashboard. Top bar com botão voltar (antes não havia), hero do paciente com status único (corrigido bug de "ATIVO ATIVO" duplicado), contato em chips, prontuários com `StatSummary`, cards de prontuário com as ações no cabeçalho, e as 6 ações em grade 2×3 de `ActionTile` horizontal (antes eram 6 botões coloridos full-width). `ActionTile` estendido com `layout="horizontal"` e `tone="danger"`. Corrigido HTML inválido (`<button>` dentro de `<button>`) reestruturando os cards de prontuário. |
 
 ---
 
@@ -147,6 +148,7 @@ usada no projeto. Fontes oficiais consultadas:
 
 ### Problemas resolvidos
 
+**Dashboard:**
 1. **4 estatísticas espremidas em uma linha** → grade 2×2 (`StatCard`)
 2. **Prontuários em 3 cards soltos** → card único com barra de proporção (`StatSummary`)
 3. **"Cadastrar, editar, ativar/desativar e arquivar" estourando o card** →
@@ -154,6 +156,13 @@ usada no projeto. Fontes oficiais consultadas:
 4. **Header com `paddingTop: 52` fixo** → `useSafeAreaInsets()`
 5. **Nome duplicado no cabeçalho** → `formatarNome()`
 6. **Telas de prontuários/exportação** com resumos diferentes → mesmo `StatSummary`
+
+**Página do paciente:**
+7. **Status duplicado ("ATIVO ATIVO")** → badge único
+8. **Sem botão de voltar** → top bar com `ChevronLeft`
+9. **6 botões de ação coloridos empilhados** → grade 2×3 de `ActionTile` horizontal
+10. **`<button>` dentro de `<button>`** (HTML inválido, aviso do React) → área que
+    abre o prontuário e botões de ação viram **irmãos** dentro de uma `View`
 
 ### 🐛 Footgun do Babel do Worklets
 
@@ -193,7 +202,7 @@ Documentado em `src/components/StatSummary.tsx`.
 
 ---
 
-Última atualização: redesign do dashboard no padrão BoardUI (tarefa #17). Novo design system em `src/theme/tokens.ts` + componentes `StatCard`, `StatSummary`, `Chip` e `ActionTile`. As 4 estatísticas de pacientes passaram de 1 linha espremida para uma grade 2×2, os prontuários viraram um card único com barra de proporção, e o card de "Ações Rápidas" foi refeito em layout vertical (a descrição estourava). Documentada a limitação: **BoardUI não tem distribuição React Native/Expo** — é React + Tailwind v4 — então o recipe e os tokens oficiais foram portados para `StyleSheet`. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 89/89 ✅. Próximo passo: primeiro build real no EAS (tarefa #11).
+Última atualização: redesign da página do paciente no padrão BoardUI (tarefa #18). A tela ganhou top bar com botão voltar, hero com status único (corrigido o "ATIVO ATIVO" duplicado), contato em chips, cards de prontuário com as ações no cabeçalho e as 6 ações em grade 2×3 no mesmo `ActionTile` do dashboard (novos props `layout="horizontal"` e `tone="danger"`). Corrigido também HTML inválido (`<button>` aninhado). `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 89/89 ✅. Próximo passo: primeiro build real no EAS (tarefa #11).
 
 ### 📱 Rodar localmente
 

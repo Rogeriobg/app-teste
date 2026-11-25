@@ -12,8 +12,8 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
-import { Button, Card, Input, StatusBadge, AppModal, StatSummary } from '@/components';
-import { colors } from '@/theme/tokens';
+import { Button, Card, Input, StatusBadge, AppModal, StatSummary, ActionTile } from '@/components';
+import { colors, radius, shadowCard, shadowRaised, spacing, typography } from '@/theme/tokens';
 import {
   Users,
   Mail,
@@ -26,19 +26,14 @@ import {
   CheckCircle2,
   Pause,
   Plus,
+  ChevronLeft,
   ChevronRight,
   AlertCircle,
   CheckCircle2 as CheckIcon,
   Download,
 } from 'lucide-react-native';
 
-const ACCENT = '#0D9488';
-const BACKGROUND = '#F4FBF7';
-const CARD = '#FFFFFF';
-const TEXT_DARK = '#133E2B';
-const TEXT_MUTED = '#64748B';
-const BORDER = '#E2E8F0';
-const DANGER = '#EF4444';
+const ACCENT = colors.brand;
 
 export default function PatientDetailsScreen() {
   const { patientId } = useLocalSearchParams() as { patientId: string };
@@ -250,12 +245,18 @@ export default function PatientDetailsScreen() {
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.emptyContainer}>
-            <AlertCircle size={48} color="#94A3B8" />
+            <View style={styles.emptyIcon}>
+              <AlertCircle size={44} color={colors.textTertiary} />
+            </View>
             <Text style={styles.emptyTitle}>Paciente não encontrado</Text>
+            <Text style={styles.emptySub}>
+              O paciente pode ter sido removido do consultório.
+            </Text>
             <Button
               variant="primary"
               onPress={() => router.replace('/patients')}
               iconLeft={<ChevronRight size={18} color="#FFFFFF" />}
+              style={styles.emptyBtn}
             >
               Voltar aos pacientes
             </Button>
@@ -265,298 +266,231 @@ export default function PatientDetailsScreen() {
     );
   }
 
-  const statusLabel = patient.status === 'Ativo' ? 'Ativo' : patient.status === 'Inativo' ? 'Inativo' : 'Arquivado';
+  const isAtivo = patient.status === 'Ativo';
+  const isArquivado = patient.status === 'Arquivado';
 
   return (
-    <SafeAreaView style={[{ flex: 1, backgroundColor: BACKGROUND }, { paddingTop: insets.top }]}>
+    <SafeAreaView style={styles.container}>
+      {/* Top bar */}
+      <View style={[styles.topBar, { paddingTop: insets.top + spacing.md }]}>
+        <TouchableOpacity
+          style={styles.backBtn}
+          onPress={() => router.back()}
+          activeOpacity={0.8}
+          accessibilityRole="button"
+          accessibilityLabel="Voltar"
+          accessibilityHint="Retorna para a lista de pacientes"
+        >
+          <ChevronLeft size={20} color={colors.textPrimary} />
+        </TouchableOpacity>
+        <Text style={styles.topBarTitle} numberOfLines={1}>
+          Prontuário do paciente
+        </Text>
+        <View style={styles.topBarSpacer} />
+      </View>
+
       <ScrollView
         contentContainerStyle={styles.scroll}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
-        style={{ paddingBottom: insets.bottom + 100 }}
+        style={{ paddingBottom: insets.bottom + spacing.xxxl }}
       >
-        {/* Header com avatar e nome */}
-        <View style={styles.headerWrapper}>
-          <View style={styles.headerCard}>
-            <View style={styles.avatarWrapper}>
-              <View style={styles.avatarBadge}>
-                <Users size={34} color="#FFFFFF" />
-              </View>
+        {/* Hero do paciente */}
+        <View style={styles.heroCard}>
+          <View style={styles.avatarBadge}>
+            <Users size={30} color="#FFFFFF" />
+          </View>
+
+          <View style={styles.heroInfo}>
+            <Text style={styles.patientName} numberOfLines={2}>
+              {patient.name}
+            </Text>
+            <StatusBadge status={patient.status as any} />
+          </View>
+
+          <View style={styles.contactRow}>
+            <View style={styles.contactChip}>
+              <Mail size={14} color={ACCENT} />
+              <Text style={styles.contactChipText} numberOfLines={1}>
+                {patient.email}
+              </Text>
             </View>
-            <View style={styles.headerInfo}>
-              <Text style={styles.patientName}>{patient.name}</Text>
-              <View style={styles.statusRow}>
-                <StatusBadge status={patient.status as any} />
-                <Text style={styles.statusText}>{statusLabel}</Text>
-              </View>
-              <View style={styles.contactRow}>
-                <Mail size={16} color="#94A3B8" style={styles.contactIcon} />
-                <Text style={styles.contactText}>{patient.email}</Text>
-              </View>
-              <View style={[styles.contactRow, { marginTop: 4 }]}>
-                <Phone size={16} color="#94A3B8" style={styles.contactIcon} />
-                <Text style={styles.contactText}>{patient.phone}</Text>
-              </View>
+            <View style={styles.contactChip}>
+              <Phone size={14} color={ACCENT} />
+              <Text style={styles.contactChipText} numberOfLines={1}>
+                {patient.phone}
+              </Text>
             </View>
           </View>
         </View>
 
         {/* Informações do paciente */}
-        <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Informações do paciente</Text>
+        <Text style={styles.sectionTitle}>Informações do paciente</Text>
 
-          <Card style={styles.infoCard} elevated>
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <Calendar size={20} color={ACCENT} />
-              </View>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Data de nascimento</Text>
-                <Text style={styles.infoValue}>{patient.birthDate || 'Não informada'}</Text>
-              </View>
+        <Card style={styles.infoCard} elevated>
+          <View style={styles.infoRow}>
+            <View style={styles.infoIcon}>
+              <Calendar size={18} color={ACCENT} />
             </View>
-            <View style={styles.divider} />
-            <View style={styles.infoRow}>
-              <View style={styles.infoIcon}>
-                <FileText size={20} color={ACCENT} />
-              </View>
-              <View style={styles.infoContent}>
-                <Text style={styles.infoLabel}>Anamnese</Text>
-                <Text style={styles.infoValue}>{patient.anamnesis || 'Não informada'}</Text>
-              </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Data de nascimento</Text>
+              <Text style={styles.infoValue}>{patient.birthDate || 'Não informada'}</Text>
             </View>
-          </Card>
-        </View>
-
-        {/* Resumo de relatórios */}
-        <View style={styles.section}>
-          <View style={styles.summaryHeader}>
-            <Text style={styles.sectionTitle}>Prontuários</Text>
-            <Button
-              variant="primary"
-              onPress={handleOpenAddRecord}
-              iconLeft={<Plus size={18} color="#FFFFFF" />}
-              style={styles.addRecordBtn}
-            >
-              Novo
-            </Button>
           </View>
-
-          <StatSummary
-            title="Resumo dos prontuários"
-            total={records.length}
-            segments={[
-              { label: 'Ativos', count: activeRecords.length, color: colors.brand },
-              { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
-            ]}
-          />
-
-          {/* Lista de relatórios */}
-          {records.length === 0 ? (
-            <Card style={styles.emptyCard} elevated>
-              <View style={styles.emptyIconContainer}>
-                <FileText size={40} color="#94A3B8" />
-              </View>
-              <Text style={styles.emptyTitle}>Nenhum prontuário cadastrado</Text>
-              <Text style={styles.emptySub}>Inicie o prontuário deste paciente nas próximas sessões.</Text>
-              <Button
-                variant="outline"
-                onPress={handleOpenAddRecord}
-                style={styles.emptyBtn}
-                iconLeft={<Plus size={18} color={ACCENT} />}
-              >
-                Criar primeiro prontuário
-              </Button>
-            </Card>
-          ) : (
-            <View style={styles.recordsList}>
-              {activeRecords.length > 0 && (
-                <>
-                  <Text style={styles.listSectionTitle}>Prontuários ativos</Text>
-                  {activeRecords.map((rec: MedicalRecord) => (
-                    <TouchableOpacity
-                      key={rec.id}
-                      style={styles.recordCard}
-                      onPress={() => handleOpenEditRecord(rec)}
-                      activeOpacity={0.8}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Editar prontuário ${rec.title}`}
-                      accessibilityHint="Toque para visualizar e editar o prontuário"
-                    >
-                      <View style={styles.recordHeader}>
-                        <View style={styles.recordIcon}>
-                          <FileText size={18} color={ACCENT} />
-                        </View>
-                        <View style={styles.recordInfo}>
-                          <Text style={styles.recordTitle}>{rec.title}</Text>
-                          <Text style={styles.recordDate}>{rec.date}</Text>
-                        </View>
-                        <ChevronRight size={16} color="#CBD5E1" />
-                      </View>
-                      <Text style={styles.recordContent}>{rec.content}</Text>
-                      <View style={styles.recordActions}>
-                        <TouchableOpacity
-                          style={[styles.recordActionBtn, styles.btnArchive]}
-                          onPress={(e) => { e.stopPropagation(); handleArchiveRecord(rec); }}
-                          activeOpacity={0.8}
-                        >
-                          {rec.status === 'Arquivado' ? (
-                            <CheckIcon size={16} color="#FFFFFF" />
-                          ) : (
-                            <Archive size={16} color="#FFFFFF" />
-                          )}
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[styles.recordActionBtn, styles.btnDelete]}
-                          onPress={(e) => { e.stopPropagation(); handleDeleteRecord(rec); }}
-                          activeOpacity={0.8}
-                          disabled={deletingRecordId === rec.id}
-                        >
-                          {deletingRecordId === rec.id ? (
-                            <ActivityIndicator size={16} color="#FFFFFF" />
-                          ) : (
-                            <Trash2 size={16} color="#FFFFFF" />
-                          )}
-                        </TouchableOpacity>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </>
-              )}
-
-              {archivedRecords.length > 0 && (
-                <>
-                  <Text style={styles.listSectionTitle}>Prontuários arquivados</Text>
-                  {archivedRecords.map((rec: MedicalRecord) => (
-                    <TouchableOpacity
-                      key={rec.id}
-                      style={[styles.recordCard, styles.recordArchived]}
-                      onPress={() => handleOpenEditRecord(rec)}
-                      activeOpacity={0.8}
-                      accessibilityRole="button"
-                      accessibilityLabel={`Editar prontuário arquivado ${rec.title}`}
-                    >
-                      <View style={styles.recordHeader}>
-                        <View style={styles.recordIcon}>
-                          <FileText size={18} color="#94A3B8" />
-                        </View>
-                        <View style={styles.recordInfo}>
-                          <Text style={[styles.recordTitle, styles.recordTitleArchived]}>{rec.title}</Text>
-                          <Text style={styles.recordDate}>{rec.date}</Text>
-                        </View>
-                        <ChevronRight size={16} color="#CBD5E1" />
-                      </View>
-                      <Text style={[styles.recordContent, styles.recordContentArchived]}>{rec.content}</Text>
-                      <View style={styles.recordActions}>
-                        <TouchableOpacity
-                          style={[styles.recordActionBtn, styles.btnRestore]}
-                          onPress={(e) => { e.stopPropagation(); handleArchiveRecord(rec); }}
-                          activeOpacity={0.8}
-                        >
-                          <CheckCircle2 size={16} color="#FFFFFF" />
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[styles.recordActionBtn, styles.btnDelete]}
-                          onPress={(e) => { e.stopPropagation(); handleDeleteRecord(rec); }}
-                          activeOpacity={0.8}
-                          disabled={deletingRecordId === rec.id}
-                        >
-                          {deletingRecordId === rec.id ? (
-                            <ActivityIndicator size={16} color="#FFFFFF" />
-                          ) : (
-                            <Trash2 size={16} color="#FFFFFF" />
-                          )}
-                        </TouchableOpacity>
-                      </View>
-                    </TouchableOpacity>
-                  ))}
-                </>
-              )}
+          <View style={styles.divider} />
+          <View style={styles.infoRow}>
+            <View style={styles.infoIcon}>
+              <FileText size={18} color={ACCENT} />
             </View>
-          )}
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Anamnese</Text>
+              <Text style={styles.infoValue}>{patient.anamnesis || 'Não informada'}</Text>
+            </View>
+          </View>
+        </Card>
+
+        {/* Prontuários */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Prontuários</Text>
+          <Button
+            variant="primary"
+            onPress={handleOpenAddRecord}
+            iconLeft={<Plus size={16} color="#FFFFFF" />}
+            style={styles.addRecordBtn}
+            accessibilityLabel="Cadastrar novo prontuário"
+          >
+            Novo
+          </Button>
         </View>
+
+        <StatSummary
+          title="Resumo dos prontuários"
+          total={records.length}
+          segments={[
+            { label: 'Ativos', count: activeRecords.length, color: colors.brand },
+            { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
+          ]}
+        />
+
+        {/* Lista de prontuários */}
+        {records.length === 0 ? (
+          <Card style={styles.emptyCard} elevated>
+            <View style={styles.emptyIconContainer}>
+              <FileText size={40} color={colors.textTertiary} />
+            </View>
+            <Text style={styles.emptyTitle}>Nenhum prontuário cadastrado</Text>
+            <Text style={styles.emptySub}>
+              Inicie o prontuário deste paciente nas próximas sessões.
+            </Text>
+            <Button
+              variant="outline"
+              onPress={handleOpenAddRecord}
+              style={styles.emptyBtn}
+              iconLeft={<Plus size={18} color={ACCENT} />}
+            >
+              Criar primeiro prontuário
+            </Button>
+          </Card>
+        ) : (
+          <View style={styles.recordsList}>
+            {activeRecords.length > 0 && (
+              <>
+                <Text style={styles.listSectionTitle}>Prontuários ativos</Text>
+                {activeRecords.map((rec: MedicalRecord) => (
+                  <RecordCard
+                    key={rec.id}
+                    record={rec}
+                    deleting={deletingRecordId === rec.id}
+                    onPress={() => handleOpenEditRecord(rec)}
+                    onArchive={() => handleArchiveRecord(rec)}
+                    onDelete={() => handleDeleteRecord(rec)}
+                  />
+                ))}
+              </>
+            )}
+
+            {archivedRecords.length > 0 && (
+              <>
+                <Text style={styles.listSectionTitle}>Prontuários arquivados</Text>
+                {archivedRecords.map((rec: MedicalRecord) => (
+                  <RecordCard
+                    key={rec.id}
+                    record={rec}
+                    archived
+                    deleting={deletingRecordId === rec.id}
+                    onPress={() => handleOpenEditRecord(rec)}
+                    onArchive={() => handleArchiveRecord(rec)}
+                    onDelete={() => handleDeleteRecord(rec)}
+                  />
+                ))}
+              </>
+            )}
+          </View>
+        )}
 
         {/* Ações do paciente (thumb zone) */}
-        <View style={styles.actionsSection}>
-          <View style={styles.actionsGrid}>
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.actionEdit]}
-              onPress={handleEditPatient}
-              activeOpacity={0.8}
-              accessibilityLabel="Editar dados do paciente"
-              accessibilityHint="Toque para editar nome, e-mail, telefone e anamnese"
-            >
-              <Edit2 size={22} color="#FFFFFF" />
-              <Text style={styles.actionLabel}>Editar paciente</Text>
-            </TouchableOpacity>
+        <Text style={styles.sectionTitle}>Ações</Text>
 
-            <TouchableOpacity
-              style={[styles.actionBtn, patient.status === 'Ativo' ? styles.actionToggle : styles.actionToggleInactive]}
-              onPress={handleTogglePatientStatus}
-              activeOpacity={0.8}
-              accessibilityLabel={patient.status === 'Ativo' ? 'Marcar paciente como inativo' : 'Marcar paciente como ativo'}
-            >
-              {patient.status === 'Ativo' ? (
-                <Pause size={22} color="#FFFFFF" />
-              ) : (
-                <CheckCircle2 size={22} color="#FFFFFF" />
-              )}
-              <Text style={styles.actionLabel}>
-                {patient.status === 'Ativo' ? 'Inativar' : 'Reativar'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.actionArchive]}
-              onPress={handleArchivePatient}
-              activeOpacity={0.8}
-              accessibilityLabel={patient.status === 'Arquivado' ? 'Restaurar paciente' : 'Arquivar paciente'}
-            >
-              {patient.status === 'Arquivado' ? (
-                <CheckCircle2 size={22} color="#FFFFFF" />
-              ) : (
-                <Archive size={22} color="#FFFFFF" />
-              )}
-              <Text style={styles.actionLabel}>
-                {patient.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'}
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.actionReports]}
-              onPress={handleOpenReports}
-              activeOpacity={0.8}
-              accessibilityLabel="Ver prontuários do paciente"
-            >
-              <FileText size={22} color="#FFFFFF" />
-              <Text style={styles.actionLabel}>Prontuários</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[styles.actionBtn, styles.actionExport]}
-              onPress={handleExportPdf}
-              activeOpacity={0.8}
-              accessibilityLabel="Exportar prontuário em PDF"
-              accessibilityHint="Gera um arquivo PDF com todos os prontuários do paciente"
-            >
-              <Download size={22} color="#FFFFFF" />
-              <Text style={styles.actionLabel}>Exportar PDF</Text>
-            </TouchableOpacity>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.actionBtn, styles.actionDelete]}
+        <View style={styles.actionsGrid}>
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            title="Editar paciente"
+            description="Nome, contato e anamnese"
+            icon={<Edit2 size={18} color={ACCENT} />}
+            onPress={handleEditPatient}
+            accessibilityLabel="Editar dados do paciente"
+            accessibilityHint="Toque para editar nome, e-mail, telefone e anamnese"
+          />
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            title="Prontuários"
+            description="Ver e gerenciar sessões"
+            icon={<FileText size={18} color={ACCENT} />}
+            onPress={handleOpenReports}
+            accessibilityLabel="Ver prontuários do paciente"
+          />
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            title={isAtivo ? 'Inativar' : 'Reativar'}
+            description="Alterar o status"
+            icon={isAtivo ? <Pause size={18} color={ACCENT} /> : <CheckCircle2 size={18} color={ACCENT} />}
+            onPress={handleTogglePatientStatus}
+            accessibilityLabel={isAtivo ? 'Marcar paciente como inativo' : 'Marcar paciente como ativo'}
+          />
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            title="Exportar PDF"
+            description="Gerar arquivo do prontuário"
+            icon={<Download size={18} color={ACCENT} />}
+            onPress={handleExportPdf}
+            accessibilityLabel="Exportar prontuário em PDF"
+            accessibilityHint="Gera um arquivo PDF com todos os prontuários do paciente"
+          />
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            title={isArquivado ? 'Restaurar' : 'Arquivar'}
+            description="Mover para arquivados"
+            icon={<Archive size={18} color={ACCENT} />}
+            onPress={handleArchivePatient}
+            accessibilityLabel={isArquivado ? 'Restaurar paciente' : 'Arquivar paciente'}
+          />
+          <ActionTile
+            layout="horizontal"
+            style={styles.actionCell}
+            tone="danger"
+            title="Excluir paciente"
+            description="Paciente e prontuários"
+            icon={<Trash2 size={18} color={colors.danger} />}
             onPress={handleDeletePatient}
-            activeOpacity={0.8}
             accessibilityLabel="Excluir paciente e todos os prontuários"
             accessibilityHint="Esta ação não pode ser desfeita"
-          >
-            <Trash2 size={22} color="#FFFFFF" />
-            <Text style={styles.actionLabel}>Excluir paciente</Text>
-          </TouchableOpacity>
+          />
         </View>
-
-        <View style={styles.bottomSpacer} />
       </ScrollView>
 
       {/* Modal: Edição de paciente / Novo prontuário */}
@@ -644,366 +578,302 @@ export default function PatientDetailsScreen() {
   );
 }
 
+/* ------------------------------------------------------------------ */
+/* Card de prontuário — usado nos prontuários ativos e arquivados       */
+/* ------------------------------------------------------------------ */
+function RecordCard({
+  record,
+  archived = false,
+  deleting = false,
+  onPress,
+  onArchive,
+  onDelete,
+}: {
+  record: MedicalRecord;
+  archived?: boolean;
+  deleting?: boolean;
+  onPress: () => void;
+  onArchive: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <View style={[styles.recordCard, archived && styles.recordCardArchived]}>
+      <View style={styles.recordHeader}>
+        <View style={[styles.recordIcon, archived && styles.recordIconArchived]}>
+          <FileText size={18} color={archived ? colors.textTertiary : ACCENT} />
+        </View>
+
+        {/*
+          A área que abre o prontuário e os botões de ação são **irmãos**
+          dentro de uma View. Aninhar um botão dentro de outro (`button`
+          dentro de `button`) é HTML inválido e o React avisa no console
+          web — além de quebrar leitores de tela.
+        */}
+        <TouchableOpacity
+          style={styles.recordInfo}
+          onPress={onPress}
+          activeOpacity={0.7}
+          accessibilityRole="button"
+          accessibilityLabel={`Editar prontuário ${archived ? 'arquivado ' : ''}${record.title}`}
+          accessibilityHint="Toque para visualizar e editar o prontuário"
+        >
+          <Text
+            style={[styles.recordTitle, archived && styles.recordTitleArchived]}
+            numberOfLines={2}
+          >
+            {record.title}
+          </Text>
+          <Text style={styles.recordDate}>{record.date}</Text>
+        </TouchableOpacity>
+
+        <View style={styles.recordActions}>
+          <TouchableOpacity
+            style={styles.iconAction}
+            onPress={onArchive}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={archived ? 'Restaurar prontuário' : 'Arquivar prontuário'}
+          >
+            {archived ? (
+              <CheckIcon size={16} color={ACCENT} />
+            ) : (
+              <Archive size={16} color={ACCENT} />
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.iconAction, styles.iconActionDanger]}
+            onPress={onDelete}
+            activeOpacity={0.8}
+            disabled={deleting}
+            accessibilityRole="button"
+            accessibilityLabel="Excluir prontuário"
+          >
+            {deleting ? (
+              <ActivityIndicator size={14} color={colors.danger} />
+            ) : (
+              <Trash2 size={16} color={colors.danger} />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <TouchableOpacity
+        onPress={onPress}
+        activeOpacity={0.7}
+        style={styles.recordContentWrap}
+        accessibilityRole="button"
+        accessibilityLabel={`Ver conteúdo do prontuário ${record.title}`}
+      >
+        <Text
+          style={[styles.recordContent, archived && styles.recordContentArchived]}
+          numberOfLines={3}
+        >
+          {record.content}
+        </Text>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: BACKGROUND,
-  },
-  scroll: {
-    padding: 16,
-    paddingBottom: 20,
-  },
-  headerWrapper: {
-    marginBottom: 20,
-  },
-  headerCard: {
-    backgroundColor: CARD,
-    borderRadius: 28,
-    borderWidth: 1,
-    borderColor: BORDER,
-    padding: 24,
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.06,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  avatarWrapper: {
+  container: { flex: 1, backgroundColor: colors.surface },
+
+  topBar: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 16,
+    justifyContent: 'space-between',
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.md,
+    backgroundColor: colors.card,
+    borderBottomWidth: 1,
+    borderColor: colors.border,
+    ...shadowCard,
+  },
+  backBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: radius.lg,
+    backgroundColor: colors.cardInner,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  topBarTitle: {
+    ...typography.headline,
+    color: colors.textPrimary,
+    flexShrink: 1,
+    textAlign: 'center',
+  },
+  topBarSpacer: { width: 40, height: 40 },
+
+  scroll: { padding: spacing.xl, gap: spacing.lg },
+
+  /* Hero */
+  heroCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.xxl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.xl,
+    alignItems: 'center',
+    gap: spacing.md,
+    ...shadowRaised,
   },
   avatarBadge: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     backgroundColor: ACCENT,
-    justifyContent: 'center',
     alignItems: 'center',
+    justifyContent: 'center',
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: colors.card,
     shadowColor: ACCENT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
-  headerInfo: {
-    alignItems: 'center',
-  },
+  heroInfo: { alignItems: 'center', gap: spacing.sm },
   patientName: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: TEXT_DARK,
-    marginBottom: 8,
-  },
-  statusRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 10,
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: ACCENT,
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    ...typography.title2,
+    color: colors.textPrimary,
+    textAlign: 'center',
   },
   contactRow: {
     flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  contactIcon: {
-    marginRight: 6,
-  },
-  contactText: {
-    fontSize: 14,
-    color: TEXT_MUTED,
-  },
-
-  section: {
-    marginBottom: 20,
-  },
-  sectionTitle: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    color: TEXT_DARK,
-    marginBottom: 12,
-  },
-  summaryHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 14,
-  },
-  addRecordBtn: {
-    backgroundColor: ACCENT,
-    borderRadius: 12,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    minHeight: 40,
-  },
-  infoCard: {
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: BORDER,
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 6,
-    elevation: 2,
-  },
-  infoRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  infoIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: '#E6F4ED',
+    flexWrap: 'wrap',
     justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 12,
+    gap: spacing.sm,
+    marginTop: spacing.xxs,
   },
-  infoContent: {
-    flex: 1,
-  },
-  infoLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: TEXT_MUTED,
-    marginBottom: 2,
-  },
-  infoValue: {
-    fontSize: 14,
-    color: TEXT_DARK,
-    lineHeight: 20,
-  },
-  divider: {
-    height: 1,
-    backgroundColor: '#F1F5F9',
-    marginVertical: 4,
-  },
-  recordsList: {
-    gap: 10,
-  },
-  listSectionTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: TEXT_DARK,
-    marginBottom: 8,
-    marginLeft: 2,
-  },
-  recordCard: {
-    backgroundColor: CARD,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: BORDER,
-    padding: 16,
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 1,
-  },
-  recordArchived: {
-    opacity: 0.7,
-    borderColor: '#E5E7EB',
-  },
-  recordHeader: {
+  contactChip: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 8,
+    gap: spacing.xs,
+    backgroundColor: colors.brandSoft,
+    borderWidth: 1,
+    borderColor: colors.brandBorder,
+    borderRadius: radius.pill,
+    paddingVertical: spacing.xs,
+    paddingHorizontal: spacing.md,
+    maxWidth: '100%',
   },
+  contactChipText: { ...typography.caption, color: ACCENT, flexShrink: 1 },
+
+  /* Seções */
+  sectionTitle: {
+    ...typography.headline,
+    color: colors.textPrimary,
+    marginTop: spacing.sm,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+  },
+  addRecordBtn: { paddingVertical: spacing.sm, minHeight: 40 },
+
+  /* Informações */
+  infoCard: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.md },
+  infoRow: { flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+  infoIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: radius.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  infoContent: { flex: 1, minWidth: 0, gap: 2 },
+  infoLabel: { ...typography.caption, color: colors.textSecondary },
+  infoValue: { ...typography.body, color: colors.textPrimary },
+  divider: { height: 1, backgroundColor: colors.separator, marginVertical: spacing.xxs },
+
+  /* Prontuários */
+  recordsList: { gap: spacing.md },
+  listSectionTitle: { ...typography.label, color: colors.textSecondary, marginTop: spacing.sm },
+  recordCard: {
+    backgroundColor: colors.card,
+    borderRadius: radius.xl,
+    borderWidth: 1,
+    borderColor: colors.border,
+    padding: spacing.lg,
+    gap: spacing.md,
+    ...shadowCard,
+  },
+  recordCardArchived: { backgroundColor: colors.cardInner },
+  recordHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   recordIcon: {
     width: 36,
     height: 36,
-    borderRadius: 10,
-    backgroundColor: '#E6F4ED',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  recordInfo: {
-    flex: 1,
-  },
-  recordTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: TEXT_DARK,
-    marginBottom: 2,
-  },
-  recordTitleArchived: {
-    color: '#94A3B8',
-    textDecorationLine: 'line-through',
-  },
-  recordDate: {
-    fontSize: 12,
-    color: TEXT_MUTED,
-  },
-  recordContent: {
-    fontSize: 13,
-    color: '#374151',
-    lineHeight: 18,
-    marginBottom: 10,
-  },
-  recordContentArchived: {
-    color: '#94A3B8',
-    textDecorationLine: 'line-through',
-  },
-  recordActions: {
-    flexDirection: 'row',
-    gap: 8,
-  },
-  recordActionBtn: {
-    flex: 1,
-    flexDirection: 'row',
+    borderRadius: radius.md,
+    backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 10,
-    gap: 6,
+  },
+  recordIconArchived: { backgroundColor: colors.mutedSoft },
+  recordInfo: { flex: 1, minWidth: 0, gap: 2 },
+  recordTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
+  recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
+  recordDate: { ...typography.caption, color: colors.textTertiary },
+  recordContentWrap: { marginTop: -spacing.xs },
+  recordContent: { ...typography.bodyRegular, color: colors.textSecondary, lineHeight: 19 },
+  recordContentArchived: { color: colors.textTertiary },
+  recordActions: { flexDirection: 'row', gap: spacing.xs },
+  iconAction: {
+    width: 34,
+    height: 34,
+    borderRadius: radius.md,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconActionDanger: {
+    backgroundColor: colors.dangerSoft,
     borderWidth: 1,
-  },
-  btnArchive: {
-    backgroundColor: '#F3F4F6',
-    borderColor: '#E5E7EB',
-  },
-  btnRestore: {
-    backgroundColor: '#D1FAE5',
-    borderColor: '#BBF7D0',
-  },
-  btnDelete: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
+    borderColor: colors.dangerBorder,
   },
 
-  emptyContainer: {
-    flex: 1,
+  /* Ações */
+  actionsGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
+  // 2 colunas: o tile precisa de uma base percentual, senão o `flex: 1`
+  // interno do ActionTile deixa todos os tiles caberem numa linha só
+  actionCell: { flexBasis: '47%', flexGrow: 1, flexShrink: 1 },
+
+  /* Estados vazios */
+  emptyContainer: { alignItems: 'center', justifyContent: 'center', padding: spacing.xxl, gap: spacing.md },
+  emptyIcon: {
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: colors.cardInner,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 40,
   },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: TEXT_DARK,
-    marginTop: 16,
-    marginBottom: 6,
-  },
-  emptySub: {
-    fontSize: 14,
-    color: TEXT_MUTED,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
+  emptyTitle: { ...typography.title2, color: colors.textPrimary, textAlign: 'center' },
+  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center' },
+  emptyBtn: { marginTop: spacing.sm, alignSelf: 'stretch' },
+
   emptyCard: {
+    backgroundColor: colors.card,
+    padding: spacing.xxl,
+    borderRadius: radius.xl,
     alignItems: 'center',
-    padding: 40,
-    borderRadius: 24,
-    marginHorizontal: 16,
+    gap: spacing.sm,
+    borderWidth: 1,
+    borderColor: colors.border,
   },
   emptyIconContainer: {
-    marginBottom: 12,
-  },
-  emptyBtn: {
-    marginTop: 12,
-    backgroundColor: ACCENT,
-    borderRadius: 12,
-    paddingVertical: 12,
-  },
-
-  actionsSection: {
-    marginBottom: 24,
-  },
-  actionsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-    gap: 10,
-    marginBottom: 14,
-  },
-  actionBtn: {
-    width: 70,
-    height: 70,
-    borderRadius: 20,
-    justifyContent: 'center',
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: colors.cardInner,
     alignItems: 'center',
-    gap: 6,
-  },
-  actionEdit: {
-    backgroundColor: '#2563EB',
-    shadowColor: '#2563EB',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionToggle: {
-    backgroundColor: '#F59E0B',
-    shadowColor: '#F59E0B',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionToggleInactive: {
-    backgroundColor: ACCENT,
-    shadowColor: ACCENT,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionArchive: {
-    backgroundColor: '#94A3B8',
-    shadowColor: '#94A3B8',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionReports: {
-    backgroundColor: ACCENT,
-    shadowColor: ACCENT,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionExport: {
-    backgroundColor: '#6B7280',
-    shadowColor: '#6B7280',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  actionDelete: {
-    backgroundColor: DANGER,
-    alignSelf: 'center',
-    width: 'auto',
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-    shadowColor: DANGER,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 3,
-  },
-  actionLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    color: '#FFFFFF',
-    textAlign: 'center',
-  },
-  bottomSpacer: {
-    height: 16,
+    justifyContent: 'center',
+    marginBottom: spacing.xs,
   },
 });
