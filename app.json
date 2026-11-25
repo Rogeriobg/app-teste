@@ -38,6 +38,17 @@
           "backgroundColor": "#F4FBF7"
         }
       ]
-    ]
+    ],
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "75093bc5-2f6d-41b9-9404-dcd5f858b322"
+      }
+    },
+    "owner": "rogeriobg"
   }
 }

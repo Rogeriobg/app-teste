@@ -94,7 +94,7 @@ src/
 | 9 | EAS Build | ✅ Feito | `eas.json` com 4 perfis (`base`, `development`, `preview`, `production`) + perfil de `submit`. `app.json` com `bundleIdentifier`/`package` (`com.psicowave.psiapp`), `scheme`, `buildNumber`, `versionCode` e splash via plugin. `expo-dev-client`, `expo-system-ui` e `expo-splash-screen` instalados. Job `build-preview` no CI. Validador `scripts/validate-eas-json.cjs` (schema oficial do EAS + checagem estrita de chaves). Migração CNG mantida — sem `ios/`/`android/` no repo (verificado via `expo prebuild`). Ajustes de schema do SDK 58: `newArchEnabled` e `splash` removidos do `app.json`. |
 | 12 | Publicar o repositório no GitHub | ✅ Feito | Repositório `Rogeriobg/app-teste` (branch `main`) sincronizado. CI validado no GitHub Actions: bug corrigido em `jobs.<id>.if` (contexto `secrets` não é permitido nesse ponto — causava "Invalid workflow file" sem criar jobs). Validador local `scripts/validate-workflow.cjs` (schema oficial do GitHub + checagem de contextos) adicionado ao CI. |
 | 10 | Cobertura de testes | ✅ Feito | Novo `__tests__/reports-test.tsx` com 21 testes cobrindo `reports.tsx` (cabeçalho, resumo, listagem, estado vazio, modal de criação com validações, criação, edição, arquivar, restaurar, excluir com confirmação/cancelamento, date picker e caminho de erro) e `export-pdf.tsx` (cabeçalho, resumo, geração do PDF, compartilhamento, erros de impressão/compartilhamento e paciente inexistente). Cobertura: `reports.tsx` 98,7% stmts / 95,4% funcs · `export-pdf.tsx` 95% stmts / 100% funcs. `coverageThreshold` no `jest.config.js` impede regressão e o CI agora roda `npm run test:coverage` e publica o relatório como artifact. |
-| 13 | Configurar secret e variable no GitHub | 🟡 Parcial | ✅ **Variable** `EAS_BUILD_ENABLED=true` criada no repositório via API. ✅ Script `scripts/set-github-secret.mjs` criado e **validado** (grava secrets com criptografia libsodium exigida pela API do GitHub) — executado com sucesso e removido em teste. ⏳ **Secret** `EXPO_TOKEN` pendente: exige um *personal access token* do Expo (criado em https://expo.dev/settings/access-tokens), que só o usuário pode gerar na sua conta. Dependência adicional: `extra.eas.projectId` no `app.json` (exigido pelo EAS para builds via token — `eas init --force --non-interactive`). |
+| 13 | Configurar secret e variable no GitHub | ✅ Feito | **Variable** `EAS_BUILD_ENABLED=true` criada. **Secret** `EXPO_TOKEN` gravado (criptografado com libsodium via `scripts/set-github-secret.mjs`). Projeto vinculado ao EAS: `extra.eas.projectId` = `75093bc5-2f6d-41b9-9404-dcd5f858b322` e `owner` = `rogeriobg` no `app.json` (gerado por `eas init`). Assistente `npm run eas:setup` (digitação mascarada, valida o token contra `api.expo.dev/graphql` **antes** de gravar) e diagnóstico `npm run eas:check-token`. |
 
 ---
 
@@ -102,13 +102,12 @@ src/
 
 | # | Tarefa | Detalhes | Arquivos envolvidos |
 |---|--------|----------|---------------------|
-| 13 | Concluir o secret `EXPO_TOKEN` no GitHub | Criar o *personal access token* em https://expo.dev/settings/access-tokens e rodar `npm run secret:github -- EXPO_TOKEN`. Depois `npx eas-cli@latest init --force --non-interactive` para gravar `extra.eas.projectId` no `app.json` (obrigatório para builds via token). | `app.json`, GitHub → Settings |
+| 11 | Primeiro build real no EAS | O CI já dispara o build `preview` a cada push na `main` (job "EAS Build (preview)"). Acompanhar o run e baixar o APK. | GitHub Actions → EAS Build |
 
 ### 🟡 Média
 
 | # | Tarefa | Detalhes |
 |---|--------|----------|
-| 11 | Primeiro build real no EAS | Rodar `npm run eas:build:preview` após configurar a conta Expo e o `EXPO_TOKEN` no GitHub. |
 | 14 | Ampliar cobertura das demais telas | `patients.tsx` (37,8%), `details.tsx` (29,9%) e `profile.tsx` (34,5%) ainda têm fluxos sem teste (cadastro/edição de paciente, filtros avançados, arquivar paciente, exportar dados). |
 
 ---
@@ -132,7 +131,7 @@ src/
 
 ---
 
-Última atualização: cobertura de testes ampliada (tarefa #10). Novo `__tests__/reports-test.tsx` com 21 testes para `reports.tsx` e `export-pdf.tsx` — total da suíte: **82 testes passando**. `reports.tsx` com 98,7% de statements e `export-pdf.tsx` com 95%, ambos com `coverageThreshold` configurado no `jest.config.js` para bloquear regressões. O CI agora roda `npm run test:coverage` e publica o relatório de cobertura como artifact. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 82/82 ✅. Próximo passo: configurar `EXPO_TOKEN` e `EAS_BUILD_ENABLED` no GitHub (tarefa #13).
+Última atualização: EAS totalmente configurado (tarefa #13). Secret `EXPO_TOKEN` e variable `EAS_BUILD_ENABLED` gravados no repositório, e o projeto vinculado ao EAS (`extra.eas.projectId` + `owner` no `app.json`). O CI agora dispara o build `preview` automaticamente em cada push na `main`. `expo-doctor` 20/20 ✅, `tsc` 0 erros, `lint` 0 erros/0 warnings, `jest` 82/82 ✅, `eas.json` e workflow válidos contra os schemas oficiais. Próximo passo: acompanhar o primeiro build EAS (tarefa #11).
 
 ### 🧪 Como rodar os testes
 ```bash
