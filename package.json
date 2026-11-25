@@ -56,7 +56,8 @@
     "eas:submit": "npx eas-cli@latest submit --profile production --platform android",
     "validate:eas": "node scripts/validate-eas-json.cjs",
     "validate:workflow": "node scripts/validate-workflow.cjs",
-    "secret:github": "node scripts/set-github-secret.mjs"
+    "secret:github": "node scripts/set-github-secret.mjs",
+    "eas:setup": "node scripts/setup-eas-token.mjs"
   },
   "private": true
 }
