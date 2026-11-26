@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, TextInput, Text, View, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, TextInput, Text, View, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
+import { X } from 'lucide-react-native';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export interface InputProps {
@@ -33,6 +34,15 @@ export interface InputProps {
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
   /** Label de acessibilidade */
   accessibilityLabel?: string;
+  /**
+   * Callback do botão de limpar.
+   *
+   * Quando presente, o input mostra um "×" à direita. É a forma mais
+   * rápida de sair de uma busca sem resultado.
+   */
+  onClear?: () => void;
+  /** Rótulo de acessibilidade do botão de limpar */
+  clearAccessibilityLabel?: string;
 }
 
 export function Input({
@@ -51,30 +61,47 @@ export function Input({
   autoComplete,
   autoCapitalize = 'none',
   accessibilityLabel,
+  onClear,
+  clearAccessibilityLabel = 'Limpar campo',
 }: InputProps) {
   const isMultiline = multiline === true || (typeof multiline === 'number' && multiline > 0);
 
   return (
     <View style={[styles.container, style]}>
       {label && <Text style={styles.label}>{label}</Text>}
-      <TextInput
-        style={[
-          styles.input,
-          isMultiline && styles.inputMultiline,
-          error && styles.inputError,
-          inputStyle,
-        ]}
-        value={value}
-        onChangeText={onChangeText}
-        placeholder={placeholder}
-        placeholderTextColor={placeholderTextColor}
-        keyboardType={keyboardType}
-        multiline={isMultiline}
-        numberOfLines={numberOfLines}
-        autoCapitalize={autoCapitalize}
-        autoComplete={autoComplete}
-        accessibilityLabel={accessibilityLabel}
-      />
+      <View style={[styles.fieldRow, isMultiline && styles.fieldRowMultiline]}>
+        <TextInput
+          style={[
+            styles.input,
+            isMultiline && styles.inputMultiline,
+            error && styles.inputError,
+            onClear ? styles.inputWithAdornment : null,
+            inputStyle,
+          ]}
+          value={value}
+          onChangeText={onChangeText}
+          placeholder={placeholder}
+          placeholderTextColor={placeholderTextColor}
+          keyboardType={keyboardType}
+          multiline={isMultiline}
+          numberOfLines={numberOfLines}
+          autoCapitalize={autoCapitalize}
+          autoComplete={autoComplete}
+          accessibilityLabel={accessibilityLabel}
+        />
+        {onClear ? (
+          <TouchableOpacity
+            style={styles.clearBtn}
+            onPress={onClear}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel={clearAccessibilityLabel}
+            hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+          >
+            <X size={16} color={colors.textTertiary} />
+          </TouchableOpacity>
+        ) : null}
+      </View>
       {error && errorText && <Text style={styles.errorText}>{errorText}</Text>}
     </View>
   );
@@ -89,7 +116,15 @@ const styles = StyleSheet.create({
     color: colors.labelText,
     marginBottom: spacing.sm,
   },
+  fieldRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fieldRowMultiline: {
+    alignItems: 'flex-start',
+  },
   input: {
+    flex: 1,
     borderWidth: 1,
     borderColor: colors.inputBorder,
     borderRadius: radius.lg,
@@ -97,6 +132,22 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     ...typography.body,
     color: colors.inputText,
+    backgroundColor: colors.inputBg,
+  },
+  inputWithAdornment: {
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
+  },
+  clearBtn: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderLeftWidth: 0,
+    borderColor: colors.inputBorder,
+    borderTopRightRadius: radius.lg,
+    borderBottomRightRadius: radius.lg,
     backgroundColor: colors.inputBg,
   },
   inputMultiline: {

@@ -314,4 +314,112 @@ describe('PatientsScreen — fluxos', () => {
       expect(screen.queryByText('João Silva')).toBeNull();
     });
   });
+
+  /* ---------------------------------------------------------------- */
+  /* Busca por telefone (A3)                                          */
+  /* ---------------------------------------------------------------- */
+
+  it('deve filtrar a lista pela busca por telefone formatado', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.changeText(
+      screen.getByPlaceholderText('Nome, e-mail ou telefone...'),
+      '(11) 98888-7777'
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Maria Oliveira')).toBeTruthy();
+      expect(screen.queryByText('João Silva')).toBeNull();
+    });
+  });
+
+  it('deve filtrar a lista pela busca por telefone apenas com dígitos', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.changeText(
+      screen.getByPlaceholderText('Nome, e-mail ou telefone...'),
+      '988887777'
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Maria Oliveira')).toBeTruthy();
+      expect(screen.queryByText('João Silva')).toBeNull();
+    });
+  });
+
+  /* ---------------------------------------------------------------- */
+  /* Estados vazios contextuais (A4)                                 */
+  /* ---------------------------------------------------------------- */
+
+  it('deve mostrar o estado vazio da busca com o termo digitado', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.changeText(
+      screen.getByPlaceholderText('Nome, e-mail ou telefone...'),
+      'ninguem'
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum resultado para «ninguem»')).toBeTruthy();
+    });
+    expect(screen.getByText('Tente outro nome, e-mail ou telefone.')).toBeTruthy();
+  });
+
+  it('deve limpar a busca pela ação do estado vazio', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.changeText(
+      screen.getByPlaceholderText('Nome, e-mail ou telefone...'),
+      'ninguem'
+    );
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum resultado para «ninguem»')).toBeTruthy();
+    });
+
+    await fireEvent.press(screen.getByLabelText('Limpar busca'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Maria Oliveira')).toBeTruthy();
+      expect(screen.queryByText('Nenhum resultado para «ninguem»')).toBeNull();
+    });
+  });
+
+  it('deve mostrar o estado vazio do filtro de status', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.press(screen.getByText('Arquivados'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum paciente arquivado')).toBeTruthy();
+    });
+    expect(screen.getByText('Ajuste o filtro ou cadastre um novo paciente.')).toBeTruthy();
+  });
+
+  it('deve voltar para todos os pacientes pela ação do estado vazio', async () => {
+    await renderWithProvider(<PatientsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.press(screen.getByText('Arquivados'));
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum paciente arquivado')).toBeTruthy();
+    });
+
+    await fireEvent.press(screen.getByLabelText('Ver todos os pacientes'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Maria Oliveira')).toBeTruthy();
+      expect(screen.queryByText('Nenhum paciente arquivado')).toBeNull();
+    });
+  });
 });

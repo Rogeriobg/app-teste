@@ -22,6 +22,7 @@ import {
   Mail,
   Phone,
   FileText,
+  X,
 } from 'lucide-react-native';
 import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
 
@@ -53,18 +54,46 @@ export default function PatientsScreen() {
 
   const [searchQuery, setSearchQuery] = useState('');
 
+  /**
+   * Normaliza um telefone para comparação: só dígitos.
+   *
+   * Permite que "988887777" encontre "(11) 98888-7777".
+   */
+  const apenasDigitos = (valor: string) => valor.replace(/\D/g, '');
+
   const filteredPatients = db.patients.filter((p: Patient) => {
     if (activeTab === 'ativos') return p.status === 'Ativo';
     if (activeTab === 'inativos') return p.status === 'Inativo';
     if (activeTab === 'arquivados') return p.status === 'Arquivado';
     return true;
   }).filter((p: Patient) => {
-    const query = searchQuery.toLowerCase();
-    return (
-      p.name.toLowerCase().includes(query) ||
-      p.email.toLowerCase().includes(query)
-    );
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
+    if (p.name.toLowerCase().includes(query)) return true;
+    if (p.email.toLowerCase().includes(query)) return true;
+    // telefone: comparação por texto e por dígitos
+    if (p.phone.toLowerCase().includes(query)) return true;
+    const queryDigitos = apenasDigitos(query);
+    if (queryDigitos.length > 0 && apenasDigitos(p.phone).includes(queryDigitos)) return true;
+    return false;
   });
+
+  /** Há uma busca ativa no momento? */
+  const buscaAtiva = searchQuery.trim().length > 0;
+  /** Termo exibido no estado vazio da busca */
+  const termoBusca = searchQuery.trim();
+  /** Rótulo do status do filtro atual (usado no estado vazio) */
+  const rotuloFiltro =
+    activeTab === 'ativos'
+      ? 'ativo'
+      : activeTab === 'inativos'
+        ? 'inativo'
+        : activeTab === 'arquivados'
+          ? 'arquivado'
+          : 'nenhum';
+
+  const handleClearSearch = () => setSearchQuery('');
+  const handleShowAll = () => setActiveTab('todos');
 
   const handleOpenAdd = () => {
     setIsEditing(false);
@@ -183,6 +212,7 @@ export default function PatientsScreen() {
           placeholderTextColor={colors.textTertiary}
           value={searchQuery}
           onChangeText={setSearchQuery}
+          onClear={() => setSearchQuery('')}
           accessibilityLabel="Buscar paciente por nome, e-mail ou telefone"
         />
       </View>
@@ -191,10 +221,58 @@ export default function PatientsScreen() {
         {filteredPatients.length === 0 ? (
           <Card style={styles.emptyCard} elevated>
             <Archive size={36} color={colors.textTertiary} />
-            <Text style={styles.emptyTitle}>Nenhum paciente neste filtro</Text>
-            {activeTab === 'todos' ? (
-              <Text style={styles.emptySub}>Toque em &quot;Novo Paciente&quot; para cadastrar seu primeiro atendimento.</Text>
-            ) : null}
+
+            {/* Estado vazio contextual: o texto diz exatamente por que a
+                lista está vazia e oferece a ação de recuperação. */}
+            {buscaAtiva ? (
+              <>
+                <Text style={styles.emptyTitle}>Nenhum resultado para «{termoBusca}»</Text>
+                <Text style={styles.emptySub}>
+                  Tente outro nome, e-mail ou telefone.
+                </Text>
+                <Button
+                  variant="outline"
+                  onPress={handleClearSearch}
+                  style={styles.emptyBtn}
+                  iconLeft={<X size={16} color={colors.brand} />}
+                  accessibilityLabel="Limpar busca"
+                >
+                  Limpar busca
+                </Button>
+              </>
+            ) : db.patients.length === 0 ? (
+              <>
+                <Text style={styles.emptyTitle}>Nenhum paciente cadastrado</Text>
+                <Text style={styles.emptySub}>
+                  Comece cadastrando seu primeiro paciente para abrir o prontuário.
+                </Text>
+                <Button
+                  variant="primary"
+                  onPress={handleOpenAdd}
+                  style={styles.emptyBtn}
+                  iconLeft={<Plus size={16} color={colors.textOnBrand} />}
+                  accessibilityLabel="Cadastrar primeiro paciente"
+                >
+                  Cadastrar paciente
+                </Button>
+              </>
+            ) : (
+              <>
+                <Text style={styles.emptyTitle}>Nenhum paciente {rotuloFiltro}</Text>
+                <Text style={styles.emptySub}>
+                  Ajuste o filtro ou cadastre um novo paciente.
+                </Text>
+                <Button
+                  variant="outline"
+                  onPress={handleShowAll}
+                  style={styles.emptyBtn}
+                  iconLeft={<Users size={16} color={colors.brand} />}
+                  accessibilityLabel="Ver todos os pacientes"
+                >
+                  Ver todos
+                </Button>
+              </>
+            )}
           </Card>
         ) : (
           filteredPatients.map((p: Patient) => (
@@ -337,7 +415,8 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.xl,
   },
   emptyTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm },
-  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center' },
+  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
+  emptyBtn: { marginTop: spacing.xs, minWidth: 200 },
 
   patientCard: {
     marginBottom: spacing.lg,

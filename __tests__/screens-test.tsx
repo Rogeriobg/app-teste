@@ -178,7 +178,7 @@ describe('Telas', () => {
       await fireEvent.press(screen.getByText('Arquivados'));
 
       await waitFor(() => {
-        expect(screen.getByText('Nenhum paciente neste filtro')).toBeTruthy();
+        expect(screen.getByText('Nenhum paciente arquivado')).toBeTruthy();
       });
     });
   });
