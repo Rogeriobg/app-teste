@@ -446,7 +446,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  patientInfo: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 10 },
+  patientInfo: { flex: 1, minWidth: 0, flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatarCircle: {
     width: 48,
     height: 48,
@@ -457,8 +457,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1EFE2',
   },
-  patientTexts: { flex: 1, minWidth: 0 },
-  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B' },
+  patientTexts: { flex: 1, minWidth: 0, flexShrink: 1 },
+  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', flexShrink: 1 },
   patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' },
   patientMeta: { fontSize: 12, color: '#64748B' },
 
