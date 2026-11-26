@@ -18,14 +18,24 @@ verificação anterior pegou:
 **DEF-5 (alta) — Exportar PDF falhava com "Não foi possível compartilhar o PDF"**
 
 - **Onde:** `src/app/patients/[patientId]/export-pdf.tsx`
-- **Causa raiz:** o `Alert.alert('PDF gerado com sucesso')` era exibido **antes**
-  do `shareAsync`. No Android o diálogo nativo fica **por cima** da tela e o
-  share sheet aberto em seguida falha. O exemplo oficial do `expo-print`
-  compartilha direto, sem alerta intermediário.
-- **Correção:** compartilhamento antes de qualquer `Alert`; guarda
-  `isAvailableAsync()`; `UTI: '.pdf'` adicionado; o erro agora mostra o motivo.
+- **Causa raiz (1ª tentativa, incompleta):** o `Alert.alert('PDF gerado com sucesso')`
+  era exibido **antes** do `shareAsync`. No Android o diálogo nativo fica
+  **por cima** da tela e o share sheet aberto em seguida falha. O exemplo
+  oficial do `expo-print` compartilha direto, sem alerta intermediário.
+- **Causa raiz real (2ª tentativa):** o erro exato do aparelho foi
+  `Not allowed to read file under given url`, que vem de
+  `SharingModule.getLocalFileFoUrl` → `isAllowedToRead(path)`. O
+  `expo-print` grava o PDF em `<cacheDir>/Print/<uuid>.pdf` e o
+  `FileProvider` do `expo-sharing` **não consegue ler** esse caminho.
+- **Correção final:** o PDF é copiado para o **documentDirectory** (que o
+  `expo-sharing` autoriza) com nome legível
+  (`prontuario-Maria_Oliveira.pdf`), usando a API `File`/`Paths` do
+  `expo-file-system`. Se o share sheet falhar, o app abre o
+  **visualizador nativo** (`File.preview()`), que é o caminho principal no
+  Android e não depende do `FileProvider`.
 - **Por que escapou:** o teste automatizado mockava o `shareAsync` (sempre
-  resolvia), e o web **não reproduz** a sobreposição de diálogo nativo.
+  resolvia), e o web **não reproduz** a permissão de leitura do
+  `FileProvider` nem a sobreposição de diálogo nativo.
 
 **DEF-6 (alta) — Botão "Novo Paciente" ocupava a largura toda no celular**
 

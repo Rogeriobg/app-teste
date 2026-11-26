@@ -10,6 +10,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync, isAvailableAsync } from 'expo-sharing';
+import { File, Paths } from 'expo-file-system';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
 import { Button, Card, StatSummary } from '@/components';
@@ -288,14 +289,22 @@ export default function ExportPdfScreen() {
       await Haptic.success();
 
       /**
-       * O compartilhamento vem **antes** de qualquer `Alert`.
+       * O PDF gerado pelo `expo-print` fica em `<cacheDir>/Print/` e o
+       * `FileProvider` do `expo-sharing` **não consegue ler** esse caminho
+       * ("Not allowed to read file under given url").
        *
-       * Um `Alert.alert` abre um diálogo nativo que fica **por cima** da
-       * tela; no Android o share sheet aberto em seguida falha ou fica
-       * escondido atrás do diálogo. O exemplo oficial do `expo-print`
-       * tambem compartilha direto, sem alerta intermediário.
+       * A correção: copiar o PDF para o **documentDirectory** (que o
+       * `expo-sharing` autoriza), com um nome legível, e compartilhar a
+       * partir dali. O arquivo também fica disponível para o usuário
+       * abrir depois pelo explorador de arquivos.
        */
-      await handleSharePdf(uri);
+      const destino = new File(
+        Paths.document,
+        `prontuario-${(patient?.name ?? 'paciente').replace(/[^a-zA-Z0-9-]/g, '_')}.pdf`
+      );
+      await copiarPara(destino, uri);
+
+      await handleSharePdf(destino);
     } catch (error) {
       await Haptic.error();
       const mensagem = error instanceof Error ? error.message : String(error);
@@ -305,23 +314,36 @@ export default function ExportPdfScreen() {
     }
   };
 
-  const handleSharePdf = async (uri: string) => {
+  /**
+   * Copia o PDF gerado pelo `expo-print` para um `File` do
+   * `expo-file-system`.
+   *
+   * O `expo-print` devolve um URI de arquivo comum; o `File` do
+   * `expo-file-system` escreve no local que o `expo-sharing` autoriza.
+   */
+  const copiarPara = async (destino: File, origemUri: string) => {
+    const origem = new File(origemUri);
+    if (!destino.exists) {
+      destino.create({ overwrite: true });
+    }
+    await origem.copy(destino);
+    return destino;
+  };
+
+  const handleSharePdf = async (arquivo: File) => {
     /**
      * `isAvailableAsync` é o guard oficial: em web (e em Expo Go sem o
      * módulo nativo) o compartilhamento não existe e `shareAsync` lança.
      */
     const disponivel = await isAvailableAsync();
     if (!disponivel) {
-      Alert.alert(
-        'Compartilhamento indisponível',
-        'Este dispositivo não permite compartilhar arquivos. O PDF foi gerado, mas não pôde ser aberto.'
-      );
+      await tentarPreview(arquivo);
       return;
     }
 
     setSharing(true);
     try {
-      await shareAsync(uri, {
+      await shareAsync(arquivo.uri, {
         mimeType: 'application/pdf',
         UTI: '.pdf',
         dialogTitle: `Prontuário - ${patient?.name ?? ''}`,
@@ -329,10 +351,36 @@ export default function ExportPdfScreen() {
       await Haptic.success();
     } catch (error) {
       await Haptic.error();
-      const mensagem = error instanceof Error ? error.message : String(error);
-      Alert.alert('Erro', `Não foi possível compartilhar o PDF.\n\n${mensagem}`);
+      /**
+       * O share sheet pode falhar (sem app para receber PDF, permissão
+       * negada, share cancelado). O visualizador nativo é o caminho
+       * principal no Android e evita o erro.
+       */
+      const abriu = await tentarPreview(arquivo);
+      if (!abriu) {
+        const mensagem = error instanceof Error ? error.message : String(error);
+        Alert.alert('Erro', `Não foi possível compartilhar o PDF.\n\n${mensagem}`);
+      }
     } finally {
       setSharing(false);
+    }
+  };
+
+  /**
+   * Abre o PDF no visualizador nativo do sistema.
+   *
+   * No Android isso abre um app instalado que handle o MIME type; no iOS,
+   * o Quick Look. É o caminho que **não** depende do `FileProvider` do
+   * `expo-sharing`.
+   */
+  const tentarPreview = async (arquivo: File): Promise<boolean> => {
+    try {
+      const pode = await File.canPreview(arquivo);
+      if (!pode) return false;
+      await File.preview(arquivo, { title: `Prontuário - ${patient?.name ?? ''}` });
+      return true;
+    } catch {
+      return false;
     }
   };
 

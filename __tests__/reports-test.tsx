@@ -5,6 +5,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
+import { File } from 'expo-file-system';
 import { renderWithProvider } from './helpers/renderWithProvider';
 import { AppContext, AppContextData, useApp } from '@/context/AppContext';
 import PatientReportsScreen from '@/app/patients/[patientId]/reports';
@@ -52,6 +53,12 @@ describe('Relatórios e Exportação', () => {
     mockedPrintToFileAsync.mockImplementation(async () => ({ uri: PDF_URI }));
     mockedShareAsync.mockReset();
     mockedShareAsync.mockImplementation(async () => undefined);
+
+    // o visualizador nativo é o caminho principal no Android
+    (File.canPreview as jest.Mock).mockReset();
+    (File.canPreview as jest.Mock).mockResolvedValue(true);
+    (File.preview as jest.Mock).mockReset();
+    (File.preview as jest.Mock).mockResolvedValue(undefined);
 
     alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
@@ -399,10 +406,17 @@ describe('Relatórios e Exportação', () => {
       expect(options.html).toContain('Sessão de Acompanhamento');
 
       await waitFor(() => expect(mockedShareAsync).toHaveBeenCalledTimes(1));
+      /**
+       * O PDF é compartilhado a partir do **documentDirectory**, com nome
+       * legível — o `FileProvider` do `expo-sharing` não consegue ler o
+       * diretório `Print/` do cache (onde o `expo-print` grava), o que
+       * causava "Not allowed to read file under given url".
+       */
       expect(mockedShareAsync).toHaveBeenCalledWith(
-        PDF_URI,
+        expect.stringContaining('document'),
         expect.objectContaining({ mimeType: 'application/pdf' })
       );
+      expect(mockedShareAsync.mock.calls[0][0]).toContain('prontuario-Maria_Oliveira.pdf');
 
       /**
        * O compartilhamento acontece **antes** de qualquer `Alert`.
@@ -434,8 +448,32 @@ describe('Relatórios e Exportação', () => {
       expect(mockedShareAsync).not.toHaveBeenCalled();
     });
 
-    it('deve informar erro quando o compartilhamento falha', async () => {
+    it('deve abrir o visualizador nativo quando o compartilhamento falha', async () => {
       mockedShareAsync.mockRejectedValueOnce(new Error('falha ao compartilhar'));
+
+      await renderWithProvider(<ExportPdfScreen />);
+
+      await waitFor(() => expect(screen.getByText('Exportar PDF')).toBeTruthy());
+      await fireEvent.press(screen.getByText('Exportar PDF'));
+
+      /**
+       * O share sheet pode falhar (sem app para receber PDF, permissão
+       * negada, share cancelado). Nesse caso o app abre o **visualizador
+       * nativo**, que é o caminho principal no Android e não depende do
+       * `FileProvider` do `expo-sharing`.
+       */
+      await waitFor(() => {
+        expect(File.preview).toHaveBeenCalled();
+      });
+      expect(alertSpy).not.toHaveBeenCalledWith(
+        'Erro',
+        expect.stringContaining('Não foi possível compartilhar o PDF.')
+      );
+    });
+
+    it('deve informar erro quando nem o compartilhamento nem o preview funcionam', async () => {
+      mockedShareAsync.mockRejectedValueOnce(new Error('falha ao compartilhar'));
+      (File.canPreview as jest.Mock).mockResolvedValueOnce(false);
 
       await renderWithProvider(<ExportPdfScreen />);
 

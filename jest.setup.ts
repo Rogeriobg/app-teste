@@ -51,23 +51,88 @@ jest.mock('expo-print', () => ({
 }));
 
 /* ---------- expo-file-system ---------- */
-jest.mock('expo-file-system', () => ({
-  Paths: {
-    get cache() {
-      return { uri: 'file:///cache/' };
+/**
+ * Mock da API **nova** (`File`, `Directory`, `Paths`) e da antiga
+ * (`writeAsStringAsync`, `cacheDirectory`...).
+ *
+ * A API nova é usada pela exportação de PDF: o PDF gerado pelo
+ * `expo-print` é copiado para `new File(Paths.document, 'x.pdf')` antes de
+ * ser compartilhado — porque o `FileProvider` do `expo-sharing` não
+ * consegue ler o diretório `Print/` do cache.
+ */
+jest.mock('expo-file-system', () => {
+  const makeFile = (uri: string) => {
+    const parts = uri.split('/').filter(Boolean);
+    const name = parts[parts.length - 1] ?? '';
+    const dir = parts.slice(0, -1).join('/');
+    return {
+      uri,
+      name,
+      extension: name.includes('.') ? `.${name.split('.').pop()}` : '',
+      size: 1024,
+      type: 'application/pdf',
+      exists: true,
+      create: jest.fn(),
+      delete: jest.fn(),
+      copy: jest.fn(async () => undefined),
+      move: jest.fn(async () => undefined),
+      write: jest.fn(async () => undefined),
+      text: jest.fn(async () => ''),
+      base64: jest.fn(async () => ''),
+    };
+  };
+
+  class FileMock {
+    constructor(...parts: unknown[]) {
+      const flat = parts
+        .map((p) => {
+          if (typeof p === 'string') return p;
+          if (p && typeof p === 'object' && 'uri' in p) return String((p as { uri: string }).uri);
+          return '';
+        })
+        .filter(Boolean)
+        .join('/');
+      Object.assign(this, makeFile(flat || 'file:///cache/file.pdf'));
+    }
+    static canPreview = jest.fn(async () => true);
+    static preview = jest.fn(async () => undefined);
+  }
+
+  class DirectoryMock {
+    constructor(...parts: unknown[]) {
+      const flat = parts
+        .map((p) => {
+          if (typeof p === 'string') return p;
+          if (p && typeof p === 'object' && 'uri' in p) return String((p as { uri: string }).uri);
+          return '';
+        })
+        .filter(Boolean)
+        .join('/');
+      Object.assign(this, makeFile(flat || 'file:///cache/'));
+    }
+    create = jest.fn();
+    delete = jest.fn();
+    list = jest.fn(() => []);
+  }
+
+  return {
+    File: FileMock,
+    Directory: DirectoryMock,
+    Paths: {
+      cache: { uri: 'file:///cache/' },
+      document: { uri: 'file:///documents/' },
+      bundle: { uri: 'file:///bundle/' },
     },
-    get document() {
-      return { uri: 'file:///documents/' };
-    },
-  },
-  cacheDirectory: 'file:///cache/',
-  documentDirectory: 'file:///documents/',
-  writeAsStringAsync: jest.fn(async () => {}),
-  readAsStringAsync: jest.fn(async () => ''),
-  deleteAsync: jest.fn(async () => {}),
-  getInfoAsync: jest.fn(async () => ({ exists: true })),
-  makeDirectoryAsync: jest.fn(async () => {}),
-}));
+    /* API legada */
+    cacheDirectory: 'file:///cache/',
+    documentDirectory: 'file:///documents/',
+    writeAsStringAsync: jest.fn(async () => {}),
+    readAsStringAsync: jest.fn(async () => ''),
+    deleteAsync: jest.fn(async () => {}),
+    getInfoAsync: jest.fn(async () => ({ exists: true })),
+    makeDirectoryAsync: jest.fn(async () => {}),
+  };
+});
 
 /* ---------- @react-native-community/datetimepicker ---------- */
 // expõe um testID para que os testes possam encontrar e acionar o picker
