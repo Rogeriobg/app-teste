@@ -89,7 +89,7 @@ export function Input({
           autoComplete={autoComplete}
           accessibilityLabel={accessibilityLabel}
         />
-        {onClear ? (
+        {onClear && value.length > 0 ? (
           <TouchableOpacity
             style={styles.clearBtn}
             onPress={onClear}
@@ -140,7 +140,10 @@ const styles = StyleSheet.create({
   },
   clearBtn: {
     width: 44,
-    height: 44,
+    // acompanha a altura do campo (o row usa alignItems: 'center' e o
+    // botão se estica), com 44px de área de toque garantida
+    minHeight: 44,
+    alignSelf: 'stretch',
     alignItems: 'center',
     justifyContent: 'center',
     borderWidth: 1,

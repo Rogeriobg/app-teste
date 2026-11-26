@@ -46,5 +46,23 @@ module.exports = {
       functions: 90,
       lines: 85,
     },
+    './src/app/patients/*/details.tsx': {
+      statements: 70,
+      branches: 55,
+      functions: 70,
+      lines: 70,
+    },
+    './src/app/patients.tsx': {
+      statements: 75,
+      branches: 60,
+      functions: 75,
+      lines: 75,
+    },
+    './src/app/profile.tsx': {
+      statements: 70,
+      branches: 55,
+      functions: 70,
+      lines: 70,
+    },
   },
 };

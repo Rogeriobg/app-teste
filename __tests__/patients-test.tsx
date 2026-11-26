@@ -5,6 +5,8 @@ import { router } from 'expo-router';
 import { renderWithProvider } from './helpers/renderWithProvider';
 import { spyOnAlert, pressAlertButton } from './helpers/alert';
 import PatientsScreen from '@/app/patients';
+import { AppContext } from '@/context/AppContext';
+import { render } from '@testing-library/react-native';
 
 describe('PatientsScreen — fluxos', () => {
   let alertSpy: jest.SpyInstance;
@@ -420,6 +422,53 @@ describe('PatientsScreen — fluxos', () => {
     await waitFor(() => {
       expect(screen.getByText('Maria Oliveira')).toBeTruthy();
       expect(screen.queryByText('Nenhum paciente arquivado')).toBeNull();
+    });
+  });
+
+  it('deve mostrar o estado vazio de primeiro uso quando nao ha pacientes', async () => {
+    // contexto com banco vazio — simula o primeiro uso real do app
+    const emptyContext = {
+      db: { users: [], patients: [], medicalRecords: [] },
+      currentUser: null,
+      getPatientsByStatus: () => [],
+      getRecordsByPatient: () => [],
+    } as never;
+
+    await render(
+      <AppContext.Provider value={emptyContext}>
+        <PatientsScreen />
+      </AppContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum paciente cadastrado')).toBeTruthy();
+    });
+    expect(screen.getByText('Comece cadastrando seu primeiro paciente para abrir o prontuário.')).toBeTruthy();
+    expect(screen.getByLabelText('Cadastrar primeiro paciente')).toBeTruthy();
+  });
+
+  it('deve abrir o cadastro a partir do estado vazio de primeiro uso', async () => {
+    const emptyContext = {
+      db: { users: [], patients: [], medicalRecords: [] },
+      currentUser: null,
+      getPatientsByStatus: () => [],
+      getRecordsByPatient: () => [],
+    } as never;
+
+    await render(
+      <AppContext.Provider value={emptyContext}>
+        <PatientsScreen />
+      </AppContext.Provider>
+    );
+
+    await waitFor(() => {
+      expect(screen.getByText('Nenhum paciente cadastrado')).toBeTruthy();
+    });
+
+    await fireEvent.press(screen.getByLabelText('Cadastrar primeiro paciente'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Cadastrar Novo Paciente')).toBeTruthy();
     });
   });
 });
