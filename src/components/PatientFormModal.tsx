@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { Calendar } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { AppModal, Input } from '@/components';
+// importa direto do módulo, e não pelo barrel `@/components`: importar pelo
+// barrel criaria um ciclo de require (index -> PatientFormModal -> index)
+import { AppModal } from './Modal';
+import { Input } from './Input';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 /** Valores do formulário de paciente. */

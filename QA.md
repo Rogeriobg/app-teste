@@ -18,6 +18,13 @@
 **Veredito: `[APROVADO]`** — os 5 itens Alta cumprem os critérios de aceite.
 2 defeitos encontrados e corrigidos durante a revisão.
 
+> ⚠️ **Este veredito do ciclo 1 foi revisto no ciclo 2.**
+> A validação foi **estática** (grep/tsc/jest) e nenhum aparelho foi
+> testado; o critério de A5 cobria só posição vertical. O DEF-3 (transbordo
+> horizontal no header de `/patients`) só apareceu quando o usuário abriu o
+> app no celular. Ver `AUDITORIA.md` (análise das 4 falhas de processo) e
+> `QA-4B.md` (fase 4b executada).
+
 ---
 
 ## Validação item a item
