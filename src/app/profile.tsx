@@ -6,7 +6,7 @@ import {
   ScrollView,
   Alert,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   selectionAsync,
   impactAsync,
@@ -34,6 +34,7 @@ const DANGER = colors.danger;
 
 export default function ProfileScreen() {
   const { currentUser, updateUser, exportData, logout, db } = useApp();
+  const insets = useSafeAreaInsets();
 
   const [name, setName] = useState(currentUser?.name ?? '');
   const [email, setEmail] = useState(currentUser?.email ?? '');
@@ -126,9 +127,12 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <ScrollView
-        contentContainerStyle={styles.scroll}
+        contentContainerStyle={[
+          styles.scroll,
+          { paddingTop: insets.top + spacing.xl, paddingBottom: insets.bottom + 90 },
+        ]}
         showsVerticalScrollIndicator={false}
         contentInsetAdjustmentBehavior="automatic"
       >
@@ -232,7 +236,7 @@ export default function ProfileScreen() {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
 
@@ -243,7 +247,6 @@ const styles = StyleSheet.create({
   },
   scroll: {
     padding: spacing.xl,
-    paddingBottom: 90,
   },
   headerCard: {
     backgroundColor: CARD,

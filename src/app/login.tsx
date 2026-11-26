@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { Mail, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react-native';
@@ -16,6 +17,7 @@ import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export default function LoginScreen() {
   const { login } = useApp();
+  const insets = useSafeAreaInsets();
   const [email, setEmail] = useState('psicologo@psicowave.com');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -41,7 +43,10 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + spacing.xxl, paddingBottom: insets.bottom + spacing.xxl }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Hero Section */}
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
@@ -95,7 +100,7 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
-  scroll: { padding: spacing.xxl, paddingTop: spacing.xxl, paddingBottom: spacing.xxl },
+  scroll: { padding: spacing.xxl },
   heroCard: {
     backgroundColor: colors.brandSoft,
     borderRadius: radius.xxl,

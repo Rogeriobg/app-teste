@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { useApp, MedicalRecord } from '@/context/AppContext';
 import { useLocalSearchParams } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Input, Card, AppModal, StatSummary } from '@/components';
 
 import {
@@ -26,6 +27,7 @@ export type PatientReportsScreenParams = {
 export default function PatientReportsScreen() {
   const { db, addMedicalRecord, archiveMedicalRecord, restoreMedicalRecord, deleteMedicalRecord, updateMedicalRecord } = useApp();
   const { patientId, patientName } = useLocalSearchParams();
+  const insets = useSafeAreaInsets();
 
   const patientIdStr = typeof patientId === 'string' ? patientId : String(patientId ?? '');
   const patientNameStr = typeof patientName === 'string' ? patientName : String(patientName ?? '');
@@ -187,7 +189,7 @@ export default function PatientReportsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
         <View>
           <Text style={styles.headerTitle}>Relatórios de {patientNameStr}</Text>
           <Text style={styles.headerSubtitle}>Prontuário e histórico de sessões</Text>
@@ -317,7 +319,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   header: {
     backgroundColor: colors.card,
-    paddingTop: 52,
     paddingHorizontal: spacing.xxl,
     paddingBottom: spacing.xl,
     flexDirection: 'row',

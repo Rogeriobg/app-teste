@@ -8,7 +8,7 @@ import {
   Alert,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
@@ -242,8 +242,14 @@ export default function PatientDetailsScreen() {
 
   if (!patient) {
     return (
-      <SafeAreaView style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <View style={styles.container}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.scroll,
+            { paddingTop: insets.top + spacing.xl, paddingBottom: insets.bottom + spacing.xxxl },
+          ]}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.emptyContainer}>
             <View style={styles.emptyIcon}>
               <AlertCircle size={44} color={colors.textTertiary} />
@@ -262,7 +268,7 @@ export default function PatientDetailsScreen() {
             </Button>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
 
@@ -270,7 +276,7 @@ export default function PatientDetailsScreen() {
   const isArquivado = patient.status === 'Arquivado';
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       {/* Top bar */}
       <View style={[styles.topBar, { paddingTop: insets.top + spacing.md }]}>
         <TouchableOpacity
@@ -580,7 +586,7 @@ export default function PatientDetailsScreen() {
           </>
         )}
       </AppModal>
-    </SafeAreaView>
+    </View>
   );
 }
 

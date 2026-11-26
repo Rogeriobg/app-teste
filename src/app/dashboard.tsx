@@ -84,7 +84,10 @@ export default function PsychologistDashboard() {
         </View>
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingBottom: insets.bottom + spacing.xxxl }]}
+        showsVerticalScrollIndicator={false}
+      >
         {/* Visão geral — grade 2×2 (BoardUI Stat Cards) */}
         <Text style={styles.sectionTitle}>Visão geral</Text>
 
@@ -263,7 +266,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  scroll: { padding: spacing.xl, paddingBottom: spacing.xxxl, gap: spacing.lg },
+  scroll: { padding: spacing.xl, gap: spacing.lg },
 
   sectionTitle: {
     ...typography.headline,

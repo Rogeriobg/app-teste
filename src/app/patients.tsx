@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { useApp, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Button, Input, Card, AppModal } from '@/components';
 import {
   Users,
@@ -43,6 +44,8 @@ export default function PatientsScreen() {
     restorePatient,
     deletePatient,
   } = useApp();
+
+  const insets = useSafeAreaInsets();
 
   const [activeTab, setActiveTab] = useState<'todos' | 'ativos' | 'inativos' | 'arquivados'>('todos');
   const [modalVisible, setModalVisible] = useState(false);
@@ -175,7 +178,7 @@ export default function PatientsScreen() {
 
   return (
     <View style={styles.container}>
-      <View style={styles.header}>
+      <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
         <View>
           <Text style={styles.headerTitle}>Meus Pacientes</Text>
           <Text style={styles.headerSubtitle}>Cadastro, edição e prontuário</Text>
@@ -393,7 +396,6 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colors.surface },
   header: {
     backgroundColor: colors.card,
-    paddingTop: 52,
     paddingHorizontal: spacing.xxl,
     paddingBottom: spacing.xl,
     flexDirection: 'row',
@@ -436,7 +438,7 @@ const styles = StyleSheet.create({
   tabText: { ...typography.label, color: colors.textSecondary },
   tabTextActive: { color: colors.brand, fontWeight: '700' },
 
-  scroll: { padding: spacing.xl, paddingBottom: spacing.xxl },
+  scroll: { padding: spacing.xl, paddingBottom: spacing.xxl + 24 },
   emptyCard: {
     padding: spacing.xxxl,
     borderRadius: radius.xxl,
