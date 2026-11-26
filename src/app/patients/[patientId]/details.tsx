@@ -255,7 +255,7 @@ export default function PatientDetailsScreen() {
             <Button
               variant="primary"
               onPress={() => router.replace('/patients')}
-              iconLeft={<ChevronRight size={18} color="#FFFFFF" />}
+              iconLeft={<ChevronRight size={18} color={colors.textOnBrand} />}
               style={styles.emptyBtn}
             >
               Voltar aos pacientes
@@ -298,7 +298,7 @@ export default function PatientDetailsScreen() {
         {/* Hero do paciente */}
         <View style={styles.heroCard}>
           <View style={styles.avatarBadge}>
-            <Users size={30} color="#FFFFFF" />
+            <Users size={30} color={colors.textOnBrand} />
           </View>
 
           <View style={styles.heroInfo}>
@@ -355,7 +355,7 @@ export default function PatientDetailsScreen() {
           <Button
             variant="primary"
             onPress={handleOpenAddRecord}
-            iconLeft={<Plus size={16} color="#FFFFFF" />}
+            iconLeft={<Plus size={16} color={colors.textOnBrand} />}
             style={styles.addRecordBtn}
             accessibilityLabel="Cadastrar novo prontuário"
           >

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, ViewStyle, TextStyle } from 'react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export type PatientStatus = 'Ativo' | 'Inativo' | 'Arquivado';
 export type RecordStatus = 'Ativo' | 'Arquivado';
@@ -22,9 +23,9 @@ export interface StatusBadgeProps {
 }
 
 const STATUS_CONFIG: Record<string, { bg: string; border: string; color: string }> = {
-  Ativo: { bg: '#D1FAE5', border: '#BBF7D0', color: '#0D9488' },
-  Inativo: { bg: '#FEF3C7', border: '#FCD34D', color: '#F59E0B' },
-  Arquivado: { bg: '#F3F4F6', border: '#E5E7EB', color: '#94A3B8' },
+  Ativo: { bg: colors.successSoft, border: colors.successBorder, color: colors.success },
+  Inativo: { bg: colors.warningSoft, border: colors.warningBorder, color: colors.warning },
+  Arquivado: { bg: colors.mutedSoft, border: colors.mutedBorder, color: colors.muted },
 };
 
 export function StatusBadge({
@@ -38,9 +39,9 @@ export function StatusBadge({
 }: StatusBadgeProps) {
   const statusKey = recordStatus ?? status;
   const config = statusKey ? STATUS_CONFIG[statusKey] : null;
-  const color = customColor ?? (config?.color ?? '#64748B');
-  const bg = config ? config.bg + '15' : '#F8FAFC';
-  const border = config ? config.border + '40' : '#CBD5E1';
+  const color = customColor ?? (config?.color ?? colors.textSecondary);
+  const bg = config ? config.bg + '15' : colors.inputBg;
+  const border = config ? config.border + '40' : colors.inputBorder;
   const text = label ?? statusKey ?? recordStatus ?? '';
 
   return (
@@ -59,20 +60,19 @@ export function StatusBadge({
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.xs,
+    borderRadius: radius.sm,
     borderWidth: 1,
     alignSelf: 'flex-start',
   },
   small: {
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xxs,
+    borderRadius: radius.md,
   },
   text: {
-    fontSize: 10,
-    fontWeight: '700',
+    ...typography.caption,
     textTransform: 'uppercase',
   },
 });

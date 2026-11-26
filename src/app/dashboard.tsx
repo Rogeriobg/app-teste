@@ -174,7 +174,7 @@ export default function PsychologistDashboard() {
             </Text>
             <TouchableOpacity style={styles.emptyAction} onPress={openPatients} activeOpacity={0.85}>
               <Text style={styles.emptyActionText}>Cadastrar paciente</Text>
-              <ArrowRight size={14} color="#FFFFFF" />
+              <ArrowRight size={14} color={colors.textOnBrand} />
             </TouchableOpacity>
           </View>
         ) : (
@@ -339,7 +339,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     minHeight: 44,
   },
-  emptyActionText: { ...typography.label, color: '#FFFFFF' },
+  emptyActionText: { ...typography.label, color: colors.textOnBrand },
 
   viewAll: { alignItems: 'center', paddingVertical: spacing.sm },
   viewAllText: { ...typography.label, color: colors.brand },

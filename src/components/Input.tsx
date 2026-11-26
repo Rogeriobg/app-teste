@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, TextInput, Text, View, ViewStyle, TextStyle } from 'react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export interface InputProps {
   /** Rótulo acima do input */
@@ -39,7 +40,7 @@ export function Input({
   value,
   onChangeText,
   placeholder,
-  placeholderTextColor = '#94A3B8',
+  placeholderTextColor = colors.textTertiary,
   keyboardType = 'default',
   multiline = false,
   numberOfLines,
@@ -81,35 +82,33 @@ export function Input({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 14,
+    marginBottom: spacing.lg,
   },
   label: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#475569',
-    marginBottom: 6,
+    ...typography.label,
+    color: colors.labelText,
+    marginBottom: spacing.sm,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    fontSize: 14,
-    color: '#1E293B',
-    backgroundColor: '#F8FAFC',
+    borderColor: colors.inputBorder,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    ...typography.body,
+    color: colors.inputText,
+    backgroundColor: colors.inputBg,
   },
   inputMultiline: {
     height: 96,
     textAlignVertical: 'top',
   },
   inputError: {
-    borderColor: '#EF4444',
+    borderColor: colors.danger,
   },
   errorText: {
-    color: '#EF4444',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 4,
+    ...typography.label,
+    color: colors.danger,
+    marginTop: spacing.xs,
   },
 });

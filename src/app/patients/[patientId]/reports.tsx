@@ -3,7 +3,7 @@ import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Alert } from 'rea
 import { useApp, MedicalRecord } from '@/context/AppContext';
 import { useLocalSearchParams } from 'expo-router';
 import { Button, Input, Card, AppModal, StatSummary } from '@/components';
-import { colors } from '@/theme/tokens';
+
 import {
   FileText,
   Archive,
@@ -16,6 +16,7 @@ import {
   Calendar,
 } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
 
 export type PatientReportsScreenParams = {
   patientId: string;
@@ -146,7 +147,7 @@ export default function PatientReportsScreen() {
     <Card key={rec.id} style={styles.recordCard} elevated>
       <View style={styles.recordHeader}>
         <View style={styles.recordIconRow}>
-          <FileText size={18} color={isArchived ? '#94A3B8' : '#0D9488'} />
+          <FileText size={18} color={isArchived ? colors.textTertiary : colors.brand} />
           <Text style={[styles.recordTitle, isArchived && styles.recordTitleArchived]}>{rec.title}</Text>
         </View>
         <TouchableOpacity
@@ -156,28 +157,28 @@ export default function PatientReportsScreen() {
           accessibilityRole="button"
           accessibilityLabel={`Editar relatório ${rec.title}`}
         >
-          <Edit2 size={16} color="#2563EB" />
+          <Edit2 size={16} color={colors.info} />
         </TouchableOpacity>
       </View>
       <Text style={styles.recordDate}>
-        <Clock size={12} color="#94A3B8" />
+        <Clock size={12} color={colors.textTertiary} />
         {' '} {rec.date}
       </Text>
       <Text style={styles.recordContent}>{rec.content}</Text>
       <View style={styles.recordActions}>
         {isArchived ? (
           <TouchableOpacity style={[styles.actionBtn, styles.btnRestore]} onPress={() => handleRestore(rec)} activeOpacity={0.8}>
-            <CheckCircle2 size={16} color="#0D9488" />
+            <CheckCircle2 size={16} color={colors.success} />
             <Text style={styles.actionText}>Restaurar</Text>
           </TouchableOpacity>
         ) : (
           <TouchableOpacity style={[styles.actionBtn, styles.btnArchive]} onPress={() => handleArchive(rec)} activeOpacity={0.8}>
-            <Archive size={16} color="#6B7280" />
+            <Archive size={16} color={colors.contentSecondary} />
             <Text style={styles.actionText}>Arquivar</Text>
           </TouchableOpacity>
         )}
         <TouchableOpacity style={[styles.actionBtn, styles.btnDelete]} onPress={() => handleDelete(rec)} activeOpacity={0.8}>
-          <Trash2 size={16} color="#EF4444" />
+          <Trash2 size={16} color={colors.danger} />
           <Text style={styles.actionText}>Excluir</Text>
         </TouchableOpacity>
       </View>
@@ -194,7 +195,7 @@ export default function PatientReportsScreen() {
         <Button
           variant="primary"
           onPress={handleOpenAdd}
-          iconLeft={<Plus size={18} color="#FFFFFF" />}
+          iconLeft={<Plus size={18} color={colors.textOnBrand} />}
           accessibilityLabel="Cadastrar novo relatório"
         >
           Novo Relatório
@@ -216,7 +217,7 @@ export default function PatientReportsScreen() {
         <Text style={styles.sectionTitle}>Prontuários Ativos</Text>
         {activeRecords.length === 0 ? (
           <Card style={styles.emptyCard} elevated>
-            <CheckCircle2 size={28} color="#0D9488" />
+            <CheckCircle2 size={28} color={colors.success} />
             <Text style={styles.emptyTitle}>Nenhum relatório ativo</Text>
             <Text style={styles.emptySub}>Todos os prontuários deste paciente estão arquivados.</Text>
           </Card>
@@ -234,7 +235,7 @@ export default function PatientReportsScreen() {
 
         {records.length === 0 && (
           <Card style={styles.emptyCard} elevated>
-            <FileText size={36} color="#94A3B8" />
+            <FileText size={36} color={colors.textTertiary} />
             <Text style={styles.emptyTitle}>Nenhum relatório cadastrado</Text>
             <Text style={styles.emptySub}>Inicie o prontuário deste paciente nas próximas sessões.</Text>
           </Card>
@@ -253,7 +254,7 @@ export default function PatientReportsScreen() {
         <Input
           label="Título da Sessão / Relatório"
           placeholder="Ex: Sessão 01 - Anamnese e Vínculo"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={title}
           onChangeText={setTitle}
           accessibilityLabel="Título do relatório"
@@ -265,7 +266,7 @@ export default function PatientReportsScreen() {
           activeOpacity={0.8}
           accessibilityLabel="Selecionar data da sessão"
         >
-          <Calendar size={18} color="#94A3B8" style={styles.datePickerIcon} />
+          <Calendar size={18} color={colors.textTertiary} style={styles.datePickerIcon} />
           <Text style={[styles.datePickerText, !date && styles.datePickerPlaceholder]}>
             {date || 'AAAA-MM-DD'}
           </Text>
@@ -285,7 +286,7 @@ export default function PatientReportsScreen() {
         <Input
           label="Conteúdo do Prontuário (evolução)"
           placeholder="Relato da sessão, evolução clínica, intervenções realizadas..."
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={content}
           onChangeText={setContent}
           multiline
@@ -294,13 +295,13 @@ export default function PatientReportsScreen() {
         />
 
         <View style={styles.privateNotesLabelRow}>
-          <Lock size={12} color="#0D9488" />
+          <Lock size={12} color={colors.brand} />
           <Text style={styles.label}>Notas Privadas do Psicólogo</Text>
         </View>
         <Input
           label=" "
           placeholder="Observações sigilosas, hipóteses diagnósticas..."
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={privateNotes}
           onChangeText={setPrivateNotes}
           multiline
@@ -313,64 +314,61 @@ export default function PatientReportsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4FBF7' },
+  container: { flex: 1, backgroundColor: colors.surface },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     paddingTop: 52,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingHorizontal: spacing.xxl,
+    paddingBottom: spacing.xl,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: colors.border,
+    ...shadowCard,
   },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#133E2B' },
-  headerSubtitle: { fontSize: 12, color: '#0D9488', fontWeight: '600', marginTop: 2 },
+  headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
+  headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
 
-  scroll: { padding: 16, paddingBottom: 20 },
+  scroll: { padding: spacing.xl, paddingBottom: spacing.xxl },
 
-  sectionTitle: { fontSize: 15, fontWeight: 'bold', color: '#133E2B', marginVertical: 14, marginLeft: 4 },
+  sectionTitle: { ...typography.headline, fontSize: 15, color: colors.textPrimary, marginVertical: spacing.lg, marginLeft: spacing.xs },
 
   recordCard: {
-    marginBottom: 14,
+    marginBottom: spacing.lg,
   },
-  recordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 8 },
-  recordIconRow: { flexDirection: 'row', alignItems: 'center', gap: 8, flex: 1 },
-  recordTitle: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', flex: 1 },
-  recordTitleArchived: { color: '#94A3B8', textDecorationLine: 'line-through' },
-  viewBtn: { padding: 6 },
-  recordDate: { flexDirection: 'row', alignItems: 'center', gap: 6, fontSize: 12, color: '#64748B', marginBottom: 10 },
-  recordContent: { fontSize: 13, color: '#374151', lineHeight: 20, marginBottom: 14 },
-  recordActions: { flexDirection: 'row', gap: 10 },
+  recordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.md },
+  recordIconRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1, minWidth: 0 },
+  recordTitle: { ...typography.headline, color: colors.textPrimary, flex: 1, minWidth: 0 },
+  recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
+  viewBtn: { padding: spacing.sm },
+  recordDate: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, ...typography.caption, color: colors.textSecondary, marginBottom: spacing.lg },
+  recordContent: { ...typography.bodyRegular, color: colors.contentMuted, lineHeight: 20, marginBottom: spacing.lg },
+  recordActions: { flexDirection: 'row', gap: spacing.lg },
   actionBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 8,
-    borderRadius: 10,
-    gap: 6,
+    paddingVertical: spacing.md,
+    borderRadius: radius.lg,
+    gap: spacing.sm,
     borderWidth: 1,
+    minHeight: 44,
   },
-  btnArchive: { backgroundColor: '#F3F4F6', borderColor: '#E5E7EB' },
-  btnRestore: { backgroundColor: '#D1FAE5', borderColor: '#BBF7D0' },
-  btnDelete: { backgroundColor: '#FEF2F2', borderColor: '#FECACA' },
-  actionText: { fontSize: 11, fontWeight: '700' },
+  btnArchive: { backgroundColor: colors.mutedSoft, borderColor: colors.mutedBorder },
+  btnRestore: { backgroundColor: colors.successSoft, borderColor: colors.successBorder },
+  btnDelete: { backgroundColor: colors.dangerSoft, borderColor: colors.dangerBorder },
+  actionText: { ...typography.caption },
 
   emptyCard: {
-    padding: 36,
-    borderRadius: 24,
+    padding: spacing.xxxl,
+    borderRadius: radius.xxl,
     alignItems: 'center',
-    marginHorizontal: 16,
+    marginHorizontal: spacing.xl,
   },
-  emptyTitle: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginTop: 12, marginBottom: 6 },
-  emptySub: { fontSize: 13, color: '#64748B', textAlign: 'center' },
+  emptyTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm },
+  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center' },
 
   privateNotesLabelRow: {
     flexDirection: 'row',
@@ -380,18 +378,18 @@ const styles = StyleSheet.create({
   },
   datePickerInput: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
+    borderColor: colors.inputBorder,
+    borderRadius: radius.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    backgroundColor: '#F8FAFC',
-    marginBottom: 14,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.inputBg,
+    marginBottom: spacing.lg,
   },
-  datePickerIcon: { marginRight: 8 },
-  datePickerText: { fontSize: 14, color: '#1E293B', flex: 1 },
-  datePickerPlaceholder: { color: '#94A3B8' },
-  label: { fontSize: 13, fontWeight: '600', color: '#475569', marginBottom: 6 },
+  datePickerIcon: { marginRight: spacing.md },
+  datePickerText: { ...typography.body, color: colors.inputText, flex: 1 },
+  datePickerPlaceholder: { color: colors.textTertiary },
+  label: { ...typography.label, color: colors.labelText, marginBottom: spacing.sm },
 });

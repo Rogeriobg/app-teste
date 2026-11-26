@@ -19,13 +19,14 @@ import {
   ChevronRight,
   AlertCircle,
 } from 'lucide-react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
-const ACCENT = '#0D9488';
-const BACKGROUND = '#F4FBF7';
-const CARD = '#FFFFFF';
-const TEXT_DARK = '#133E2B';
-const TEXT_MUTED = '#64748B';
-const BORDER = '#E2E8F0';
+const ACCENT = colors.brand;
+const BACKGROUND = colors.surface;
+const CARD = colors.card;
+const TEXT_DARK = colors.textPrimary;
+const TEXT_MUTED = colors.textSecondary;
+const BORDER = colors.border;
 
 export default function ExportPdfScreen() {
   const { patientId } = useLocalSearchParams() as { patientId: string };
@@ -53,6 +54,14 @@ export default function ExportPdfScreen() {
     }, []),
   };
 
+  /**
+   * HTML do PDF.
+   *
+   * Exceção deliberada à regra de tokenização (A2): este CSS é renderizado
+   * pelo `expo-print` num WebView — **não** é React Native. Usar os tokens de
+   * RN aqui não faria sentido (o WebView não conhece `StyleSheet`), então as
+   * cores ficam como literais aqui, espelhando a paleta do design system.
+   */
   const buildHtml = useCallback((): string => {
     const dateFormatted = new Date().toLocaleDateString('pt-BR', {
       day: '2-digit',
@@ -317,12 +326,12 @@ export default function ExportPdfScreen() {
       <SafeAreaView style={styles.container}>
         <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
           <View style={styles.emptyContainer}>
-            <AlertCircle size={48} color="#94A3B8" />
+            <AlertCircle size={48} color={colors.textTertiary} />
             <Text style={styles.emptyTitle}>Paciente não encontrado</Text>
             <Button
               variant="primary"
               onPress={handleBack}
-              iconLeft={<ChevronRight size={18} color="#FFFFFF" />}
+              iconLeft={<ChevronRight size={18} color={colors.textOnBrand} />}
             >
               Voltar
             </Button>
@@ -346,7 +355,7 @@ export default function ExportPdfScreen() {
             <View style={styles.headerContent}>
               <View style={styles.avatarWrapper}>
                 <View style={styles.avatarBadge}>
-                  <FileText size={34} color="#FFFFFF" />
+                  <FileText size={34} color={colors.textOnBrand} />
                 </View>
               </View>
               <View style={styles.headerInfo}>
@@ -367,7 +376,7 @@ export default function ExportPdfScreen() {
             total={records.length}
             segments={[
               { label: 'Ativos', count: activeRecords.length, color: ACCENT },
-              { label: 'Arquivados', count: archivedRecords.length, color: '#94A3B8' },
+              { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
             ]}
           />
 
@@ -398,7 +407,7 @@ export default function ExportPdfScreen() {
             disabled={generating || sharing}
             loading={generating || sharing}
             style={styles.exportButton}
-            iconLeft={<Download size={20} color="#FFFFFF" />}
+            iconLeft={<Download size={20} color={colors.textOnBrand} />}
             accessibilityLabel="Exportar prontuário em PDF"
           >
             {generating ? 'Gerando PDF...' : sharing ? 'Compartilhando...' : 'Exportar PDF'}
@@ -427,19 +436,19 @@ const styles = StyleSheet.create({
     backgroundColor: BACKGROUND,
   },
   scroll: {
-    padding: 16,
-    paddingBottom: 20,
+    padding: spacing.xl,
+    paddingBottom: spacing.xxl,
   },
   headerWrapper: {
-    marginBottom: 20,
+    marginBottom: spacing.xxl,
   },
   headerCard: {
     backgroundColor: CARD,
-    borderRadius: 28,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: BORDER,
-    padding: 24,
-    shadowColor: '#0F766E',
+    padding: spacing.xxl,
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
@@ -450,7 +459,7 @@ const styles = StyleSheet.create({
   },
   avatarWrapper: {
     alignItems: 'center',
-    marginBottom: 16,
+    marginBottom: spacing.xl,
   },
   avatarBadge: {
     width: 80,
@@ -460,7 +469,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 3,
-    borderColor: '#FFFFFF',
+    borderColor: colors.card,
     shadowColor: ACCENT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
@@ -471,31 +480,30 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   screenTitle: {
-    fontSize: 24,
-    fontWeight: '800',
+    ...typography.title1,
     color: TEXT_DARK,
-    marginBottom: 6,
+    marginBottom: spacing.sm,
   },
   screenSub: {
-    fontSize: 14,
+    ...typography.body,
     color: TEXT_MUTED,
     textAlign: 'center',
   },
 
   section: {
-    marginBottom: 20,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
+    ...typography.title2,
     fontSize: 17,
-    fontWeight: 'bold',
     color: TEXT_DARK,
-    marginBottom: 12,
+    marginBottom: spacing.lg,
   },
   summaryCard: {
-    borderRadius: 18,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: BORDER,
-    shadowColor: '#0F766E',
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -504,51 +512,50 @@ const styles = StyleSheet.create({
   summaryRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    gap: 8,
-    padding: 16,
+    gap: spacing.md,
+    padding: spacing.xl,
   },
   summaryBox: {
     flex: 1,
-    borderRadius: 16,
-    padding: 14,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
     backgroundColor: CARD,
     borderWidth: 1,
     borderColor: BORDER,
     alignItems: 'center',
-    shadowColor: '#0F766E',
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
     shadowRadius: 6,
     elevation: 1,
   },
   summaryTotal: {
-    borderColor: '#2563EB',
-    backgroundColor: '#EFF6FF',
+    borderColor: colors.infoBorder,
+    backgroundColor: colors.infoSoft,
   },
   summaryActive: {
-    borderColor: ACCENT,
-    backgroundColor: '#E6F4ED',
+    borderColor: colors.brandBorder,
+    backgroundColor: colors.brandSoft,
   },
   summaryArchived: {
-    borderColor: '#94A3B8',
-    backgroundColor: '#F3F4F6',
+    borderColor: colors.mutedBorder,
+    backgroundColor: colors.mutedSoft,
   },
   summaryNum: {
+    ...typography.title2,
     fontSize: 20,
-    fontWeight: '800',
     color: TEXT_DARK,
-    marginBottom: 2,
+    marginBottom: spacing.xxs,
   },
   summaryLabel: {
-    fontSize: 11,
+    ...typography.caption,
     color: TEXT_MUTED,
-    fontWeight: '600',
   },
   infoCard: {
-    borderRadius: 18,
+    borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: BORDER,
-    shadowColor: '#0F766E',
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.04,
     shadowRadius: 6,
@@ -557,32 +564,31 @@ const styles = StyleSheet.create({
   infoRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingVertical: 12,
+    paddingVertical: spacing.lg,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: colors.dividerSoft,
   },
   infoLabel: {
-    fontSize: 13,
-    fontWeight: '600',
+    ...typography.label,
     color: TEXT_MUTED,
   },
   infoValue: {
-    fontSize: 14,
+    ...typography.body,
     color: TEXT_DARK,
     fontWeight: '500',
   },
   divider: {
     height: 1,
-    backgroundColor: '#F1F5F9',
-    marginVertical: 4,
+    backgroundColor: colors.dividerSoft,
+    marginVertical: spacing.xs,
   },
   actionsSection: {
-    marginBottom: 24,
+    marginBottom: spacing.xxl,
   },
   exportButton: {
     backgroundColor: ACCENT,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.xl,
     shadowColor: ACCENT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -592,24 +598,24 @@ const styles = StyleSheet.create({
   backButton: {
     borderWidth: 1,
     borderColor: ACCENT,
-    borderRadius: 14,
-    paddingVertical: 14,
-    marginTop: 10,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    marginTop: spacing.lg,
   },
   bottomSpacer: {
-    height: 16,
+    height: spacing.xl,
   },
   emptyContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 40,
+    padding: spacing.xxxl,
   },
   emptyTitle: {
+    ...typography.headline,
     fontSize: 18,
-    fontWeight: 'bold',
     color: TEXT_DARK,
-    marginTop: 16,
-    marginBottom: 6,
+    marginTop: spacing.xl,
+    marginBottom: spacing.sm,
   },
 });

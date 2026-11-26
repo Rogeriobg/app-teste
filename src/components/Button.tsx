@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, View, ViewStyle, TextStyle } from 'react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
 
@@ -29,11 +30,11 @@ export interface ButtonProps {
 }
 
 const VARIANT_STYLES: Record<ButtonVariant, { bg: string; border: string; color: string }> = {
-  primary: { bg: '#0D9488', border: '#0D9488', color: '#FFFFFF' },
-  secondary: { bg: '#FFFFFF', border: '#E2E8F0', color: '#133E2B' },
-  outline: { bg: 'transparent', border: '#0D9488', color: '#0D9488' },
-  danger: { bg: '#FEE2E2', border: '#FECACA', color: '#EF4444' },
-  ghost: { bg: 'transparent', border: 'transparent', color: '#64748B' },
+  primary: { bg: colors.brand, border: colors.brand, color: colors.textOnBrand },
+  secondary: { bg: colors.card, border: colors.border, color: colors.textPrimary },
+  outline: { bg: 'transparent', border: colors.brand, color: colors.brand },
+  danger: { bg: colors.dangerSoft, border: colors.dangerBorder, color: colors.danger },
+  ghost: { bg: 'transparent', border: 'transparent', color: colors.textSecondary },
 };
 
 export function Button({
@@ -63,7 +64,7 @@ export function Button({
       accessibilityState={{ disabled: isDisabled }}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={color === '#FFFFFF' ? '#FFFFFF' : '#0D9488'} style={styles.spinner} />
+        <ActivityIndicator size="small" color={color === colors.textOnBrand ? colors.textOnBrand : colors.brand} style={styles.spinner} />
       ) : (
         <>
           {iconLeft && <View style={styles.iconWrapper}>{iconLeft}</View>}
@@ -88,17 +89,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
-    borderRadius: 12,
-    paddingVertical: 12,
-    paddingHorizontal: 16,
+    gap: spacing.md,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    paddingHorizontal: spacing.xl,
     minHeight: 48,
   },
   disabled: {
     opacity: 0.5,
   },
   text: {
-    fontSize: 14,
+    ...typography.body,
     fontWeight: '700',
     textAlign: 'center',
     flex: 1,
@@ -107,6 +108,6 @@ const styles = StyleSheet.create({
     // permite que ícones lucide ocupem o espaço correto
   },
   spinner: {
-    marginLeft: -4,
+    marginLeft: -spacing.xs,
   },
 });

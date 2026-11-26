@@ -77,6 +77,37 @@ export const colors = {
   info: '#2563EB',
   infoSoft: '#EFF6FF',
   infoBorder: '#DBEAFE',
+
+  /* --- Tokens adicionados na etapa 3 (A2: tokenização) -------------------
+   * Cobrem as cores que o app usava como hex literal e que ainda não
+   * tinham lugar no design system: campos de formulário, texto sobre
+   * fundo de marca, superfície neutra, overlay de modal e tom de conteúdo.
+   * ------------------------------------------------------------------- */
+
+  /** Fundo de campo de formulário */
+  inputBg: '#F8FAFC',
+  /** Borda de campo de formulário */
+  inputBorder: '#CBD5E1',
+  /** Texto digitado em campo de formulário */
+  inputText: '#1E293B',
+  /** Rótulo de campo de formulário */
+  labelText: '#475569',
+  /** Texto sobre fundo de marca (teal) */
+  textOnBrand: '#FFFFFF',
+  /** Texto sobre fundo destrutivo */
+  textOnDanger: '#FFFFFF',
+  /** Superfície neutra (botão secundário, separador interno) */
+  mutedSurface: '#F1F5F9',
+  /** Overlay escurecido atrás do modal */
+  overlay: 'rgba(0,0,0,0.45)',
+  /** Sombra neutra (modal) */
+  shadowNeutral: '#000000',
+  /** Corpo de texto dentro de card */
+  contentMuted: '#374151',
+  /** Divisória interna suave */
+  dividerSoft: '#F1F5F9',
+  /** Cinza de conteúdo secundário em card (ex.: "Sessão de Acompanhamento") */
+  contentSecondary: '#6B7280',
 } as const;
 
 /** Sombra de card — BoardUI: `--shadow-card: 0 1px 1px 0 rgb(0 0 0 / 0.05)` */

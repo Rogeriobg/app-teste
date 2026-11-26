@@ -146,7 +146,7 @@ describe('Telas', () => {
 
       await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
 
-      await fireEvent.changeText(screen.getByPlaceholderText('Nome ou e-mail...'), 'João');
+      await fireEvent.changeText(screen.getByPlaceholderText('Nome, e-mail ou telefone...'), 'João');
 
       await waitFor(() => {
         expect(screen.queryByText('Maria Oliveira')).toBeNull();
@@ -160,7 +160,7 @@ describe('Telas', () => {
       await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
 
       await fireEvent.changeText(
-        screen.getByPlaceholderText('Nome ou e-mail...'),
+        screen.getByPlaceholderText('Nome, e-mail ou telefone...'),
         'maria.oliveira@email.com'
       );
 

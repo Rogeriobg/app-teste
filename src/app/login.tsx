@@ -12,6 +12,7 @@ import {
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { Mail, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export default function LoginScreen() {
   const { login } = useApp();
@@ -44,10 +45,10 @@ export default function LoginScreen() {
         {/* Hero Section */}
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
-            <Sparkles size={16} color="#0D9488" />
+            <Sparkles size={16} color={colors.brand} />
             <Text style={styles.badgeText}>PsiApp • Consultório Pessoal</Text>
           </View>
-          <ShieldCheck size={32} color="#0D9488" style={styles.heroIcon} />
+          <ShieldCheck size={32} color={colors.brand} style={styles.heroIcon} />
           <Text style={styles.title}>Consultório Psicológico</Text>
           <Text style={styles.subtitle}>Cadastro, prontuário e relatórios dos seus pacientes.</Text>
         </View>
@@ -58,13 +59,13 @@ export default function LoginScreen() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <View style={styles.inputWrapper}>
-            <Mail size={18} color="#94A3B8" style={styles.inputIcon} />
+            <Mail size={18} color={colors.textTertiary} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={email}
               onChangeText={setEmail}
               placeholder="E-mail do psicólogo"
-              placeholderTextColor="#94A3B8"
+              placeholderTextColor={colors.textTertiary}
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
@@ -82,7 +83,7 @@ export default function LoginScreen() {
             ) : (
               <>
                 <Text style={styles.primaryButtonText}>Entrar no Consultório</Text>
-                <ArrowRight size={18} color="#FFFFFF" />
+                <ArrowRight size={18} color={colors.textOnBrand} />
               </>
             )}
           </TouchableOpacity>
@@ -93,65 +94,65 @@ export default function LoginScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4FBF7' },
-  scroll: { padding: 20, paddingTop: 40, paddingBottom: 40 },
+  container: { flex: 1, backgroundColor: colors.surface },
+  scroll: { padding: spacing.xxl, paddingTop: spacing.xxl, paddingBottom: spacing.xxl },
   heroCard: {
-    backgroundColor: '#E6F4ED',
-    borderRadius: 28,
-    padding: 30,
-    marginBottom: 24,
+    backgroundColor: colors.brandSoft,
+    borderRadius: radius.xxl,
+    padding: spacing.xxxl,
+    marginBottom: spacing.xxl,
     borderWidth: 1,
-    borderColor: '#D1EFE2',
+    borderColor: colors.brandBorder,
     alignItems: 'center',
   },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 14, gap: 8 },
-  badgeText: { color: '#0F766E', fontWeight: '700', fontSize: 13 },
-  heroIcon: { marginBottom: 12 },
-  title: { fontSize: 26, fontWeight: '800', color: '#133E2B', marginBottom: 8, letterSpacing: -0.3, textAlign: 'center' },
-  subtitle: { fontSize: 14, color: '#4A6B5D', lineHeight: 20, textAlign: 'center' },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg, gap: spacing.md },
+  badgeText: { ...typography.body, color: colors.brand, fontWeight: '700' },
+  heroIcon: { marginBottom: spacing.lg },
+  title: { ...typography.title1, fontSize: 26, color: colors.textPrimary, marginBottom: spacing.md, letterSpacing: -0.3, textAlign: 'center' },
+  subtitle: { ...typography.body, color: colors.textSecondary, lineHeight: 20, textAlign: 'center' },
 
   formCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 24,
+    backgroundColor: colors.card,
+    borderRadius: radius.xxl,
+    padding: spacing.xxl,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F766E',
+    borderColor: colors.border,
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 3,
   },
-  formTitle: { fontSize: 18, fontWeight: 'bold', color: '#133E2B', marginBottom: 16 },
-  errorText: { color: '#EF4444', marginBottom: 12, fontSize: 13, fontWeight: '500' },
+  formTitle: { ...typography.title2, fontSize: 18, color: colors.textPrimary, marginBottom: spacing.xl },
+  errorText: { ...typography.body, color: colors.danger, marginBottom: spacing.lg },
 
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F8FAFC',
+    backgroundColor: colors.inputBg,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
-    paddingHorizontal: 14,
-    marginBottom: 20,
+    borderColor: colors.inputBorder,
+    borderRadius: radius.lg,
+    paddingHorizontal: spacing.lg,
+    marginBottom: spacing.xxl,
   },
-  inputIcon: { marginRight: 10 },
-  input: { flex: 1, paddingVertical: 12, fontSize: 14, color: '#1E293B' },
+  inputIcon: { marginRight: spacing.lg },
+  input: { flex: 1, paddingVertical: spacing.lg, ...typography.body, color: colors.inputText },
 
   primaryButton: {
-    backgroundColor: '#0D9488',
-    borderRadius: 12,
-    paddingVertical: 14,
+    backgroundColor: colors.brand,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    gap: 8,
-    shadowColor: '#0D9488',
+    gap: spacing.md,
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
     shadowRadius: 8,
     elevation: 4,
   },
   loadingButton: { opacity: 0.7 },
-  primaryButtonText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 15 },
+  primaryButtonText: { ...typography.body, color: colors.textOnBrand, fontWeight: 'bold', fontSize: 15 },
 });

@@ -22,14 +22,15 @@ import {
   Download,
   LogOut,
 } from 'lucide-react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
-const ACCENT = '#0D9488';
-const BACKGROUND = '#F4FBF7';
-const CARD = '#FFFFFF';
-const TEXT_DARK = '#133E2B';
-const TEXT_MUTED = '#64748B';
-const BORDER = '#E2E8F0';
-const DANGER = '#EF4444';
+const ACCENT = colors.brand;
+const BACKGROUND = colors.surface;
+const CARD = colors.card;
+const TEXT_DARK = colors.textPrimary;
+const TEXT_MUTED = colors.textSecondary;
+const BORDER = colors.border;
+const DANGER = colors.danger;
 
 export default function ProfileScreen() {
   const { currentUser, updateUser, exportData, logout, db } = useApp();
@@ -136,7 +137,7 @@ export default function ProfileScreen() {
           <View style={styles.headerContent}>
             <View style={styles.avatarWrapper}>
               <View style={styles.avatarBadge}>
-                <ShieldCheck size={26} color="#FFFFFF" />
+                <ShieldCheck size={26} color={colors.textOnBrand} />
               </View>
             </View>
             <View style={styles.headerInfo}>
@@ -147,7 +148,7 @@ export default function ProfileScreen() {
                 {currentUser?.role ?? 'psicologo'}
               </Text>
               <View style={styles.headerContact}>
-                <Mail size={14} color="#94A3B8" />
+                <Mail size={14} color={colors.textTertiary} />
                 <Text style={styles.headerEmail}>
                   {currentUser?.email ?? ''}
                 </Text>
@@ -189,7 +190,7 @@ export default function ProfileScreen() {
             disabled={!hasChanges || saving}
             loading={saving}
             style={styles.saveButton}
-            iconLeft={<Save size={18} color="#FFFFFF" />}
+            iconLeft={<Save size={18} color={colors.textOnBrand} />}
             accessibilityLabel="Salvar alterações dos dados do psicólogo"
           >
             {saving ? 'Salvando...' : hasChanges ? 'Salvar alterações' : 'Sem alterações'}
@@ -222,7 +223,7 @@ export default function ProfileScreen() {
             variant="danger"
             onPress={handleLogout}
             style={styles.logoutButton}
-            iconLeft={<LogOut size={18} color="#FFFFFF" />}
+            iconLeft={<LogOut size={18} color={colors.textOnDanger} />}
             accessibilityLabel="Sair da conta"
           >
             Sair do consultório
@@ -241,27 +242,27 @@ const styles = StyleSheet.create({
     backgroundColor: BACKGROUND,
   },
   scroll: {
-    padding: 16,
+    padding: spacing.xl,
     paddingBottom: 90,
   },
   headerCard: {
     backgroundColor: CARD,
-    borderRadius: 24,
+    borderRadius: radius.xxl,
     borderWidth: 1,
     borderColor: BORDER,
-    marginBottom: 20,
-    shadowColor: '#0F766E',
+    marginBottom: spacing.xxl,
+    shadowColor: colors.brand,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
     elevation: 3,
   },
   headerContent: {
-    padding: 24,
+    padding: spacing.xxl,
     alignItems: 'center',
   },
   avatarWrapper: {
-    marginBottom: 14,
+    marginBottom: spacing.lg,
   },
   avatarBadge: {
     width: 64,
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: colors.card,
     shadowColor: ACCENT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
@@ -282,58 +283,57 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headerName: {
+    ...typography.title2,
     fontSize: 20,
-    fontWeight: '800',
     color: TEXT_DARK,
-    marginBottom: 4,
+    marginBottom: spacing.xs,
   },
   headerRole: {
-    fontSize: 12,
-    fontWeight: '700',
+    ...typography.caption,
     color: ACCENT,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
-    marginBottom: 8,
+    marginBottom: spacing.md,
   },
   headerContact: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    backgroundColor: '#E6F4ED',
-    paddingHorizontal: 10,
-    paddingVertical: 6,
-    borderRadius: 10,
+    gap: spacing.sm,
+    backgroundColor: colors.brandSoft,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#D1EFE2',
+    borderColor: colors.brandBorder,
   },
   headerEmail: {
+    ...typography.bodyRegular,
     fontSize: 13,
     color: TEXT_MUTED,
   },
 
   section: {
-    marginBottom: 20,
+    marginBottom: spacing.xxl,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
+    ...typography.headline,
     color: TEXT_DARK,
-    marginBottom: 6,
-    marginLeft: 2,
+    marginBottom: spacing.sm,
+    marginLeft: spacing.xxs,
   },
   sectionSub: {
-    fontSize: 13,
+    ...typography.bodyRegular,
     color: TEXT_MUTED,
-    marginBottom: 16,
-    marginLeft: 2,
+    marginBottom: spacing.xl,
+    marginLeft: spacing.xxs,
     lineHeight: 18,
   },
 
   saveButton: {
     backgroundColor: ACCENT,
-    borderRadius: 14,
-    paddingVertical: 16,
-    marginTop: 4,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.xl,
+    marginTop: spacing.xs,
     shadowColor: ACCENT,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.2,
@@ -343,18 +343,18 @@ const styles = StyleSheet.create({
   exportButton: {
     borderWidth: 1,
     borderColor: ACCENT,
-    borderRadius: 14,
-    paddingVertical: 14,
-    marginTop: 4,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.lg,
+    marginTop: spacing.xs,
   },
 
   logoutSection: {
-    marginBottom: 24,
+    marginBottom: spacing.xxl,
   },
   logoutButton: {
     backgroundColor: DANGER,
-    borderRadius: 14,
-    paddingVertical: 16,
+    borderRadius: radius.lg,
+    paddingVertical: spacing.xl,
     shadowColor: DANGER,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.15,
@@ -362,6 +362,6 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   bottomSpacer: {
-    height: 16,
+    height: spacing.xl,
   },
 });

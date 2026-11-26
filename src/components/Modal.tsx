@@ -10,6 +10,7 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export interface ModalProps {
   /** Visibilidade do modal */
@@ -108,9 +109,9 @@ export function AppModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.45)',
+    backgroundColor: colors.overlay,
     justifyContent: 'center',
-    padding: 20,
+    padding: spacing.xxl,
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
@@ -119,10 +120,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 22,
-    shadowColor: '#000',
+    backgroundColor: colors.card,
+    borderRadius: radius.xxl,
+    padding: spacing.xxl,
+    shadowColor: colors.shadowNeutral,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -130,43 +131,42 @@ const styles = StyleSheet.create({
     maxHeight: '85%',
   },
   header: {
-    marginBottom: 18,
+    marginBottom: spacing.lg,
     alignItems: 'center',
   },
   title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#133E2B',
+    ...typography.title2,
+    color: colors.textPrimary,
     textAlign: 'center',
   },
   actions: {
     flexDirection: 'row',
-    gap: 10,
-    marginTop: 6,
+    gap: spacing.lg,
+    marginTop: spacing.sm,
   },
   btn: {
     flex: 1,
-    paddingVertical: 12,
-    borderRadius: 12,
+    paddingVertical: spacing.lg,
+    borderRadius: radius.lg,
     alignItems: 'center',
   },
   btnCancel: {
-    backgroundColor: '#F1F5F9',
+    backgroundColor: colors.mutedSurface,
   },
   btnConfirm: {
-    backgroundColor: '#0D9488',
+    backgroundColor: colors.brand,
   },
   btnDisabled: {
     opacity: 0.6,
   },
   btnTextCancel: {
-    color: '#64748B',
+    ...typography.body,
     fontWeight: 'bold',
-    fontSize: 14,
+    color: colors.textSecondary,
   },
   btnTextConfirm: {
-    color: '#FFFFFF',
+    ...typography.body,
     fontWeight: 'bold',
-    fontSize: 14,
+    color: colors.textOnBrand,
   },
 });

@@ -24,6 +24,7 @@ import {
   Calendar,
 } from 'lucide-react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
 
 const tabs = [
   { key: 'todos' as const, label: 'Todos' },
@@ -182,7 +183,7 @@ export default function PatientsScreen() {
         <Button
           variant="primary"
           onPress={handleOpenAdd}
-          iconLeft={<Plus size={18} color="#FFFFFF" />}
+          iconLeft={<Plus size={18} color={colors.textOnBrand} />}
           accessibilityLabel="Cadastrar novo paciente"
         >
           Novo Paciente
@@ -207,18 +208,18 @@ export default function PatientsScreen() {
       <View style={styles.searchContainer}>
         <Input
           label="Buscar paciente"
-          placeholder="Nome ou e-mail..."
-          placeholderTextColor="#94A3B8"
+          placeholder="Nome, e-mail ou telefone..."
+          placeholderTextColor={colors.textTertiary}
           value={searchQuery}
           onChangeText={setSearchQuery}
-          accessibilityLabel="Buscar paciente por nome ou e-mail"
+          accessibilityLabel="Buscar paciente por nome, e-mail ou telefone"
         />
       </View>
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {filteredPatients.length === 0 ? (
           <Card style={styles.emptyCard} elevated>
-            <Archive size={36} color="#94A3B8" />
+            <Archive size={36} color={colors.textTertiary} />
             <Text style={styles.emptyTitle}>Nenhum paciente neste filtro</Text>
             {activeTab === 'todos' ? (
               <Text style={styles.emptySub}>Toque em &quot;Novo Paciente&quot; para cadastrar seu primeiro atendimento.</Text>
@@ -237,10 +238,10 @@ export default function PatientsScreen() {
               {/* Linha 2: Avatar | Email */}
               <View style={styles.rowEmail}>
                 <View style={styles.avatarCircle}>
-                  <Users size={22} color="#0D9488" />
+                  <Users size={22} color={colors.brand} />
                 </View>
                 <View style={styles.rowEmailTextContainer}>
-                  <Mail size={14} color="#94A3B8" />
+                  <Mail size={14} color={colors.textTertiary} />
                   <Text style={styles.rowEmailText} numberOfLines={1} ellipsizeMode="tail">
                     {p.email}
                   </Text>
@@ -249,7 +250,7 @@ export default function PatientsScreen() {
 
               {/* Linha 3: Ícone telefone | Número */}
               <View style={styles.rowPhone}>
-                <Phone size={14} color="#94A3B8" />
+                <Phone size={14} color={colors.textTertiary} />
                 <Text style={styles.rowPhoneText} numberOfLines={1} ellipsizeMode="tail">
                   {p.phone}
                 </Text>
@@ -264,7 +265,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Editar paciente ${p.name}`}
                 >
-                  <Edit2 size={16} color="#2563EB" />
+                  <Edit2 size={16} color={colors.info} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
@@ -274,9 +275,9 @@ export default function PatientsScreen() {
                   accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
                 >
                   {p.status === 'Ativo' ? (
-                    <Pause size={16} color="#F59E0B" />
+                    <Pause size={16} color={colors.warning} />
                   ) : (
-                    <CheckCircle2 size={16} color="#0D9488" />
+                    <CheckCircle2 size={16} color={colors.success} />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -286,7 +287,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
                 >
-                  <Archive size={16} color="#6B7280" />
+                  <Archive size={16} color={colors.contentSecondary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.iconBtn}
@@ -295,7 +296,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
                 >
-                  <FileText size={16} color="#0D9488" />
+                  <FileText size={16} color={colors.brand} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.iconBtn, styles.btnDelete]}
@@ -304,7 +305,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Excluir paciente ${p.name}`}
                 >
-                  <Trash2 size={16} color="#EF4444" />
+                  <Trash2 size={16} color={colors.danger} />
                 </TouchableOpacity>
               </View>
             </Card>
@@ -324,7 +325,7 @@ export default function PatientsScreen() {
         <Input
           label="Nome Completo"
           placeholder="Ex: Maria Oliveira"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={name}
           onChangeText={setName}
           accessibilityLabel="Nome completo do paciente"
@@ -333,7 +334,7 @@ export default function PatientsScreen() {
         <Input
           label="E-mail"
           placeholder="Ex: maria@email.com"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           keyboardType="email-address"
           autoCapitalize="none"
           value={email}
@@ -344,7 +345,7 @@ export default function PatientsScreen() {
         <Input
           label="Telefone"
           placeholder="Ex: (11) 98888-7777"
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={phone}
           onChangeText={setPhone}
           accessibilityLabel="Telefone do paciente"
@@ -356,7 +357,7 @@ export default function PatientsScreen() {
           activeOpacity={0.8}
           accessibilityLabel="Selecionar data de nascimento"
         >
-          <Calendar size={18} color="#94A3B8" style={styles.datePickerIcon} />
+          <Calendar size={18} color={colors.textTertiary} style={styles.datePickerIcon} />
           <Text style={[styles.datePickerText, !birthDate && styles.datePickerPlaceholder]}>
             {birthDate || 'AAAA-MM-DD'}
           </Text>
@@ -376,7 +377,7 @@ export default function PatientsScreen() {
         <Input
           label="Anamnese (resumo inicial)"
           placeholder="Queixa principal, histórico, observações..."
-          placeholderTextColor="#94A3B8"
+          placeholderTextColor={colors.textTertiary}
           value={anamnesis}
           onChangeText={setAnamnesis}
           multiline
@@ -389,77 +390,69 @@ export default function PatientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#F4FBF7' },
+  container: { flex: 1, backgroundColor: colors.surface },
   header: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: colors.card,
     paddingTop: 52,
-    paddingHorizontal: 20,
-    paddingBottom: 16,
+    paddingHorizontal: spacing.xxl,
+    paddingBottom: spacing.xl,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.03,
-    shadowRadius: 6,
-    elevation: 2,
+    borderColor: colors.border,
+    ...shadowCard,
   },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#133E2B' },
-  headerSubtitle: { fontSize: 12, color: '#0D9488', fontWeight: '600', marginTop: 2 },
+  headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
+  headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
 
-  tabsContainer: { flexDirection: 'row', margin: 16, gap: 8 },
-  searchContainer: { marginHorizontal: 16, marginBottom: 12 },
+  tabsContainer: { flexDirection: 'row', margin: spacing.xl, gap: spacing.md },
+  searchContainer: { marginHorizontal: spacing.xl, marginBottom: spacing.lg },
   datePickerInput: {
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    borderRadius: 12,
+    borderColor: colors.inputBorder,
+    borderRadius: radius.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingHorizontal: 12,
-    paddingVertical: 11,
-    backgroundColor: '#F8FAFC',
-    marginBottom: 14,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.lg,
+    backgroundColor: colors.inputBg,
+    marginBottom: spacing.lg,
   },
-  datePickerIcon: { marginRight: 8 },
-  datePickerText: { fontSize: 14, color: '#1E293B', flex: 1 },
-  datePickerPlaceholder: { color: '#94A3B8' },
+  datePickerIcon: { marginRight: spacing.md },
+  datePickerText: { ...typography.body, color: colors.inputText, flex: 1 },
+  datePickerPlaceholder: { color: colors.textTertiary },
   datePickerWrapper: { height: 200 },
   tabBtn: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 10,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: '#CBD5E1',
-    backgroundColor: '#FFFFFF',
+    borderColor: colors.inputBorder,
+    backgroundColor: colors.card,
   },
-  tabActive: { backgroundColor: '#E6F4ED', borderColor: '#0D9488' },
-  tabText: { fontSize: 12, fontWeight: '600', color: '#64748B' },
-  tabTextActive: { color: '#0D9488', fontWeight: '700' },
+  tabActive: { backgroundColor: colors.brandSoft, borderColor: colors.brand },
+  tabText: { ...typography.label, color: colors.textSecondary },
+  tabTextActive: { color: colors.brand, fontWeight: '700' },
 
-  scroll: { padding: 16, paddingBottom: 20 },
+  scroll: { padding: spacing.xl, paddingBottom: spacing.xxl },
   emptyCard: {
-    padding: 40,
-    borderRadius: 24,
+    padding: spacing.xxxl,
+    borderRadius: radius.xxl,
     alignItems: 'center',
-    marginHorizontal: 16,
+    marginHorizontal: spacing.xl,
   },
-  emptyTitle: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginTop: 12, marginBottom: 6 },
-  emptySub: { fontSize: 13, color: '#64748B', textAlign: 'center' },
+  emptyTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm },
+  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center' },
 
   patientCard: {
-    marginBottom: 14,
-    borderRadius: 16,
+    marginBottom: spacing.lg,
+    borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    borderColor: colors.border,
+    backgroundColor: colors.card,
+    ...shadowCard,
     overflow: 'hidden',
   },
   /* Linha 1: Apenas o nome */
@@ -467,14 +460,14 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingTop: 10,
-    paddingBottom: 6,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.lg,
+    paddingBottom: spacing.sm,
   },
   rowNameText: {
+    ...typography.title2,
     fontSize: 17,
-    fontWeight: 'bold',
-    color: '#133E2B',
+    color: colors.textPrimary,
     flex: 1,
     minWidth: 0,
   },
@@ -482,32 +475,32 @@ const styles = StyleSheet.create({
   rowEmail: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: colors.dividerSoft,
   },
   avatarCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: '#E6F4ED',
+    backgroundColor: colors.brandSoft,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#D1EFE2',
+    borderColor: colors.brandBorder,
     flexShrink: 0,
-    marginRight: 10,
+    marginRight: spacing.lg,
   },
   rowEmailTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: spacing.sm,
     flexShrink: 1,
   },
   rowEmailText: {
-    fontSize: 14,
-    color: '#1E293B',
+    ...typography.body,
+    color: colors.inputText,
     flex: 1,
     minWidth: 0,
   },
@@ -515,27 +508,27 @@ const styles = StyleSheet.create({
   rowPhone: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 12,
-    paddingVertical: 8,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    borderBottomColor: colors.dividerSoft,
   },
   rowPhoneText: {
-    fontSize: 14,
-    color: '#1E293B',
+    ...typography.body,
+    color: colors.inputText,
     flex: 1,
     minWidth: 0,
   },
   /* Linha 4: Ícones de ação */
   rowActions: {
     flexDirection: 'row',
-    gap: 6,
+    gap: spacing.sm,
     alignItems: 'center',
-    padding: 10,
+    padding: spacing.lg,
   },
-  iconBtn: { padding: 8, borderRadius: 10, backgroundColor: '#F8FAFC' },
-  btnToggleActive: { backgroundColor: '#FEF3C7' },
-  btnToggleInactive: { backgroundColor: '#D1FAE5' },
-  btnArchive: { backgroundColor: '#E5E7EB' },
-  btnDelete: { backgroundColor: '#FEE2E2' },
+  iconBtn: { padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.cardInner },
+  btnToggleActive: { backgroundColor: colors.warningSoft },
+  btnToggleInactive: { backgroundColor: colors.successSoft },
+  btnArchive: { backgroundColor: colors.mutedSoft },
+  btnDelete: { backgroundColor: colors.dangerSoft },
 });

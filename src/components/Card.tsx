@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
+import { colors, radius, spacing, shadowCard } from '@/theme/tokens';
 
 export interface CardProps {
   /** Conteúdo do card */
@@ -20,9 +21,9 @@ export function Card({
   children,
   style,
   elevated = true,
-  borderRadius = 16,
-  padding = 18,
-  backgroundColor = '#FFFFFF',
+  borderRadius = radius.xl,
+  padding = spacing.xl,
+  backgroundColor = colors.card,
 }: CardProps) {
   return (
     <View
@@ -41,13 +42,9 @@ export function Card({
 const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
-    borderColor: '#E2E8F0',
+    borderColor: colors.border,
   },
   elevated: {
-    shadowColor: '#0F766E',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
+    ...shadowCard,
   },
 });
