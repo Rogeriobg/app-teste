@@ -232,7 +232,7 @@ export default function PatientsScreen() {
                   <Users size={22} color="#0D9488" />
                 </View>
                 <View style={styles.patientTexts}>
-                  <Text style={styles.patientName}>{p.name}</Text>
+                  <Text style={styles.patientName} numberOfLines={2}>{p.name}</Text>
                   <View style={styles.patientMetaRow}>
                     <Mail size={12} color="#94A3B8" />
                     <Text style={styles.patientMeta}>{p.email}</Text>
@@ -246,13 +246,21 @@ export default function PatientsScreen() {
               </View>
 
               <View style={styles.patientActions}>
-                <TouchableOpacity style={styles.iconBtn} onPress={() => handleOpenEdit(p)} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={styles.iconBtn}
+                  onPress={() => handleOpenEdit(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Editar paciente ${p.name}`}
+                >
                   <Edit2 size={16} color="#2563EB" />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
                   onPress={() => handleToggleStatus(p)}
                   activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
                 >
                   {p.status === 'Ativo' ? (
                     <Pause size={16} color="#F59E0B" />
@@ -264,6 +272,8 @@ export default function PatientsScreen() {
                   style={[styles.iconBtn, styles.btnArchive]}
                   onPress={() => handleArchive(p)}
                   activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
                 >
                   <Archive size={16} color="#6B7280" />
                 </TouchableOpacity>
@@ -271,11 +281,18 @@ export default function PatientsScreen() {
                   style={styles.iconBtn}
                   onPress={() => router.push(`/patients/${p.id}/details`)}
                   activeOpacity={0.8}
-                  accessibilityLabel="Ver detalhes do paciente"
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
                 >
                   <FileText size={16} color="#0D9488" />
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.iconBtn, styles.btnDelete]} onPress={() => handleDelete(p)} activeOpacity={0.8}>
+                <TouchableOpacity
+                  style={[styles.iconBtn, styles.btnDelete]}
+                  onPress={() => handleDelete(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Excluir paciente ${p.name}`}
+                >
                   <Trash2 size={16} color="#EF4444" />
                 </TouchableOpacity>
               </View>
@@ -424,26 +441,28 @@ const styles = StyleSheet.create({
   patientCard: {
     marginBottom: 14,
     flexDirection: 'row',
+    flexWrap: 'wrap',
     justifyContent: 'space-between',
     alignItems: 'center',
+    gap: 10,
   },
-  patientInfo: { flex: 1, flexDirection: 'row', alignItems: 'center', gap: 14 },
+  patientInfo: { flex: 1, minWidth: 0, flexDirection: 'row', alignItems: 'center', gap: 10 },
   avatarCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 26,
+    width: 48,
+    height: 48,
+    borderRadius: 24,
     backgroundColor: '#E6F4ED',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#D1EFE2',
   },
-  patientTexts: { flex: 1 },
-  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', marginBottom: 4 },
-  patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 },
+  patientTexts: { flex: 1, minWidth: 0 },
+  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B' },
+  patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' },
   patientMeta: { fontSize: 12, color: '#64748B' },
 
-  patientActions: { flexDirection: 'row', gap: 8, alignItems: 'center' },
+  patientActions: { flexDirection: 'row', gap: 6, alignItems: 'center', flexWrap: 'wrap' },
   iconBtn: { padding: 8, borderRadius: 10, backgroundColor: '#F8FAFC' },
   btnToggleActive: { backgroundColor: '#FEF3C7' },
   btnToggleInactive: { backgroundColor: '#D1FAE5' },
