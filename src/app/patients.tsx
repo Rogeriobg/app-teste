@@ -227,74 +227,86 @@ export default function PatientsScreen() {
         ) : (
           filteredPatients.map((p: Patient) => (
             <Card key={p.id} style={styles.patientCard} elevated>
-              <View style={styles.patientInfo}>
+              {/* Linha superior: Nome | Status | Ícones */}
+              <View style={styles.rowTop}>
+                <View style={styles.rowTopLeft}>
+                  <Text style={styles.rowTopName} numberOfLines={1} ellipsizeMode="tail">
+                    {p.name}
+                  </Text>
+                  <StatusBadge status={p.status} small />
+                </View>
+                <View style={styles.rowTopActions}>
+                  <TouchableOpacity
+                    style={styles.iconBtn}
+                    onPress={() => handleOpenEdit(p)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Editar paciente ${p.name}`}
+                  >
+                    <Edit2 size={16} color="#2563EB" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
+                    onPress={() => handleToggleStatus(p)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
+                  >
+                    {p.status === 'Ativo' ? (
+                      <Pause size={16} color="#F59E0B" />
+                    ) : (
+                      <CheckCircle2 size={16} color="#0D9488" />
+                    )}
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.iconBtn, styles.btnArchive]}
+                    onPress={() => handleArchive(p)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
+                  >
+                    <Archive size={16} color="#6B7280" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={styles.iconBtn}
+                    onPress={() => router.push(`/patients/${p.id}/details`)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
+                  >
+                    <FileText size={16} color="#0D9488" />
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[styles.iconBtn, styles.btnDelete]}
+                    onPress={() => handleDelete(p)}
+                    activeOpacity={0.8}
+                    accessibilityRole="button"
+                    accessibilityLabel={`Excluir paciente ${p.name}`}
+                  >
+                    <Trash2 size={16} color="#EF4444" />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              {/* Linha do meio: Avatar | Email */}
+              <View style={styles.rowMiddle}>
                 <View style={styles.avatarCircle}>
                   <Users size={22} color="#0D9488" />
                 </View>
-                <View style={styles.patientTexts}>
-                  <Text style={styles.patientName} numberOfLines={1} ellipsizeMode="tail">{p.name}</Text>
-                  <View style={styles.patientMetaRow}>
-                    <Mail size={12} color="#94A3B8" />
-                    <Text style={styles.patientMeta} numberOfLines={1} ellipsizeMode="tail">{p.email}</Text>
-                  </View>
-                  <View style={styles.patientMetaRow}>
-                    <Phone size={12} color="#94A3B8" />
-                    <Text style={styles.patientMeta} numberOfLines={1} ellipsizeMode="tail">{p.phone}</Text>
-                  </View>
+                <View style={styles.rowMiddleEmail}>
+                  <Mail size={14} color="#94A3B8" />
+                  <Text style={styles.rowMiddleText} numberOfLines={1} ellipsizeMode="tail">
+                    {p.email}
+                  </Text>
                 </View>
-                <StatusBadge status={p.status} small />
               </View>
 
-              <View style={styles.patientActions}>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => handleOpenEdit(p)}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Editar paciente ${p.name}`}
-                >
-                  <Edit2 size={16} color="#2563EB" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
-                  onPress={() => handleToggleStatus(p)}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
-                >
-                  {p.status === 'Ativo' ? (
-                    <Pause size={16} color="#F59E0B" />
-                  ) : (
-                    <CheckCircle2 size={16} color="#0D9488" />
-                  )}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.iconBtn, styles.btnArchive]}
-                  onPress={() => handleArchive(p)}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
-                >
-                  <Archive size={16} color="#6B7280" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.iconBtn}
-                  onPress={() => router.push(`/patients/${p.id}/details`)}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
-                >
-                  <FileText size={16} color="#0D9488" />
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[styles.iconBtn, styles.btnDelete]}
-                  onPress={() => handleDelete(p)}
-                  activeOpacity={0.8}
-                  accessibilityRole="button"
-                  accessibilityLabel={`Excluir paciente ${p.name}`}
-                >
-                  <Trash2 size={16} color="#EF4444" />
-                </TouchableOpacity>
+              {/* Linha inferior: Telefone */}
+              <View style={styles.rowBottom}>
+                <Phone size={14} color="#94A3B8" />
+                <Text style={styles.rowBottomText} numberOfLines={1} ellipsizeMode="tail">
+                  {p.phone}
+                </Text>
               </View>
             </Card>
           ))
@@ -440,11 +452,54 @@ const styles = StyleSheet.create({
 
   patientCard: {
     marginBottom: 14,
+    borderRadius: 16,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    backgroundColor: '#FFFFFF',
+    shadowColor: '#0F766E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.04,
+    shadowRadius: 8,
+    elevation: 2,
+    overflow: 'hidden',
+  },
+  /* Linha superior: Nome | Status | Ícones */
+  rowTop: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
   },
-  patientInfo: { flex: 1, minWidth: 0, flexShrink: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
+  rowTopLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    flexShrink: 1,
+  },
+  rowTopName: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: '#133E2B',
+    flex: 1,
+    minWidth: 0,
+  },
+  rowTopActions: {
+    flexDirection: 'row',
+    gap: 6,
+    flexShrink: 0,
+  },
+  /* Linha do meio: Avatar | Email */
+  rowMiddle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
   avatarCircle: {
     width: 44,
     height: 44,
@@ -455,13 +510,33 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#D1EFE2',
     flexShrink: 0,
+    marginRight: 10,
   },
-  patientTexts: { flex: 1, minWidth: 0, flexShrink: 1 },
-  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B' },
-  patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 },
-  patientMeta: { fontSize: 12, color: '#64748B' },
-
-  patientActions: { flexDirection: 'row', gap: 6, alignItems: 'center', flexShrink: 0 },
+  rowMiddleEmail: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    flexShrink: 1,
+  },
+  rowMiddleText: {
+    fontSize: 14,
+    color: '#1E293B',
+    flex: 1,
+    minWidth: 0,
+  },
+  /* Linha inferior: Telefone */
+  rowBottom: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingBottom: 10,
+  },
+  rowBottomText: {
+    fontSize: 14,
+    color: '#1E293B',
+    flex: 1,
+    minWidth: 0,
+  },
   iconBtn: { padding: 8, borderRadius: 10, backgroundColor: '#F8FAFC' },
   btnToggleActive: { backgroundColor: '#FEF3C7' },
   btnToggleInactive: { backgroundColor: '#D1FAE5' },
