@@ -96,13 +96,13 @@ para todas as telas:
 
 ### 🔴 Alta — travam a versão 1.0
 
-| # | Item | Critério de aceite |
-|---|------|--------------------|
-| **A1** | **Editar paciente funcional** — hoje o modal de "Editar paciente" na tela de detalhes tem `onChangeText` vazio (`/* edição de paciente futura */`) e o botão "Salvar Alterações" chama `handleSaveRecord`, que valida título/conteúdo de prontuário. O usuário **não consegue editar os dados de um paciente por esse caminho**. | Editar nome, e-mail, telefone, data de nascimento e anamnese na tela de detalhes persiste no `AppContext`; `updatePatient` é chamado com os dados novos; toast/alerta de sucesso; teste automatizado cobrindo salvar e cancelar. |
-| **A2** | **Tokenização completa** — `login.tsx`, `profile.tsx`, `patients.tsx`, `reports.tsx`, `export-pdf.tsx`, `details.tsx` e todos os componentes (`Button`, `Input`, `Modal`, `StatusBadge`, `Chip`) usam hex literais em vez de `src/theme/tokens.ts`. | Nenhum hex literal fora de `src/theme/tokens.ts` (exceto `app.json`/`export-pdf` HTML); `grep` de `#` no `src/` retorna apenas o arquivo de tokens; `tsc` e `lint` limpos. |
-| **A3** | **Busca por telefone** — a busca filtra só por nome e e-mail, mas o telefone é exibido em todas as telas. | A busca encontra por nome, e-mail **ou** telefone; teste automatizado para os três campos. |
-| **A4** | **Estado vazio da busca** — quando um filtro/busca não encontra ninguém, a mensagem diz "Nenhum paciente neste filtro" e não diz **por quê**. | A mensagem distingue "nenhum paciente cadastrado" de "nenhum resultado para «termo»" e oferece limpar a busca quando há termo ativo. |
-| **A5** | **Safe area inconsistente** — `profile.tsx` e `details.tsx` usam `SafeAreaView`; `login.tsx` usa `paddingTop: 40` fixo; `patients.tsx` usa `paddingTop: 52` fixo; `reports.tsx` e `export-pdf.tsx` não aplicam inset nenhum. | Todas as 7 rotas aplicam `useSafeAreaInsets()`; nenhum `paddingTop` fixo maior que 24 permanece; nenhum conteúdo fica sob o notch ou a barra de gestos em nenhum aparelho testado. |
+| # | Item | Critério de aceite | Status |
+|---|------|--------------------|--------|
+| **A1** | **Editar paciente funcional** — hoje o modal de "Editar paciente" na tela de detalhes tem `onChangeText` vazio (`/* edição de paciente futura */`) e o botão "Salvar Alterações" chama `handleSaveRecord`, que valida título/conteúdo de prontuário. O usuário **não consegue editar os dados de um paciente por esse caminho**. | Editar nome, e-mail, telefone, data de nascimento e anamnese na tela de detalhes persiste no `AppContext`; `updatePatient` é chamado com os dados novos; toast/alerta de sucesso; teste automatizado cobrindo salvar e cancelar. | ✅ `88419e1` |
+| **A2** | **Tokenização completa** — `login.tsx`, `profile.tsx`, `patients.tsx`, `reports.tsx`, `export-pdf.tsx`, `details.tsx` e todos os componentes (`Button`, `Input`, `Modal`, `StatusBadge`, `Chip`) usam hex literais em vez de `src/theme/tokens.ts`. | Nenhum hex literal fora de `src/theme/tokens.ts` (exceto `app.json`/`export-pdf` HTML); `grep` de `#` no `src/` retorna apenas o arquivo de tokens; `tsc` e `lint` limpos. | ✅ `37e40fd` |
+| **A3** | **Busca por telefone** — a busca filtra só por nome e e-mail, mas o telefone é exibido em todas as telas. | A busca encontra por nome, e-mail **ou** telefone; teste automatizado para os três campos. | ✅ `5643eb8` |
+| **A4** | **Estado vazio da busca** — quando um filtro/busca não encontra ninguém, a mensagem diz "Nenhum paciente neste filtro" e não diz **por quê**. | A mensagem distingue "nenhum paciente cadastrado" de "nenhum resultado para «termo»" e oferece limpar a busca quando há termo ativo. | ✅ `5643eb8` |
+| **A5** | **Safe area inconsistente** — `profile.tsx` e `details.tsx` usam `SafeAreaView`; `login.tsx` usa `paddingTop: 40` fixo; `patients.tsx` usa `paddingTop: 52` fixo; `reports.tsx` e `export-pdf.tsx` não aplicam inset nenhum. | Todas as 7 rotas aplicam `useSafeAreaInsets()`; nenhum `paddingTop` fixo maior que 24 permanece; nenhum conteúdo fica sob o notch ou a barra de gestos em nenhum aparelho testado. | ✅ `fd9ae31` |
 
 ### 🟡 Média — qualidade do produto
 
@@ -159,5 +159,5 @@ para todas as telas:
 
 ---
 
-Última atualização: Etapa 1 (planner) — 2026-11-26.
-Diagnóstico sobre: `8611eba` (131/131 testes verdes, `tsc`/`lint` limpos).
+Última atualização: Etapa 3 (mobile-ui) — 2026-11-26.
+Itens Alta A1–A5 implementados e verificados (140/140 testes, `tsc`/`lint` limpos).
