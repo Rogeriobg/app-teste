@@ -176,7 +176,9 @@ export default function PsychologistDashboard() {
               Cadastre o primeiro paciente para começar o prontuário.
             </Text>
             <TouchableOpacity style={styles.emptyAction} onPress={openPatients} activeOpacity={0.85}>
-              <Text style={styles.emptyActionText}>Cadastrar paciente</Text>
+              <Text style={styles.emptyActionText} numberOfLines={1}>
+                Cadastrar paciente
+              </Text>
               <ArrowRight size={14} color={colors.textOnBrand} />
             </TouchableOpacity>
           </View>
@@ -242,7 +244,7 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     flexShrink: 1,
   },
-  headerText: { flexShrink: 1 },
+  headerText: { flexShrink: 1, minWidth: 0 },
   avatarBadge: {
     width: 40,
     height: 40,
@@ -252,6 +254,7 @@ const styles = StyleSheet.create({
     borderColor: colors.brandBorder,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   greeting: { ...typography.title2, color: colors.textPrimary },
   roleSubtext: { ...typography.caption, color: colors.brand, marginTop: 2 },
@@ -264,6 +267,7 @@ const styles = StyleSheet.create({
     borderColor: colors.dangerBorder,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
 
   scroll: { padding: spacing.xl, gap: spacing.lg },
@@ -294,8 +298,9 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
-  patientRowInfo: { flex: 1, marginHorizontal: spacing.lg, gap: 2 },
+  patientRowInfo: { flex: 1, minWidth: 0, marginHorizontal: spacing.lg, gap: 2 },
   patientRowName: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
   patientRowMeta: { ...typography.bodyRegular, color: colors.textSecondary },
   statusBadgeActive: {
@@ -303,6 +308,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: radius.sm,
+    flexShrink: 0,
   },
   statusText: { ...typography.caption, color: colors.success },
 
@@ -341,8 +347,9 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.lg,
     minHeight: 44,
+    maxWidth: '100%',
   },
-  emptyActionText: { ...typography.label, color: colors.textOnBrand },
+  emptyActionText: { ...typography.label, color: colors.textOnBrand, flexShrink: 1, minWidth: 0 },
 
   viewAll: { alignItems: 'center', paddingVertical: spacing.sm },
   viewAllText: { ...typography.label, color: colors.brand },

@@ -217,7 +217,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
   },
   datePickerIcon: { marginRight: spacing.md },
-  datePickerText: { ...typography.body, color: colors.inputText, flex: 1 },
+  datePickerText: { ...typography.body, color: colors.inputText, flex: 1, minWidth: 0 },
   datePickerPlaceholder: { color: colors.textTertiary },
   footerNote: { marginTop: spacing.xs, marginBottom: spacing.xs },
   footerNoteText: { ...typography.caption, color: colors.textTertiary, textAlign: 'center' },

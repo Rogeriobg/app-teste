@@ -387,7 +387,9 @@ export default function PatientDetailsScreen() {
 
         {/* Prontuários */}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Prontuários</Text>
+          <Text style={[styles.sectionTitle, styles.sectionHeaderTitle]} numberOfLines={1}>
+            Prontuários
+          </Text>
           <Button
             variant="primary"
             onPress={handleOpenAddRecord}
@@ -707,14 +709,17 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   topBarTitle: {
     ...typography.headline,
     color: colors.textPrimary,
+    flex: 1,
+    minWidth: 0,
     flexShrink: 1,
     textAlign: 'center',
   },
-  topBarSpacer: { width: 40, height: 40 },
+  topBarSpacer: { width: 40, height: 40, flexShrink: 0 },
 
   scroll: { padding: spacing.xl, gap: spacing.lg },
 
@@ -768,8 +773,10 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xs,
     paddingHorizontal: spacing.md,
     maxWidth: '100%',
+    flexShrink: 1,
+    minWidth: 0,
   },
-  contactChipText: { ...typography.caption, color: ACCENT, flexShrink: 1 },
+  contactChipText: { ...typography.caption, color: ACCENT, flexShrink: 1, minWidth: 0 },
 
   /* Seções */
   sectionTitle: {
@@ -781,9 +788,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    gap: spacing.md,
     marginTop: spacing.sm,
   },
-  addRecordBtn: { paddingVertical: spacing.sm, minHeight: 40 },
+  sectionHeaderTitle: { flex: 1, minWidth: 0, flexShrink: 1 },
+  addRecordBtn: { paddingVertical: spacing.sm, minHeight: 40, flexShrink: 0 },
 
   /* Informações */
   infoCard: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.md },
@@ -795,6 +804,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   infoContent: { flex: 1, minWidth: 0, gap: 2 },
   infoLabel: { ...typography.caption, color: colors.textSecondary },
@@ -822,6 +832,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   recordIconArchived: { backgroundColor: colors.mutedSoft },
   recordInfo: { flex: 1, minWidth: 0, gap: 2 },
@@ -831,7 +842,7 @@ const styles = StyleSheet.create({
   recordContentWrap: { marginTop: -spacing.xs },
   recordContent: { ...typography.bodyRegular, color: colors.textSecondary, lineHeight: 19 },
   recordContentArchived: { color: colors.textTertiary },
-  recordActions: { flexDirection: 'row', gap: spacing.xs },
+  recordActions: { flexDirection: 'row', gap: spacing.xs, flexShrink: 1, minWidth: 0 },
   iconAction: {
     width: 34,
     height: 34,
@@ -839,6 +850,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
+    flexShrink: 0,
   },
   iconActionDanger: {
     backgroundColor: colors.dangerSoft,

@@ -51,7 +51,9 @@ export default function LoginScreen() {
         <View style={styles.heroCard}>
           <View style={styles.badgeRow}>
             <Sparkles size={16} color={colors.brand} />
-            <Text style={styles.badgeText}>PsiApp • Consultório Pessoal</Text>
+            <Text style={styles.badgeText} numberOfLines={1} ellipsizeMode="tail">
+              PsiApp • Consultório Pessoal
+            </Text>
           </View>
           <ShieldCheck size={32} color={colors.brand} style={styles.heroIcon} />
           <Text style={styles.title}>Consultório Psicológico</Text>
@@ -110,8 +112,8 @@ const styles = StyleSheet.create({
     borderColor: colors.brandBorder,
     alignItems: 'center',
   },
-  badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg, gap: spacing.md },
-  badgeText: { ...typography.body, color: colors.brand, fontWeight: '700' },
+  badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg, gap: spacing.md, flexShrink: 1 },
+  badgeText: { ...typography.body, color: colors.brand, fontWeight: '700', flexShrink: 1, minWidth: 0 },
   heroIcon: { marginBottom: spacing.lg },
   title: { ...typography.title1, fontSize: 26, color: colors.textPrimary, marginBottom: spacing.md, letterSpacing: -0.3, textAlign: 'center' },
   subtitle: { ...typography.body, color: colors.textSecondary, lineHeight: 20, textAlign: 'center' },
@@ -142,7 +144,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxl,
   },
   inputIcon: { marginRight: spacing.lg },
-  input: { flex: 1, paddingVertical: spacing.lg, ...typography.body, color: colors.inputText },
+  input: { flex: 1, minWidth: 0, paddingVertical: spacing.lg, ...typography.body, color: colors.inputText },
 
   primaryButton: {
     backgroundColor: colors.brand,

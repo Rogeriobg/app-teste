@@ -106,16 +106,17 @@ para todas as telas:
 
 ### 🟡 Média — qualidade do produto
 
-| # | Item | Critério de aceite |
-|---|------|--------------------|
-| **M1** | **Header da lista de pacientes** — usa `paddingTop: 52` fixo e `Button` "Novo Paciente" com texto; o botão é a única forma de cadastrar e fica longe do polegar. | Header usa inset; a ação primária de cadastro é um botão circular no topo (44×44) **e** um FAB/`ActionTile` na thumb zone inferior; a lista continua com a mesma função. |
-| **M2** | **Ordenação da lista** — pacientes saem na ordem de inserção, sem opção de ordenar. | Ordenação por nome (alfabética), por mais recente e por mais antigo, com controle acessível; a escolha persiste entre navegações. |
-| **M3** | **Duplicidade de prontuário** — a tela de detalhes e a de relatórios (`/patients/[id]/reports`) mantêm **duas** listas de prontuários do mesmo paciente, com CRUD duplicado. | Uma das duas telas passa a ser a fonte única (recomendado: `details`), e a outra redireciona para ela; nenhum prontuário aparece em dois lugares diferentes. |
-| **M4** | **Contagem de prontuários no card do paciente** — o card da lista não mostra quantos prontuários o paciente tem. | O card mostra a contagem (ex.: "3 prontuários") com ícone; item visual do card, sem tocar no layout de 4 linhas já aprovado. |
-| **M5** | **Data de nascimento sem máscara/validação** — o `DateTimePicker` grava `AAAA-MM-DD` cru, e o campo aceita qualquer texto. | Data válida e formatada (`DD/MM/AAAA`) na exibição e na gravação; o picker abre o calendário em vez de um campo de texto livre; idade calculada e exibida no hero do paciente. |
-| **M6** | **Estado vazio da tela de prontuários** — o texto "Nenhum prontuário cadastrado" não diferencia "paciente sem prontuário" de "filtro sem resultado". | Mensagem contextual + ação primária "Criar primeiro prontuário" no vazio do paciente sem prontuários. |
-| **M7** | **Ordenação dos prontuários** — prontuários aparecem na ordem de inserção, sem destaque de sessão mais recente. | Prontuários ordenados por data (mais recente primeiro), com a data de criação preservada em `createdAt`. |
-| **M8** | **Busca global / atalho** — o acesso ao prontuário exige 2–3 toques a partir do dashboard. | Atalho no dashboard para "paciente recente" (último atendido) com um toque; sem criar uma tela nova de busca. |
+| # | Item | Critério de aceite | Status |
+|---|------|--------------------|--------|
+| **T7** | **Nenhum elemento transbordar a largura da tela** — *transversal, vale para todas as rotas*. Em 41 containers `row` de 11 arquivos havia filhos que não podiam encolher (o container do título do header de `/patients` era o caso reportado: o botão "Novo Paciente" saía da tela em 360–375pt). | `npm run validate:layout` retorna VÁLIDO; nenhum header, card ou linha tem conteúdo mais largo que a viewport; conferido visualmente em 360dp e 430dp. | ✅ Ciclo 2 |
+| **M1** | **Header da lista de pacientes** — usa `paddingTop: 52` fixo e `Button` "Novo Paciente" com texto; o botão é a única forma de cadastrar e fica longe do polegar. | Header usa inset; a ação primária de cadastro é um botão circular no topo (44×44) **e** um FAB/`ActionTile` na thumb zone inferior; a lista continua com a mesma função. | Parcial — o T7 resolveu o transbordo; falta a ação na thumb zone |
+| **M2** | **Ordenação da lista** — pacientes saem na ordem de inserção, sem opção de ordenar. | Ordenação por nome (alfabética), por mais recente e por mais antigo, com controle acessível; a escolha persiste entre navegações. | Aberto |
+| **M3** | **Duplicidade de prontuário** — a tela de detalhes e a de relatórios (`/patients/[id]/reports`) mantêm **duas** listas de prontuários do mesmo paciente, com CRUD duplicado. | Uma das duas telas passa a ser a fonte única (recomendado: `details`), e a outra redireciona para ela; nenhum prontuário aparece em dois lugares diferentes. | Aberto |
+| **M4** | **Contagem de prontuários no card do paciente** — o card da lista não mostra quantos prontuários o paciente tem. | O card mostra a contagem (ex.: "3 prontuários") com ícone; item visual do card, sem tocar no layout de 4 linhas já aprovado. | Aberto |
+| **M5** | **Data de nascimento sem máscara/validação** — o `DateTimePicker` grava `AAAA-MM-DD` cru, e o campo aceita qualquer texto. | Data válida e formatada (`DD/MM/AAAA`) na exibição e na gravação; o picker abre o calendário em vez de um campo de texto livre; idade calculada e exibida no hero do paciente. | Aberto |
+| **M6** | **Estado vazio da tela de prontuários** — o texto "Nenhum prontuário cadastrado" não diferencia "paciente sem prontuário" de "filtro sem resultado". | Mensagem contextual + ação primária "Criar primeiro prontuário" no vazio do paciente sem prontuários. | Aberto |
+| **M7** | **Ordenação dos prontuários** — prontuários aparecem na ordem de inserção, sem destaque de sessão mais recente. | Prontuários ordenados por data (mais recente primeiro), com a data de criação preservada em `createdAt`. | Aberto |
+| **M8** | **Busca global / atalho** — o acesso ao prontuário exige 2–3 toques a partir do dashboard. | Atalho no dashboard para "paciente recente" (último atendido) com um toque; sem criar uma tela nova de busca. | Aberto |
 
 ### 🟢 Baixa — polimento
 

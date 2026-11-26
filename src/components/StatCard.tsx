@@ -117,6 +117,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     alignItems: 'center',
     gap: spacing.md,
+    minWidth: 0,
   },
-  value: { ...typography.title1, color: colors.textPrimary },
+  value: { ...typography.title1, color: colors.textPrimary, flexShrink: 1, minWidth: 0 },
 });

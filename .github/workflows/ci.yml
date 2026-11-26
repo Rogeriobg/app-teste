@@ -37,6 +37,9 @@ jobs:
       - name: Lint (ESLint / Expo)
         run: npm run lint
 
+      - name: Gate de layout (transbordo horizontal)
+        run: npm run validate:layout
+
       - name: Testes (Jest) + cobertura
         run: npm run test:coverage
 

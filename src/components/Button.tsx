@@ -68,7 +68,11 @@ export function Button({
       ) : (
         <>
           {iconLeft && <View style={styles.iconWrapper}>{iconLeft}</View>}
-          <Text style={[styles.text, { color }, textStyle]}>{children ?? title}</Text>
+          {/* `children` pode ser uma string simples: o RN exige que todo
+              texto dentro de um <View> esteja dentro de um <Text>. */}
+          <Text style={[styles.text, { color }, textStyle]} numberOfLines={1} ellipsizeMode="tail">
+            {children ?? title}
+          </Text>
           {iconRight && <View style={styles.iconWrapper}>{iconRight}</View>}
         </>
       )}
@@ -94,6 +98,8 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
     minHeight: 48,
+    // nunca cresce além do pai: o texto é que trunca
+    maxWidth: '100%',
   },
   disabled: {
     opacity: 0.5,

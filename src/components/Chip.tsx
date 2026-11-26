@@ -55,7 +55,9 @@ const styles = StyleSheet.create({
     paddingLeft: spacing.sm,
     paddingRight: spacing.md,
     gap: spacing.xxs,
+    maxWidth: '100%',
+    minWidth: 0,
   },
-  icon: { width: 14, height: 14, alignItems: 'center', justifyContent: 'center' },
-  text: { ...typography.caption, includeFontPadding: false },
+  icon: { width: 14, height: 14, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  text: { ...typography.caption, includeFontPadding: false, flexShrink: 1, minWidth: 0 },
 });

@@ -153,7 +153,7 @@ export default function ProfileScreen() {
               </Text>
               <View style={styles.headerContact}>
                 <Mail size={14} color={colors.textTertiary} />
-                <Text style={styles.headerEmail}>
+                <Text style={styles.headerEmail} numberOfLines={1} ellipsizeMode="tail">
                   {currentUser?.email ?? ''}
                 </Text>
               </View>
@@ -308,11 +308,16 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.brandBorder,
+    maxWidth: '100%',
+    flexShrink: 1,
+    minWidth: 0,
   },
   headerEmail: {
     ...typography.bodyRegular,
     fontSize: 13,
     color: TEXT_MUTED,
+    flexShrink: 1,
+    minWidth: 0,
   },
 
   section: {

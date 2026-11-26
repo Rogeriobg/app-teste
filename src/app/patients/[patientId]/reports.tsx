@@ -190,13 +190,18 @@ export default function PatientReportsScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
-        <View>
-          <Text style={styles.headerTitle}>Relatórios de {patientNameStr}</Text>
-          <Text style={styles.headerSubtitle}>Prontuário e histórico de sessões</Text>
+        <View style={styles.headerIdentity}>
+          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+            Relatórios de {patientNameStr}
+          </Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            Prontuário e histórico de sessões
+          </Text>
         </View>
         <Button
           variant="primary"
           onPress={handleOpenAdd}
+          style={styles.headerAction}
           iconLeft={<Plus size={18} color={colors.textOnBrand} />}
           accessibilityLabel="Cadastrar novo relatório"
         >
@@ -298,7 +303,9 @@ export default function PatientReportsScreen() {
 
         <View style={styles.privateNotesLabelRow}>
           <Lock size={12} color={colors.brand} />
-          <Text style={styles.label}>Notas Privadas do Psicólogo</Text>
+          <Text style={styles.label} numberOfLines={1} ellipsizeMode="tail">
+            Notas Privadas do Psicólogo
+          </Text>
         </View>
         <Input
           label=" "
@@ -330,6 +337,24 @@ const styles = StyleSheet.create({
   },
   headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
   headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
+  /**
+   * Container do título.
+   *
+   * `flex: 1` + `minWidth: 0` obrigam o bloco a ceder espaço ao botão —
+   * sem isso o título mantém a largura intrínseco e o botão
+   * "Novo Relatório" transborda a tela em aparelhos de 360–375pt.
+   */
+  headerIdentity: {
+    flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  /** Botão do header: largura fixa, nunca encolhe. */
+  headerAction: {
+    flexShrink: 0,
+    paddingHorizontal: spacing.lg,
+  },
 
   scroll: { padding: spacing.xl, paddingBottom: spacing.xxl },
 
@@ -360,7 +385,7 @@ const styles = StyleSheet.create({
   btnArchive: { backgroundColor: colors.mutedSoft, borderColor: colors.mutedBorder },
   btnRestore: { backgroundColor: colors.successSoft, borderColor: colors.successBorder },
   btnDelete: { backgroundColor: colors.dangerSoft, borderColor: colors.dangerBorder },
-  actionText: { ...typography.caption },
+  actionText: { ...typography.caption, flexShrink: 1, minWidth: 0 },
 
   emptyCard: {
     padding: spacing.xxxl,
@@ -374,8 +399,9 @@ const styles = StyleSheet.create({
   privateNotesLabelRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
-    marginBottom: 6,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+    flexShrink: 1,
   },
   datePickerInput: {
     borderWidth: 1,
@@ -390,7 +416,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   datePickerIcon: { marginRight: spacing.md },
-  datePickerText: { ...typography.body, color: colors.inputText, flex: 1 },
+  datePickerText: { ...typography.body, color: colors.inputText, flex: 1, minWidth: 0 },
   datePickerPlaceholder: { color: colors.textTertiary },
-  label: { ...typography.label, color: colors.labelText, marginBottom: spacing.sm },
+  label: { ...typography.label, color: colors.labelText, marginBottom: spacing.sm, flexShrink: 1, minWidth: 0 },
 });

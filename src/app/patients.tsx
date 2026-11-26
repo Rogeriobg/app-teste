@@ -176,13 +176,18 @@ export default function PatientsScreen() {
   return (
     <View style={styles.container}>
       <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
-        <View>
-          <Text style={styles.headerTitle}>Meus Pacientes</Text>
-          <Text style={styles.headerSubtitle}>Cadastro, edição e prontuário</Text>
+        <View style={styles.headerIdentity}>
+          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+            Meus Pacientes
+          </Text>
+          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+            Cadastro, edição e prontuário
+          </Text>
         </View>
         <Button
           variant="primary"
           onPress={handleOpenAdd}
+          style={styles.headerAction}
           iconLeft={<Plus size={18} color={colors.textOnBrand} />}
           accessibilityLabel="Cadastrar novo paciente"
         >
@@ -392,6 +397,24 @@ const styles = StyleSheet.create({
   },
   headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
   headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
+  /**
+   * Container do título.
+   *
+   * `flex: 1` + `minWidth: 0` obrigam o bloco a ceder espaço ao botão —
+   * sem isso o subtítulo mantém a largura intrínseco e o botão
+   * "Novo Paciente" transborda a tela em aparelhos de 360–375pt.
+   */
+  headerIdentity: {
+    flex: 1,
+    minWidth: 0,
+    flexShrink: 1,
+    justifyContent: 'center',
+  },
+  /** Botão do header: largura fixa, nunca encolhe. */
+  headerAction: {
+    flexShrink: 0,
+    paddingHorizontal: spacing.lg,
+  },
 
   tabsContainer: { flexDirection: 'row', margin: spacing.xl, gap: spacing.md },
   searchContainer: { marginHorizontal: spacing.xl, marginBottom: spacing.lg },
@@ -497,8 +520,15 @@ const styles = StyleSheet.create({
     gap: spacing.sm,
     alignItems: 'center',
     padding: spacing.lg,
+    flexShrink: 1,
+    minWidth: 0,
   },
-  iconBtn: { padding: spacing.md, borderRadius: radius.lg, backgroundColor: colors.cardInner },
+  iconBtn: {
+    padding: spacing.md,
+    borderRadius: radius.lg,
+    backgroundColor: colors.cardInner,
+    flexShrink: 0,
+  },
   btnToggleActive: { backgroundColor: colors.warningSoft },
   btnToggleInactive: { backgroundColor: colors.successSoft },
   btnArchive: { backgroundColor: colors.mutedSoft },

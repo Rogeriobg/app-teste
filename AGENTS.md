@@ -39,3 +39,32 @@ Docs: https://docs.expo.dev/eas/index.md
 - If `ios/` and `android/` directories do not exist, they are generated (Continuous Native Generation). Never create or edit them by hand — configure native behavior in `app.json` and config plugins.
 - Expo Go only includes its bundled native modules. After adding a library with native code, the app needs a development build: `npx expo run:ios|android` locally, or `eas build --profile development`.
 - Prefer recommended Expo modules over third-party libraries, and check your available skills before adding dependencies. Docs: https://docs.expo.dev/versions/latest/index.md
+
+## Layout invariants (mandatory)
+
+Every task that touches UI must keep the app free of horizontal overflow.
+The RNTL does **not** measure geometry, so a passing test suite proves nothing
+about layout — these rules are enforced by `npm run validate:layout`.
+
+1. **A child of a `flexDirection: 'row'` container must be able to shrink**:
+   declare `flexShrink: 1`, `flex: 1` or `minWidth: 0` on it.
+   Without one of those, it keeps its intrinsic width and pushes its sibling
+   off-screen.
+2. **A fixed item is `flexShrink: 0`** — icons, badges, action buttons.
+   Only one side of a row may be fixed; the other must shrink.
+3. **Text inside a row needs `numberOfLines`** (+ `ellipsizeMode="tail"`).
+   Without it, long text breaks character by character or overflows.
+4. **`flex: 1` without `minWidth: 0` is invalid** — RN will not shrink the
+   child and the text breaks character by character.
+5. **Safe area is explicit**: use `useSafeAreaInsets()` and apply the inset
+   per edge. Do not use `SafeAreaView` together with a manual inset — the
+   inset gets counted twice.
+
+Run before declaring a UI task done:
+
+```bash
+npm run validate:layout   # reprova transbordo horizontal
+```
+
+**UI tasks must load the `mobile-designer` skill** and record which rules
+were applied. See `AUDITORIA.md` for why this became mandatory.

@@ -122,8 +122,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    minWidth: 0,
   },
-  dot: { width: 8, height: 8, borderRadius: 4 },
-  legendLabel: { ...typography.bodyRegular, color: colors.textSecondary, flex: 1 },
-  legendValue: { ...typography.headline, color: colors.textPrimary, fontSize: 15 },
+  dot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
+  legendLabel: { ...typography.bodyRegular, color: colors.textSecondary, flex: 1, minWidth: 0 },
+  legendValue: { ...typography.headline, color: colors.textPrimary, fontSize: 15, flexShrink: 0 },
 });
