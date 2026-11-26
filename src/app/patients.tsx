@@ -232,14 +232,14 @@ export default function PatientsScreen() {
                   <Users size={22} color="#0D9488" />
                 </View>
                 <View style={styles.patientTexts}>
-                  <Text style={styles.patientName} numberOfLines={2}>{p.name}</Text>
+                  <Text style={styles.patientName} numberOfLines={1} ellipsizeMode="tail">{p.name}</Text>
                   <View style={styles.patientMetaRow}>
                     <Mail size={12} color="#94A3B8" />
-                    <Text style={styles.patientMeta}>{p.email}</Text>
+                    <Text style={styles.patientMeta} numberOfLines={1} ellipsizeMode="tail">{p.email}</Text>
                   </View>
                   <View style={styles.patientMetaRow}>
                     <Phone size={12} color="#94A3B8" />
-                    <Text style={styles.patientMeta}>{p.phone}</Text>
+                    <Text style={styles.patientMeta} numberOfLines={1} ellipsizeMode="tail">{p.phone}</Text>
                   </View>
                 </View>
                 <StatusBadge status={p.status} small />
@@ -444,7 +444,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-  patientInfo: { flex: 1, minWidth: 0, flexShrink: 1, flexDirection: 'row', alignItems: 'center', gap: 8 },
+  patientInfo: { flex: 1, minWidth: 0, flexShrink: 1, flexDirection: 'row', alignItems: 'flex-start', gap: 8 },
   avatarCircle: {
     width: 44,
     height: 44,
@@ -457,8 +457,8 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   patientTexts: { flex: 1, minWidth: 0, flexShrink: 1 },
-  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B', flexShrink: 1 },
-  patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2, flexWrap: 'wrap' },
+  patientName: { fontSize: 16, fontWeight: 'bold', color: '#133E2B' },
+  patientMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginBottom: 2 },
   patientMeta: { fontSize: 12, color: '#64748B' },
 
   patientActions: { flexDirection: 'row', gap: 6, alignItems: 'center', flexShrink: 0 },
