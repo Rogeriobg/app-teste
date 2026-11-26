@@ -445,7 +445,7 @@ export default function PatientDetailsScreen() {
           <ActionTile
             layout="horizontal"
             style={styles.actionCell}
-            title="Prontuários"
+            title="Ver prontuários"
             description="Ver e gerenciar sessões"
             icon={<FileText size={18} color={ACCENT} />}
             onPress={handleOpenReports}
@@ -497,12 +497,18 @@ export default function PatientDetailsScreen() {
       <AppModal
         visible={modalVisible}
         onDismiss={() => { setModalVisible(false); setDeletingRecordId(null); }}
-        title={isEditing ? (editingId ? 'Editar Prontuário' : 'Novo Prontuário') : 'Editar Paciente'}
+        title={
+          !isEditing
+            ? 'Novo Prontuário'
+            : editingId
+              ? 'Editar Prontuário'
+              : 'Editar Paciente'
+        }
         cancelTitle="Cancelar"
-        confirmTitle={isEditing ? 'Salvar Prontuário' : 'Salvar Alterações'}
+        confirmTitle={isEditing && !editingId ? 'Salvar Alterações' : 'Salvar Prontuário'}
         onConfirm={handleSaveRecord}
       >
-        {!isEditing || !editingId ? (
+        {isEditing && !editingId ? (
           <>
             <Input
               label="Nome completo"
@@ -647,7 +653,7 @@ function RecordCard({
             activeOpacity={0.8}
             disabled={deleting}
             accessibilityRole="button"
-            accessibilityLabel="Excluir prontuário"
+            accessibilityLabel={`Excluir prontuário ${record.title}`}
           >
             {deleting ? (
               <ActivityIndicator size={14} color={colors.danger} />
