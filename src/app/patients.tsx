@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { useApp, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
-import { Button, Input, Card, StatusBadge, AppModal } from '@/components';
+import { Button, Input, Card, AppModal } from '@/components';
 import {
   Users,
   Plus,
@@ -227,86 +227,85 @@ export default function PatientsScreen() {
         ) : (
           filteredPatients.map((p: Patient) => (
             <Card key={p.id} style={styles.patientCard} elevated>
-              {/* Linha superior: Nome | Status | Ícones */}
-              <View style={styles.rowTop}>
-                <View style={styles.rowTopLeft}>
-                  <Text style={styles.rowTopName} numberOfLines={1} ellipsizeMode="tail">
-                    {p.name}
-                  </Text>
-                  <StatusBadge status={p.status} small />
-                </View>
-                <View style={styles.rowTopActions}>
-                  <TouchableOpacity
-                    style={styles.iconBtn}
-                    onPress={() => handleOpenEdit(p)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Editar paciente ${p.name}`}
-                  >
-                    <Edit2 size={16} color="#2563EB" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
-                    onPress={() => handleToggleStatus(p)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
-                  >
-                    {p.status === 'Ativo' ? (
-                      <Pause size={16} color="#F59E0B" />
-                    ) : (
-                      <CheckCircle2 size={16} color="#0D9488" />
-                    )}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.iconBtn, styles.btnArchive]}
-                    onPress={() => handleArchive(p)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
-                  >
-                    <Archive size={16} color="#6B7280" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={styles.iconBtn}
-                    onPress={() => router.push(`/patients/${p.id}/details`)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
-                  >
-                    <FileText size={16} color="#0D9488" />
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    style={[styles.iconBtn, styles.btnDelete]}
-                    onPress={() => handleDelete(p)}
-                    activeOpacity={0.8}
-                    accessibilityRole="button"
-                    accessibilityLabel={`Excluir paciente ${p.name}`}
-                  >
-                    <Trash2 size={16} color="#EF4444" />
-                  </TouchableOpacity>
-                </View>
+              {/* Linha 1: Apenas o nome */}
+              <View style={styles.rowName}>
+                <Text style={styles.rowNameText} numberOfLines={1} ellipsizeMode="tail">
+                  {p.name}
+                </Text>
               </View>
 
-              {/* Linha do meio: Avatar | Email */}
-              <View style={styles.rowMiddle}>
+              {/* Linha 2: Avatar | Email */}
+              <View style={styles.rowEmail}>
                 <View style={styles.avatarCircle}>
                   <Users size={22} color="#0D9488" />
                 </View>
-                <View style={styles.rowMiddleEmail}>
+                <View style={styles.rowEmailTextContainer}>
                   <Mail size={14} color="#94A3B8" />
-                  <Text style={styles.rowMiddleText} numberOfLines={1} ellipsizeMode="tail">
+                  <Text style={styles.rowEmailText} numberOfLines={1} ellipsizeMode="tail">
                     {p.email}
                   </Text>
                 </View>
               </View>
 
-              {/* Linha inferior: Telefone */}
-              <View style={styles.rowBottom}>
+              {/* Linha 3: Ícone telefone | Número */}
+              <View style={styles.rowPhone}>
                 <Phone size={14} color="#94A3B8" />
-                <Text style={styles.rowBottomText} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={styles.rowPhoneText} numberOfLines={1} ellipsizeMode="tail">
                   {p.phone}
                 </Text>
+              </View>
+
+              {/* Linha 4: Ícones de ação */}
+              <View style={styles.rowActions}>
+                <TouchableOpacity
+                  style={styles.iconBtn}
+                  onPress={() => handleOpenEdit(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Editar paciente ${p.name}`}
+                >
+                  <Edit2 size={16} color="#2563EB" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
+                  onPress={() => handleToggleStatus(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
+                >
+                  {p.status === 'Ativo' ? (
+                    <Pause size={16} color="#F59E0B" />
+                  ) : (
+                    <CheckCircle2 size={16} color="#0D9488" />
+                  )}
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.iconBtn, styles.btnArchive]}
+                  onPress={() => handleArchive(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
+                >
+                  <Archive size={16} color="#6B7280" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.iconBtn}
+                  onPress={() => router.push(`/patients/${p.id}/details`)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
+                >
+                  <FileText size={16} color="#0D9488" />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[styles.iconBtn, styles.btnDelete]}
+                  onPress={() => handleDelete(p)}
+                  activeOpacity={0.8}
+                  accessibilityRole="button"
+                  accessibilityLabel={`Excluir paciente ${p.name}`}
+                >
+                  <Trash2 size={16} color="#EF4444" />
+                </TouchableOpacity>
               </View>
             </Card>
           ))
@@ -463,36 +462,24 @@ const styles = StyleSheet.create({
     elevation: 2,
     overflow: 'hidden',
   },
-  /* Linha superior: Nome | Status | Ícones */
-  rowTop: {
+  /* Linha 1: Apenas o nome */
+  rowName: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
+    paddingTop: 10,
+    paddingBottom: 6,
   },
-  rowTopLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flexShrink: 1,
-  },
-  rowTopName: {
-    fontSize: 16,
+  rowNameText: {
+    fontSize: 17,
     fontWeight: 'bold',
     color: '#133E2B',
     flex: 1,
     minWidth: 0,
   },
-  rowTopActions: {
-    flexDirection: 'row',
-    gap: 6,
-    flexShrink: 0,
-  },
-  /* Linha do meio: Avatar | Email */
-  rowMiddle: {
+  /* Linha 2: Avatar | Email */
+  rowEmail: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
@@ -512,30 +499,39 @@ const styles = StyleSheet.create({
     flexShrink: 0,
     marginRight: 10,
   },
-  rowMiddleEmail: {
+  rowEmailTextContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     flexShrink: 1,
   },
-  rowMiddleText: {
+  rowEmailText: {
     fontSize: 14,
     color: '#1E293B',
     flex: 1,
     minWidth: 0,
   },
-  /* Linha inferior: Telefone */
-  rowBottom: {
+  /* Linha 3: Ícone telefone | Número */
+  rowPhone: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 12,
-    paddingBottom: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
   },
-  rowBottomText: {
+  rowPhoneText: {
     fontSize: 14,
     color: '#1E293B',
     flex: 1,
     minWidth: 0,
+  },
+  /* Linha 4: Ícones de ação */
+  rowActions: {
+    flexDirection: 'row',
+    gap: 6,
+    alignItems: 'center',
+    padding: 10,
   },
   iconBtn: { padding: 8, borderRadius: 10, backgroundColor: '#F8FAFC' },
   btnToggleActive: { backgroundColor: '#FEF3C7' },
