@@ -133,8 +133,8 @@ para todas as telas:
 
 | # | Risco | Impacto | Mitigação |
 |---|-------|---------|-----------|
-| **R1** | **`eas.json` regrediu** — a versão atual do working tree perdeu o pin do Node (`22.23.3`), as variantes `EXPO_PUBLIC_APP_VARIANT` (`base/development/preview/production`), o bloco `submit` com `track`/`releaseStatus`/`language` e a config de simulador iOS; e trocou `appVersionSource` de `local` para `remote`. | Build de produção pode falhar ou gerar numeração de build inconsistente. | **Etapa 5 (release-prep)** deve restaurar o `eas.json` do HEAD (`git show HEAD:eas.json`) e rodar `npm run validate:eas`. |
-| **R2** | **Cobertura só protege 2 arquivos** — `coverageThreshold` só cobre `reports.tsx` e `export-pdf.tsx`; `patients.tsx`, `details.tsx`, `profile.tsx`, `dashboard.tsx` e `login.tsx` podem regredir sem o CI avisar. | Regressão silenciosa de UI. | Adicionar `coverageThreshold` para as 5 telas restantes assim que A1 e A2 saírem. |
+| **R1** | **`eas.json` regrediu** — a versão atual do working tree perdeu o pin do Node (`22.23.3`), as variantes `EXPO_PUBLIC_APP_VARIANT` (`base/development/preview/production`), o bloco `submit` com `track`/`releaseStatus`/`language` e a config de simulador iOS; e trocou `appVersionSource` de `local` para `remote`. | Build de produção pode falhar ou gerar numeração de build inconsistente. | ✅ **Resolvido na etapa 5** — `eas.json` restaurado do HEAD e validado com `npm run validate:eas` (VÁLIDO). |
+| **R2** | **Cobertura só protege 2 arquivos** — `coverageThreshold` só cobre `reports.tsx` e `export-pdf.tsx`; `patients.tsx`, `details.tsx`, `profile.tsx`, `dashboard.tsx` e `login.tsx` podem regredir sem o CI avisar. | Regressão silenciosa de UI. | ✅ **Resolvido na etapa 4** — `coverageThreshold` agora cobre `details.tsx` (70%), `patients.tsx` (75%) e `profile.tsx` (70%) além dos 2 originais. Cobertura real: 89,4% · 96,5% · 92,8%. |
 | **R3** | **`BACKLOG.md` removido** — o histórico de decisões do produto vive só no git. | Perda de contexto entre etapas. | Este `PLANO.md` é a nova fonte de escopo; o histórico permanece em `git show HEAD:BACKLOG.md`. |
 | **R4** | **`android/` existe localmente** — diretório gerado, ignorado pelo git. | Risco de alguém editar nativo à mão, contra o `AGENTS.md`. | Não editar; o projeto é CNG (config em `app.json`). |
 | **R5** | **Seed com 2 pacientes e 3 prontuários** — o app abre sempre com o mesmo conteúdo. | Estado de "primeiro uso" nunca é visto por quem já rodou o app; o vazio real não é testado. | Adicionar um item de QA: apagar o storage do app e percorrer o primeiro uso. |
@@ -159,5 +159,5 @@ para todas as telas:
 
 ---
 
-Última atualização: Etapa 3 (mobile-ui) — 2026-11-26.
-Itens Alta A1–A5 implementados e verificados (140/140 testes, `tsc`/`lint` limpos).
+Última atualização: Etapa 5 (release-prep) — 2026-11-26.
+Esteira concluída: A1–A5 implementados e verificados (142/142 testes, `tsc`/`lint` limpos, `expo-doctor` 20/20). Riscos R1, R2 e R3 resolvidos.

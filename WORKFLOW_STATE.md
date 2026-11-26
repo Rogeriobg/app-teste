@@ -6,7 +6,7 @@
 | 2     | architect     | [APROVADO]  | 1     | ARQUITETURA.md criado: decisões técnicas de A1–A5, tokens novos para a tokenização, extração de PatientFormModal, regra única de safe area e ordem de execução A2 → A5 → A1 → A3 → A4 (refatorações transversais primeiro). Contratos de teste por item. |
 | 3     | mobile-ui     | [APROVADO]  | 1     | A2 tokenização (37e40fd), A5 safe area (fd9ae31), A1 editar paciente funcional (88419e1), A3 busca por telefone + A4 estado vazio contextual (5643eb8). Novo PatientFormModal compartilhado; 140/140 testes, tsc e lint limpos. |
 | 4     | qa-vision     | [APROVADO]  | 1     | QA.md criado: A1–A5 validados contra o critério de aceite — 142/142 testes, tsc/lint limpos, cobertura patients 96,5% · profile 92,8% · details 89,4%. 2 defeitos corrigidos (DEF-1 botão × visível com campo vazio; DEF-2 desalinhamento do ×). 6 pendências: contraste textTertiary 2,56:1 (B5), brand 3,74:1, áreas de toque <44px, seed de demo, eas.json regredido (R1), duplicidade de prontuários (M3). |
-| 5     | release-prep  | [PENDENTE]  | 0     | Restaurar o eas.json regredido (R1) via git show HEAD:eas.json, validar app.json e entregar checklist de build manual. |
+| 5     | release-prep  | [APROVADO]  | 1     | eas.json regredido restaurado do HEAD (risco R1 resolvido) — valida com `npm run validate:eas` ✅. app.json conferido: name/slug/version/orientation/scheme/bundleIdentifier/package/buildNumber/versionCode/projectId/owner, todos os 6 assets presentes. expo-doctor 20/20. RELEASE.md reescrito com checklist marcado (5 etapas, não 4) e comandos reais. Secret EXPO_TOKEN e variable EAS_BUILD_ENABLED confirmados no GitHub. Build continua MANUAL por decisão do usuário. |
 
 ## Relatório de bugs do QA (preenchido pela etapa 4 quando [REPROVADO])
 (vazio)
@@ -14,15 +14,27 @@
 A etapa 4 foi **aprovada** — os defeitos encontrados (DEF-1, DEF-2) foram
 corrigidos no commit `b5a696a`. As pendências que sobraram (QA-1 a QA-6)
 estão listadas em `QA.md` e não bloqueiam o release: são itens de produto
-(B5, M3, M4) e a pendência QA-5 (`eas.json`), que é da etapa 5.
+(B5, M3, M4) e a pendência QA-5 (`eas.json`), que era da etapa 5 e **foi
+resolvida** — o `eas.json` foi restaurado e validado.
 
 ## Pendências registradas pela etapa 4
 
-| # | Pendência | Destino |
-|---|-----------|---------|
-| QA-1 | `textTertiary` (#94A3B8) com contraste 2,56:1 — abaixo de WCAG AA | Item B5 do `PLANO.md` |
-| QA-2 | `brand` (#0D9488) com contraste 3,74:1 — só passa em texto grande | Item B5 do `PLANO.md` |
-| QA-3 | Áreas de toque abaixo de 44×44 px (backBtn, logoutBtn, iconAction, iconBtn, viewBtn) | Itens M1–M8 / nova rodada |
-| QA-4 | Seed de demonstração impede ver o primeiro uso real | Item de produto |
-| QA-5 | `eas.json` regredido | **Etapa 5 (release-prep)** — risco R1 |
-| QA-6 | Duplicidade da lista de prontuários entre `details.tsx` e `reports.tsx` | Item M3 do `PLANO.md` |
+| # | Pendência | Destino | Status |
+|---|-----------|---------|--------|
+| QA-1 | `textTertiary` (#94A3B8) com contraste 2,56:1 — abaixo de WCAG AA | Item B5 do `PLANO.md` | Aberto |
+| QA-2 | `brand` (#0D9488) com contraste 3,74:1 — só passa em texto grande | Item B5 do `PLANO.md` | Aberto |
+| QA-3 | Áreas de toque abaixo de 44×44 px (backBtn, logoutBtn, iconAction, iconBtn, viewBtn) | Itens M1–M8 / nova rodada | Aberto |
+| QA-4 | Seed de demonstração impede ver o primeiro uso real | Item de produto | Aberto |
+| QA-5 | `eas.json` regredido | Etapa 5 (release-prep) — risco R1 | ✅ Resolvido |
+| QA-6 | Duplicidade da lista de prontuários entre `details.tsx` e `reports.tsx` | Item M3 do `PLANO.md` | Aberto |
+
+## Riscos do PLANO.md após a esteira
+
+| # | Risco | Status |
+|---|-------|--------|
+| R1 | `eas.json` regredido | ✅ Resolvido (etapa 5) |
+| R2 | Cobertura só protege 2 arquivos | ✅ Resolvido (etapa 4 — agora 7 telas) |
+| R3 | `BACKLOG.md` removido | ✅ Resolvido (etapa 1 — `PLANO.md` é a nova fonte) |
+| R4 | `android/` existe localmente | ⚠️ Segue — não editar (projeto CNG) |
+| R5 | Seed fixa de 2 pacientes | ⚠️ Segue — ver QA-4 |
+| R6 | Login sem senha (single-user local) | ⚠️ Segue — dívida de produto |
