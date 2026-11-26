@@ -335,6 +335,68 @@ describe('PatientDetailsScreen — fluxos', () => {
     expect(screen.getByDisplayValue('(11) 98888-7777')).toBeTruthy();
   });
 
+  it('deve salvar os dados editados do paciente', async () => {
+    const { current } = await renderWithProvider(<PatientDetailsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.press(screen.getByLabelText('Editar dados do paciente'));
+    await waitFor(() => expect(screen.getByText('Editar Paciente')).toBeTruthy());
+
+    await fireEvent.changeText(screen.getByLabelText('Nome completo do paciente'), 'Maria da Silva');
+    await fireEvent.changeText(screen.getByLabelText('E-mail do paciente'), 'maria.silva@email.com');
+    await fireEvent.changeText(screen.getByLabelText('Telefone do paciente'), '(11) 90000-1111');
+    await fireEvent.press(screen.getByText('Salvar Alterações'));
+
+    await waitFor(() => {
+      expect(alertSpy).toHaveBeenCalledWith('Sucesso', 'Dados do paciente atualizados com sucesso!');
+    });
+
+    await waitFor(() => {
+      const editado = current.db.patients.find((p) => p.id === 'p1');
+      expect(editado?.name).toBe('Maria da Silva');
+      expect(editado?.email).toBe('maria.silva@email.com');
+      expect(editado?.phone).toBe('(11) 90000-1111');
+      // id, status e createdAt preservados
+      expect(editado?.id).toBe('p1');
+      expect(editado?.status).toBe('Ativo');
+      expect(editado?.createdAt).toBeTruthy();
+    });
+  });
+
+  it('não deve alterar o paciente quando a edição é cancelada', async () => {
+    const { current } = await renderWithProvider(<PatientDetailsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.press(screen.getByLabelText('Editar dados do paciente'));
+    await waitFor(() => expect(screen.getByText('Editar Paciente')).toBeTruthy());
+
+    await fireEvent.changeText(screen.getByLabelText('Nome completo do paciente'), 'Nome Descartado');
+    await fireEvent.press(screen.getByText('Cancelar'));
+
+    await waitFor(() => {
+      const original = current.db.patients.find((p) => p.id === 'p1');
+      expect(original?.name).toBe('Maria Oliveira');
+    });
+  });
+
+  it('deve validar o nome do paciente no modal de edição', async () => {
+    await renderWithProvider(<PatientDetailsScreen />);
+
+    await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
+
+    await fireEvent.press(screen.getByLabelText('Editar dados do paciente'));
+    await waitFor(() => expect(screen.getByText('Editar Paciente')).toBeTruthy());
+
+    await fireEvent.changeText(screen.getByLabelText('Nome completo do paciente'), '');
+    await fireEvent.press(screen.getByText('Salvar Alterações'));
+
+    await waitFor(() => {
+      expect(screen.getByText('Informe o nome do paciente.')).toBeTruthy();
+    });
+  });
+
   it('deve voltar para a tela anterior', async () => {
     await renderWithProvider(<PatientDetailsScreen />);
 

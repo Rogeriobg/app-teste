@@ -24,3 +24,6 @@ export type { StatSummaryProps, StatSummarySegment } from './StatSummary';
 
 export { ActionTile } from './ActionTile';
 export type { ActionTileProps } from './ActionTile';
+
+export { PatientFormModal } from './PatientFormModal';
+export type { PatientFormValues, PatientFormMode, PatientFormModalProps } from './PatientFormModal';

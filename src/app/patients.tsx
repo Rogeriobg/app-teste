@@ -10,7 +10,7 @@ import {
 import { useApp, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Button, Input, Card, AppModal } from '@/components';
+import { Button, Input, Card, PatientFormModal, PatientFormValues } from '@/components';
 import {
   Users,
   Plus,
@@ -22,9 +22,7 @@ import {
   Mail,
   Phone,
   FileText,
-  Calendar,
 } from 'lucide-react-native';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
 
 const tabs = [
@@ -51,14 +49,9 @@ export default function PatientsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingPatient, setEditingPatient] = useState<Patient | null>(null);
 
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [birthDate, setBirthDate] = useState('');
-  const [anamnesis, setAnamnesis] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
-  const [datePickerVisible, setDatePickerVisible] = useState(false);
 
   const filteredPatients = db.patients.filter((p: Patient) => {
     if (activeTab === 'ativos') return p.status === 'Ativo';
@@ -76,41 +69,24 @@ export default function PatientsScreen() {
   const handleOpenAdd = () => {
     setIsEditing(false);
     setEditingId(null);
-    setName('');
-    setEmail('');
-    setPhone('');
-    setBirthDate('');
-    setAnamnesis('');
+    setEditingPatient(null);
     setModalVisible(true);
   };
 
   const handleOpenEdit = (p: Patient) => {
     setIsEditing(true);
     setEditingId(p.id);
-    setName(p.name);
-    setEmail(p.email);
-    setPhone(p.phone);
-    setBirthDate(p.birthDate);
-    setAnamnesis(p.anamnesis);
+    setEditingPatient(p);
     setModalVisible(true);
   };
 
-  const handleSavePatient = async () => {
-    if (!name.trim()) {
-      Alert.alert('Atenção', 'Informe o nome do paciente.');
-      return;
-    }
-    if (!email.trim()) {
-      Alert.alert('Atenção', 'Informe o e-mail do paciente.');
-      return;
-    }
-
+  const handleSavePatient = async (values: PatientFormValues) => {
     const patientData = {
-      name: name.trim(),
-      email: email.trim(),
-      phone: phone.trim(),
-      birthDate: birthDate.trim(),
-      anamnesis: anamnesis.trim(),
+      name: values.name,
+      email: values.email,
+      phone: values.phone,
+      birthDate: values.birthDate,
+      anamnesis: values.anamnesis,
       status: 'Ativo' as const,
     };
 
@@ -166,14 +142,6 @@ export default function PatientsScreen() {
         },
       ]
     );
-  };
-
-  const handleOpenDatePicker = () => setDatePickerVisible(true);
-  const handleDateChange = (_event: any, selectedDate: Date | undefined) => {
-    if (selectedDate) {
-      setBirthDate(selectedDate.toISOString().slice(0, 10));
-    }
-    setDatePickerVisible(false);
   };
 
   return (
@@ -316,78 +284,17 @@ export default function PatientsScreen() {
         )}
       </ScrollView>
 
-      {/* Modal Cadastro / Edição */}
-      <AppModal
+      {/* Modal Cadastro / Edição — componente compartilhado.
+          O `key` remonta o formulário a cada abertura, para os campos
+          nascerem com os valores do paciente em edição. */}
+      <PatientFormModal
+        key={editingId ?? 'novo'}
         visible={modalVisible}
+        mode={isEditing ? 'edit' : 'create'}
+        initial={editingPatient}
         onDismiss={() => setModalVisible(false)}
-        title={isEditing ? 'Editar Paciente' : 'Cadastrar Novo Paciente'}
-        cancelTitle="Cancelar"
-        confirmTitle={isEditing ? 'Salvar Alterações' : 'Cadastrar'}
-        onConfirm={handleSavePatient}
-      >
-        <Input
-          label="Nome Completo"
-          placeholder="Ex: Maria Oliveira"
-          placeholderTextColor={colors.textTertiary}
-          value={name}
-          onChangeText={setName}
-          accessibilityLabel="Nome completo do paciente"
-        />
-
-        <Input
-          label="E-mail"
-          placeholder="Ex: maria@email.com"
-          placeholderTextColor={colors.textTertiary}
-          keyboardType="email-address"
-          autoCapitalize="none"
-          value={email}
-          onChangeText={setEmail}
-          accessibilityLabel="E-mail do paciente"
-        />
-
-        <Input
-          label="Telefone"
-          placeholder="Ex: (11) 98888-7777"
-          placeholderTextColor={colors.textTertiary}
-          value={phone}
-          onChangeText={setPhone}
-          accessibilityLabel="Telefone do paciente"
-        />
-
-        <TouchableOpacity
-          style={styles.datePickerInput}
-          onPress={handleOpenDatePicker}
-          activeOpacity={0.8}
-          accessibilityLabel="Selecionar data de nascimento"
-        >
-          <Calendar size={18} color={colors.textTertiary} style={styles.datePickerIcon} />
-          <Text style={[styles.datePickerText, !birthDate && styles.datePickerPlaceholder]}>
-            {birthDate || 'AAAA-MM-DD'}
-          </Text>
-        </TouchableOpacity>
-
-        {datePickerVisible && (
-          <DateTimePicker
-            value={birthDate ? new Date(birthDate) : new Date()}
-            mode="date"
-            display="default"
-            onChange={handleDateChange}
-            minimumDate={new Date(1900, 0, 1)}
-            maximumDate={new Date()}
-          />
-        )}
-
-        <Input
-          label="Anamnese (resumo inicial)"
-          placeholder="Queixa principal, histórico, observações..."
-          placeholderTextColor={colors.textTertiary}
-          value={anamnesis}
-          onChangeText={setAnamnesis}
-          multiline
-          numberOfLines={3}
-          accessibilityLabel="Anamnese do paciente"
-        />
-      </AppModal>
+        onSubmit={handleSavePatient}
+      />
     </View>
   );
 }
@@ -410,22 +317,6 @@ const styles = StyleSheet.create({
 
   tabsContainer: { flexDirection: 'row', margin: spacing.xl, gap: spacing.md },
   searchContainer: { marginHorizontal: spacing.xl, marginBottom: spacing.lg },
-  datePickerInput: {
-    borderWidth: 1,
-    borderColor: colors.inputBorder,
-    borderRadius: radius.lg,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.lg,
-    backgroundColor: colors.inputBg,
-    marginBottom: spacing.lg,
-  },
-  datePickerIcon: { marginRight: spacing.md },
-  datePickerText: { ...typography.body, color: colors.inputText, flex: 1 },
-  datePickerPlaceholder: { color: colors.textTertiary },
-  datePickerWrapper: { height: 200 },
   tabBtn: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,

@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
-import { Button, Card, Input, StatusBadge, AppModal, StatSummary, ActionTile } from '@/components';
+import { Button, Card, Input, StatusBadge, AppModal, StatSummary, ActionTile, PatientFormModal, PatientFormValues } from '@/components';
 import { colors, radius, shadowCard, shadowRaised, spacing, typography } from '@/theme/tokens';
 import {
   Users,
@@ -39,6 +39,7 @@ export default function PatientDetailsScreen() {
   const { patientId } = useLocalSearchParams() as { patientId: string };
   const {
     db,
+    updatePatient,
     togglePatientStatus,
     archivePatient,
     restorePatient,
@@ -58,7 +59,8 @@ export default function PatientDetailsScreen() {
   const activeRecords = records.filter((r: MedicalRecord) => r.status === 'Ativo');
   const archivedRecords = records.filter((r: MedicalRecord) => r.status === 'Arquivado');
 
-  const [modalVisible, setModalVisible] = useState(false);
+  /* Modal de prontuário (criar/editar) */
+  const [recordModalVisible, setRecordModalVisible] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [title, setTitle] = useState('');
@@ -66,6 +68,9 @@ export default function PatientDetailsScreen() {
   const [content, setContent] = useState('');
   const [privateNotes, setPrivateNotes] = useState('');
   const [deletingRecordId, setDeletingRecordId] = useState<string | null>(null);
+
+  /* Modal de edição do paciente */
+  const [patientModalVisible, setPatientModalVisible] = useState(false);
 
   const Haptic = {
     selection: useCallback(async () => {
@@ -86,7 +91,7 @@ export default function PatientDetailsScreen() {
     setDate(new Date().toISOString().slice(0, 10));
     setContent('');
     setPrivateNotes('');
-    setModalVisible(true);
+    setRecordModalVisible(true);
     Haptic.selection();
   };
 
@@ -97,7 +102,7 @@ export default function PatientDetailsScreen() {
     setDate(rec.date);
     setContent(rec.content);
     setPrivateNotes(rec.privateNotes);
-    setModalVisible(true);
+    setRecordModalVisible(true);
     Haptic.selection();
   };
 
@@ -140,7 +145,7 @@ export default function PatientDetailsScreen() {
         });
       }
       await Haptic.success();
-      setModalVisible(false);
+      setRecordModalVisible(false);
       Alert.alert('Sucesso', 'Relatório salvo com sucesso!');
     } catch {
       await Haptic.error();
@@ -235,9 +240,34 @@ export default function PatientDetailsScreen() {
 
   const handleEditPatient = () => {
     if (!patient) return;
-    setIsEditing(true);
-    setModalVisible(true);
+    setPatientModalVisible(true);
     Haptic.selection();
+  };
+
+  /**
+   * Salva os dados editados do paciente.
+   *
+   * Preserva `id`, `status` e `createdAt` do registro original — só os
+   * campos editáveis são trocados.
+   */
+  const handleSavePatient = async (values: PatientFormValues) => {
+    if (!patient) return;
+    try {
+      await updatePatient({
+        ...patient,
+        name: values.name,
+        email: values.email,
+        phone: values.phone,
+        birthDate: values.birthDate,
+        anamnesis: values.anamnesis,
+      });
+      await Haptic.success();
+      setPatientModalVisible(false);
+      Alert.alert('Sucesso', 'Dados do paciente atualizados com sucesso!');
+    } catch {
+      await Haptic.error();
+      Alert.alert('Erro', 'Não foi possível salvar os dados do paciente.');
+    }
   };
 
   if (!patient) {
@@ -499,93 +529,59 @@ export default function PatientDetailsScreen() {
         </View>
       </ScrollView>
 
-      {/* Modal: Edição de paciente / Novo prontuário */}
+      {/* Modal: Novo prontuário / Editar prontuário */}
       <AppModal
-        visible={modalVisible}
-        onDismiss={() => { setModalVisible(false); setDeletingRecordId(null); }}
-        title={
-          !isEditing
-            ? 'Novo Prontuário'
-            : editingId
-              ? 'Editar Prontuário'
-              : 'Editar Paciente'
-        }
+        visible={recordModalVisible}
+        onDismiss={() => { setRecordModalVisible(false); setDeletingRecordId(null); }}
+        title={isEditing ? 'Editar Prontuário' : 'Novo Prontuário'}
         cancelTitle="Cancelar"
-        confirmTitle={isEditing && !editingId ? 'Salvar Alterações' : 'Salvar Prontuário'}
+        confirmTitle={isEditing ? 'Salvar Prontuário' : 'Salvar Prontuário'}
         onConfirm={handleSaveRecord}
       >
-        {isEditing && !editingId ? (
-          <>
-            <Input
-              label="Nome completo"
-              placeholder="Ex: Maria Oliveira"
-              value={patient?.name ?? ''}
-              onChangeText={(v) => { /* edição de paciente futura */ }}
-              accessibilityLabel="Nome completo do paciente"
-            />
-            <Input
-              label="E-mail"
-              placeholder="Ex: maria@email.com"
-              value={patient?.email ?? ''}
-              onChangeText={(v) => { /* edição de paciente futura */ }}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              accessibilityLabel="E-mail do paciente"
-            />
-            <Input
-              label="Telefone"
-              placeholder="Ex: (11) 98888-7777"
-              value={patient?.phone ?? ''}
-              onChangeText={(v) => { /* edição de paciente futura */ }}
-              accessibilityLabel="Telefone do paciente"
-            />
-            <Input
-              label="Anamnese"
-              placeholder="Queixa principal, histórico, observações..."
-              value={patient?.anamnesis ?? ''}
-              onChangeText={(v) => { /* edição de paciente futura */ }}
-              multiline
-              numberOfLines={3}
-              accessibilityLabel="Anamnese do paciente"
-            />
-          </>
-        ) : (
-          <>
-            <Input
-              label="Título da sessão"
-              placeholder="Ex: Sessão 01 - Anamnese"
-              value={title}
-              onChangeText={setTitle}
-              accessibilityLabel="Título do prontuário"
-            />
-            <Input
-              label="Data da sessão"
-              placeholder="AAAA-MM-DD"
-              value={date}
-              onChangeText={setDate}
-              accessibilityLabel="Data da sessão"
-            />
-            <Input
-              label="Conteúdo do prontuário"
-              placeholder="Evolução clínica, intervenções realizadas..."
-              value={content}
-              onChangeText={setContent}
-              multiline
-              numberOfLines={4}
-              accessibilityLabel="Conteúdo do prontuário"
-            />
-            <Input
-              label="Notas privadas"
-              placeholder="Observações sigilosas..."
-              value={privateNotes}
-              onChangeText={setPrivateNotes}
-              multiline
-              numberOfLines={2}
-              accessibilityLabel="Notas privadas do psicólogo"
-            />
-          </>
-        )}
+        <Input
+          label="Título da sessão"
+          placeholder="Ex: Sessão 01 - Anamnese"
+          value={title}
+          onChangeText={setTitle}
+          accessibilityLabel="Título do prontuário"
+        />
+        <Input
+          label="Data da sessão"
+          placeholder="AAAA-MM-DD"
+          value={date}
+          onChangeText={setDate}
+          accessibilityLabel="Data da sessão"
+        />
+        <Input
+          label="Conteúdo do prontuário"
+          placeholder="Evolução clínica, intervenções realizadas..."
+          value={content}
+          onChangeText={setContent}
+          multiline
+          numberOfLines={4}
+          accessibilityLabel="Conteúdo do prontuário"
+        />
+        <Input
+          label="Notas privadas"
+          placeholder="Observações sigilosas..."
+          value={privateNotes}
+          onChangeText={setPrivateNotes}
+          multiline
+          numberOfLines={2}
+          accessibilityLabel="Notas privadas do psicólogo"
+        />
       </AppModal>
+
+      {/* Modal: Edição dos dados do paciente (componente compartilhado).
+          O `key` remonta o formulário a cada abertura. */}
+      <PatientFormModal
+        key={patient?.id ?? 'paciente'}
+        visible={patientModalVisible}
+        mode="edit"
+        initial={patient}
+        onDismiss={() => setPatientModalVisible(false)}
+        onSubmit={handleSavePatient}
+      />
     </View>
   );
 }

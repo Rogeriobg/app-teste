@@ -45,8 +45,9 @@ describe('PatientsScreen — fluxos', () => {
 
     await fireEvent.press(screen.getByText('Cadastrar'));
 
+    // a validação acontece inline, no próprio campo
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith('Atenção', 'Informe o nome do paciente.');
+      expect(screen.getByText('Informe o nome do paciente.')).toBeTruthy();
     });
   });
 
@@ -60,7 +61,7 @@ describe('PatientsScreen — fluxos', () => {
     await fireEvent.press(screen.getByText('Cadastrar'));
 
     await waitFor(() => {
-      expect(alertSpy).toHaveBeenCalledWith('Atenção', 'Informe o e-mail do paciente.');
+      expect(screen.getByText('Informe o e-mail do paciente.')).toBeTruthy();
     });
   });
 
