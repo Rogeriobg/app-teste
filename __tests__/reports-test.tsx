@@ -404,9 +404,16 @@ describe('Relatórios e Exportação', () => {
         expect.objectContaining({ mimeType: 'application/pdf' })
       );
 
-      expect(alertSpy).toHaveBeenCalledWith(
+      /**
+       * O compartilhamento acontece **antes** de qualquer `Alert`.
+       *
+       * Um `Alert` nativo fica por cima da tela e, no Android, quebra o
+       * share sheet que é aberto em seguida — foi o que fazia o botão
+       * "Exportar PDF" falhar com "Não foi possível compartilhar o PDF".
+       */
+      expect(alertSpy).not.toHaveBeenCalledWith(
         'PDF gerado com sucesso',
-        expect.stringContaining('Maria Oliveira')
+        expect.anything()
       );
     });
 
@@ -419,7 +426,10 @@ describe('Relatórios e Exportação', () => {
       await fireEvent.press(screen.getByText('Exportar PDF'));
 
       await waitFor(() => {
-        expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível gerar o PDF.');
+        expect(alertSpy).toHaveBeenCalledWith(
+          'Erro',
+          expect.stringContaining('Não foi possível gerar o PDF.')
+        );
       });
       expect(mockedShareAsync).not.toHaveBeenCalled();
     });
@@ -433,7 +443,10 @@ describe('Relatórios e Exportação', () => {
       await fireEvent.press(screen.getByText('Exportar PDF'));
 
       await waitFor(() => {
-        expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível compartilhar o PDF.');
+        expect(alertSpy).toHaveBeenCalledWith(
+          'Erro',
+          expect.stringContaining('Não foi possível compartilhar o PDF.')
+        );
       });
     });
 

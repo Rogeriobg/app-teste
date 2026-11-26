@@ -135,6 +135,16 @@ const RN_TAGS = new Set([
   'ImageBackground',
 ]);
 
+/**
+ * Componentes cujo CONTEÚDO precisa poder encolher.
+ *
+ * `flex: 1` no texto de um botão faz o botão crescer até a largura do
+ * pai — no Yoga nativo isso estica o botão dentro de um `row` e espreme
+ * o irmão para fora da tela. No web o CSS mascara o efeito (o botão tem
+ * `width: auto`), por isso o defeito só aparecia no aparelho.
+ */
+const CONTENT_MUST_SHRINK = new Set(['Text', 'TextInput']);
+
 /* ---------------------------------------------------------------- */
 /* Análise por brace-depth                                           */
 /* ---------------------------------------------------------------- */
@@ -419,8 +429,96 @@ function walk(dir) {
   return out;
 }
 
+/**
+ * Regra extra: `flex: 1` no conteudo de um componente de largura fixa.
+ *
+ * Quando um `<Text>` (ou `<TextInput>`) tem `flex: 1` dentro de um
+ * componente cujo container e `flexShrink: 0` (botao, chip, badge),
+ * o texto cresce ate a largura do pai e o componente inteiro estica.
+ * Dentro de um `row`, isso empurra o irmao para fora da tela.
+ *
+ * O web nao reproduz: no CSS o botao tem `width: auto` e o texto cede
+ * espaco. No Yoga nativo o `flex: 1` cresce de verdade — foi assim que
+ * o botao "Novo Paciente" ocupou a largura toda no celular.
+ */
+function checkFixedWidthContent(file) {
+  const rel = path.relative(ROOT, file).replace(/\\/g, '/');
+  if (rel.includes('export-pdf')) return [];
+
+  const source = fs.readFileSync(file, 'utf8');
+  const byKey = extractStyleEntries(source);
+  const problems = [];
+
+  // estilos cujo container e fixo (flexShrink 0) E row
+  const fixedRowStyles = new Set(
+    [...byKey.entries()]
+      .filter(([, v]) => /flexShrink\s*:\s*0/.test(v) && /flexDirection\s*:\s*['"]row['"]/.test(v))
+      .map(([k]) => k)
+  );
+  if (fixedRowStyles.size === 0) return [];
+
+  /**
+   * Para cada elemento cujo style aponta para um container fixo, procura
+   * `<Text>` descendentes com `flex: 1`.
+   */
+  const STYLE_USE = /style=\{([^}]*(?:\{[^}]*\}[^}]*)*)\}/g;
+  let m;
+  while ((m = STYLE_USE.exec(source)) !== null) {
+    const refs = [...m[1].matchAll(/styles\.([A-Za-z_][A-Za-z0-9_]*)/g)].map((x) => x[1]);
+    if (!refs.some((r) => fixedRowStyles.has(r))) continue;
+
+    // o elemento que carrega esse style
+    const tagStart = source.lastIndexOf('<', m.index);
+    if (tagStart === -1) continue;
+    const tagMatch = /^<([A-Za-z][A-Za-z0-9.]*)/.exec(source.slice(tagStart));
+    if (!tagMatch) continue;
+
+    // percorre a arvore a partir do elemento
+    const stack = [m.index];
+    while (stack.length) {
+      const at = stack.pop();
+      const near = source.lastIndexOf('<', at);
+      if (near === -1) continue;
+      const nearMatch = /^<([A-Za-z][A-Za-z0-9.]*)/.exec(source.slice(near));
+      if (!nearMatch) continue;
+      const openEnd = source.indexOf('>', near);
+      if (openEnd === -1) continue;
+      if (source[openEnd - 1] === '/') continue;
+
+      // fecha a tag correspondente
+      const closeRe = new RegExp(`</\\s*${nearMatch[1]}\\s*>`);
+      const closeMatch = closeRe.exec(source.slice(openEnd + 1));
+      if (!closeMatch) continue;
+      const body = source.slice(openEnd + 1, openEnd + 1 + closeMatch.index);
+
+      // <Text> dentro deste elemento
+      const textRe = /<Text\b([^>]*?)>/g;
+      let tm;
+      while ((tm = textRe.exec(body)) !== null) {
+        const styleMatch = /style=\{([^}]*(?:\{[^}]*\}[^}]*)*)\}/.exec(tm[1] || '');
+        if (!styleMatch) continue;
+        const childRefs = [...styleMatch[1].matchAll(/styles\.([A-Za-z_][A-Za-z0-9_]*)/g)].map((x) => x[1]);
+        const values = childRefs.map((r) => byKey.get(r) || '').join('\n');
+        const inline = styleMatch[1];
+
+        const temFlex1 = /(^|[^a-zA-Z])flex\s*:\s*1\b/.test(values) || /(^|[^a-zA-Z])flex\s*:\s*1\b/.test(inline);
+        if (!temFlex1) continue;
+        if (/minWidth\s*:\s*0/.test(values) || /minWidth\s*:\s*0/.test(inline)) continue;
+
+        problems.push({
+          file: rel,
+          line: source.slice(0, openEnd + 1 + tm.index).split('\n').length,
+          message: `<Text> dentro de um container fixo (flexShrink: 0) com 'flex: 1' — o texto cresce até a largura do pai e o componente estica dentro do row, empurrando o irmão para fora da tela. Use 'flexShrink: 1' + 'minWidth: 0'`,
+        });
+      }
+    }
+  }
+
+  return problems;
+}
+
 const files = walk(SRC);
-const problems = files.flatMap(analyseFile);
+const problems = files.flatMap(analyseFile).concat(files.flatMap(checkFixedWidthContent));
 
 console.log('=== Gate de layout: transbordo horizontal ===');
 console.log(`arquivos analisados: ${files.length}`);

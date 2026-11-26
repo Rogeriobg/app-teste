@@ -9,7 +9,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { printToFileAsync } from 'expo-print';
-import { shareAsync } from 'expo-sharing';
+import { shareAsync, isAvailableAsync } from 'expo-sharing';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
 import { Button, Card, StatSummary } from '@/components';
@@ -286,31 +286,51 @@ export default function ExportPdfScreen() {
       });
 
       await Haptic.success();
-      Alert.alert(
-        'PDF gerado com sucesso',
-        `O prontuário de ${patient.name} foi gerado. Escolha um app para salvar ou compartilhar.`,
-      );
 
+      /**
+       * O compartilhamento vem **antes** de qualquer `Alert`.
+       *
+       * Um `Alert.alert` abre um diálogo nativo que fica **por cima** da
+       * tela; no Android o share sheet aberto em seguida falha ou fica
+       * escondido atrás do diálogo. O exemplo oficial do `expo-print`
+       * tambem compartilha direto, sem alerta intermediário.
+       */
       await handleSharePdf(uri);
-    } catch {
+    } catch (error) {
       await Haptic.error();
-      Alert.alert('Erro', 'Não foi possível gerar o PDF.');
+      const mensagem = error instanceof Error ? error.message : String(error);
+      Alert.alert('Erro', `Não foi possível gerar o PDF.\n\n${mensagem}`);
     } finally {
       setGenerating(false);
     }
   };
 
   const handleSharePdf = async (uri: string) => {
+    /**
+     * `isAvailableAsync` é o guard oficial: em web (e em Expo Go sem o
+     * módulo nativo) o compartilhamento não existe e `shareAsync` lança.
+     */
+    const disponivel = await isAvailableAsync();
+    if (!disponivel) {
+      Alert.alert(
+        'Compartilhamento indisponível',
+        'Este dispositivo não permite compartilhar arquivos. O PDF foi gerado, mas não pôde ser aberto.'
+      );
+      return;
+    }
+
     setSharing(true);
     try {
       await shareAsync(uri, {
         mimeType: 'application/pdf',
-        dialogTitle: `Prontuário - ${patient?.name}`,
+        UTI: '.pdf',
+        dialogTitle: `Prontuário - ${patient?.name ?? ''}`,
       });
       await Haptic.success();
-    } catch {
+    } catch (error) {
       await Haptic.error();
-      Alert.alert('Erro', 'Não foi possível compartilhar o PDF.');
+      const mensagem = error instanceof Error ? error.message : String(error);
+      Alert.alert('Erro', `Não foi possível compartilhar o PDF.\n\n${mensagem}`);
     } finally {
       setSharing(false);
     }

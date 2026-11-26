@@ -98,7 +98,18 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     paddingHorizontal: spacing.xl,
     minHeight: 48,
-    // nunca cresce além do pai: o texto é que trunca
+    /**
+     * O botão **nunca cresce**: dentro de um `row` ele ocupa só a
+     * largura do próprio conteúdo (ícone + texto + padding) e o resto
+     * fica com o irmão que cede espaço.
+     *
+     * `flexBasis: 'auto'` + `flexGrow: 0` + `flexShrink: 0` = o botão
+     * mantém a largura intrínseca. Sem isso, o `flex: 1` do texto (que
+     * existia) fazia o botão herdar a largura total do pai.
+     */
+    flexBasis: 'auto',
+    flexGrow: 0,
+    flexShrink: 0,
     maxWidth: '100%',
   },
   disabled: {
@@ -108,7 +119,20 @@ const styles = StyleSheet.create({
     ...typography.body,
     fontWeight: '700',
     textAlign: 'center',
-    flex: 1,
+    /**
+     * **NÃO** use `flex: 1` aqui.
+     *
+     * Com `flex: 1`, o texto cresce até ocupar o pai — e como o botão é
+     * filho de um `row` (o header de `/patients`, por exemplo), o botão
+     * inteiro inchava para a largura da tela, espremendo o título para
+     * fora. No web o CSS mascara isso (o botão tem `width: auto`); no
+     * Yoga nativo não.
+     *
+     * O encolhimento do texto é controlado por `numberOfLines` +
+     * `ellipsizeMode`, e o botão por `flexShrink: 0`.
+     */
+    flexShrink: 1,
+    minWidth: 0,
   },
   iconWrapper: {
     // permite que ícones lucide ocupem o espaço correto

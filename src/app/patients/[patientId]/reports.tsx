@@ -350,9 +350,10 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     justifyContent: 'center',
   },
-  /** Botão do header: largura fixa, nunca encolhe. */
+  /** Botão do header: largura fixa pelo próprio conteúdo, nunca encolhe. */
   headerAction: {
     flexShrink: 0,
+    flexGrow: 0,
     paddingHorizontal: spacing.lg,
   },
 
