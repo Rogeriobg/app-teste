@@ -30,7 +30,8 @@
 - Telas: campo de senha com mostrar/ocultar + "Esqueci minha senha" (`/recover-password`); Perfil → Segurança → Alterar senha, com código de 6 dígitos exibido uma única vez.
 - **Correção de migração (feedback do aparelho):** instalações antigas com `@psi_app_current_user_v1` entravam no dashboard e pulavam a senha. Novo marcador `@psi_app_session_v1` — só uma sessão que passou pelo `login()` restaura o usuário; `currentUser` começa `null` e `index.tsx` espera `authReady` (sem flash de login). O banco de dados é preservado, apenas a sessão antiga é descartada.
 - `ProfileScreen` passou a derivar nome/e-mail do `currentUser` (estado de edição separado) porque a sessão agora chega de forma assíncrona — o campo não fica mais vazio se a tela montar antes da carga.
-- 5 testes de auth; 152/152 no total, tsc/lint e 6 gates limpos. Testeável no Expo Go (`expo-crypto` é suportado).
+- **Cadastro de e-mail/senha reais (pedido do usuário):** nova rota `/register` acessível por "Cadastrar meu acesso" no login (só enquanto a senha padrão está ativa). Substitui o usuário do seed por nome/e-mail reais, salva a senha com hash, gera código de recuperação exibido uma única vez e volta ao login (não cria sessão). `registerUser()` no `AppContext`. Corrigido `updateUser()` para também atualizar `db.users` — trocar e-mail no Perfil agora reflete no login. Novo helper `mockAsyncStorage()` nos testes.
+- 157/157 testes, tsc/lint e 6 gates limpos. Testeável no Expo Go (`expo-crypto` é suportado).
 
 ---
 

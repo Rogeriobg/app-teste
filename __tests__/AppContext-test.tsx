@@ -1,6 +1,6 @@
 import { act, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession, mockAsyncStorage } from './helpers/renderWithProvider';
 import { MedicalRecord, Patient } from '@/context/AppContext';
 
 const DB_KEY = '@psi_app_db_json_v1';
@@ -123,6 +123,91 @@ describe('AppContext', () => {
       });
 
       expect(current.currentUser).toBeNull();
+    });
+
+    it('deve atualizar db.users para que o novo e-mail sirva para login', async () => {
+      const { current } = await renderWithProvider(<></>);
+
+      await waitFor(() => expect(current.authReady).toBe(true));
+      await act(async () => {
+        await current.updateUser({ email: 'novo.email@psicowave.com' });
+      });
+
+      await waitFor(() =>
+        expect(current.db.users[0].email).toBe('novo.email@psicowave.com')
+      );
+      await act(async () => {
+        await current.logout();
+      });
+      let ok = false;
+      await act(async () => {
+        ok = await current.login('novo.email@psicowave.com', 'PsiApp2026');
+      });
+      expect(ok).toBe(true);
+    });
+  });
+
+  describe('registerUser', () => {
+    // precisa de storage com persistência real: a senha é gravada e depois
+    // lida por verifyPassword() no login
+    beforeEach(() => mockAsyncStorage());
+
+    it('cadastra e-mail/senha reais, substitui o padrão e não cria sessão', async () => {
+      const { current } = await renderWithProvider(<></>);
+
+      await waitFor(() => expect(current.authReady).toBe(true));
+      const pacientesAntes = current.db.patients.length;
+      const prontuariosAntes = current.db.medicalRecords.length;
+
+      let recoveryCode = '';
+      await act(async () => {
+        const r = await current.registerUser({
+          name: 'Dra. Maria Oliveira',
+          email: 'maria@consultorio.com',
+          senha: 'MinhaSenha123',
+        });
+        recoveryCode = r.recoveryCode;
+      });
+
+      expect(recoveryCode).toMatch(/^\d{6}$/);
+      expect(current.db.users[0].email).toBe('maria@consultorio.com');
+      expect(current.db.users[0].name).toBe('Dra. Maria Oliveira');
+      // cadastro não autentica — o usuário volta ao login
+      expect(current.currentUser).toBeNull();
+      // dados clínicos preservados
+      expect(current.db.patients).toHaveLength(pacientesAntes);
+      expect(current.db.medicalRecords).toHaveLength(prontuariosAntes);
+
+      // o e-mail antigo não serve mais; o novo entra com a nova senha
+      let antigo = true;
+      let novo = false;
+      await act(async () => {
+        antigo = await current.login('psicologo@psicowave.com', 'PsiApp2026');
+      });
+      await act(async () => {
+        novo = await current.login('maria@consultorio.com', 'MinhaSenha123');
+      });
+      expect(antigo).toBe(false);
+      expect(novo).toBe(true);
+    });
+
+    it('rejeita a senha antiga após o cadastro', async () => {
+      const { current } = await renderWithProvider(<></>);
+
+      await waitFor(() => expect(current.authReady).toBe(true));
+      await act(async () => {
+        await current.registerUser({
+          name: 'Dr. João',
+          email: 'joao@consultorio.com',
+          senha: 'SenhaNova456',
+        });
+      });
+
+      let ok = true;
+      await act(async () => {
+        ok = await current.login('joao@consultorio.com', 'PsiApp2026');
+      });
+      expect(ok).toBe(false);
     });
   });
 

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -14,19 +14,34 @@ import { useThemeStyles } from '@/theme/hooks';
 import { useTheme } from '@/theme/context';
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
-import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShieldCheck, HelpCircle } from 'lucide-react-native';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShieldCheck, HelpCircle, UserPlus } from 'lucide-react-native';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { isDefaultPassword } from '@/services/auth';
 
 export default function LoginScreen() {
-  const { login } = useApp();
+  const { login, db } = useApp();
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
   const { theme } = useTheme();
-  const [email, setEmail] = useState('psicologo@psicowave.com');
+
+  // `null` = ainda sem edição: usa o e-mail cadastrado no banco (que muda
+  // depois do cadastro e é carregado do storage de forma assíncrona)
+  const [emailEdit, setEmailEdit] = useState<string | null>(null);
+  const email = emailEdit ?? db.users[0]?.email ?? '';
   const [senha, setSenha] = useState('');
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  // o cadastro só faz sentido enquanto as credenciais padrão estão ativas
+  const [podeCadastrar, setPodeCadastrar] = useState(false);
+
+  useEffect(() => {
+    let ativo = true;
+    isDefaultPassword().then((padrao) => {
+      if (ativo) setPodeCadastrar(padrao);
+    }).catch(() => {});
+    return () => { ativo = false; };
+  }, []);
 
   const handleLogin = async () => {
     if (!email.trim()) {
@@ -80,7 +95,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.input}
               value={email}
-              onChangeText={setEmail}
+              onChangeText={setEmailEdit}
               placeholder="E-mail do psicólogo"
               placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
@@ -148,6 +163,21 @@ export default function LoginScreen() {
               </>
             )}
           </TouchableOpacity>
+
+          {podeCadastrar ? (
+            <TouchableOpacity
+              style={styles.cadastrarBtn}
+              onPress={() => router.push('/register')}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel="Cadastrar meu acesso"
+            >
+              <UserPlus size={16} color={theme.colors.primary} />
+              <Text style={[styles.cadastrarText, css.primary]} numberOfLines={1} ellipsizeMode="tail">
+                Cadastrar meu acesso
+              </Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -228,4 +258,13 @@ const styles = StyleSheet.create({
   },
   loadingButton: { opacity: 0.7 },
   primaryButtonText: { ...typography.body, color: colors.textOnBrand, fontWeight: 'bold', fontSize: 15 },
+  cadastrarBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    minHeight: 44,
+    marginTop: spacing.md,
+  },
+  cadastrarText: { ...typography.label, flexShrink: 1, minWidth: 0 },
 });

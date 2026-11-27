@@ -20,6 +20,13 @@
 - **Quem usava o app antes da senha:** ao atualizar, a sessão antiga é
   descartada e o app abre no login (os dados de pacientes/prontuários ficam
   intactos). Entre com a senha padrão acima.
+- **Cadastro com dados reais:** na tela de login, toque em
+  **Cadastrar meu acesso** (disponível enquanto a senha padrão estiver ativa)
+  e informe nome, e-mail e senha. O cadastro substitui o e-mail/senha padrão,
+  gera um novo código de recuperação exibido uma única vez e **volta ao login**
+  para conferir o acesso. O link de cadastro desaparece depois disso.
+- Trocar o e-mail em **Perfil** também atualiza o e-mail de login (antes, a
+  troca valia só para a sessão e o usuário ficava sem conseguir entrar).
 
 ---
 

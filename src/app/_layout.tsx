@@ -33,6 +33,7 @@ export default function RootLayout() {
           <Stack.Screen name="index" />
           <Stack.Screen name="login" />
           <Stack.Screen name="recover-password" />
+          <Stack.Screen name="register" />
           <Stack.Screen name="dashboard" />
           <Stack.Screen name="patients" />
           <Stack.Screen name="patients/[patientId]/reports" />

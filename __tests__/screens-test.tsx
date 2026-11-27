@@ -8,6 +8,7 @@ import DashboardScreen from '@/app/dashboard';
 import PatientsScreen from '@/app/patients';
 import ProfileScreen from '@/app/profile';
 import PatientDetailsScreen from '@/app/patients/[patientId]/details';
+import RegisterScreen from '@/app/register';
 
 const mockedUseLocalSearchParams = useLocalSearchParams as jest.Mock;
 
@@ -263,6 +264,46 @@ describe('Telas', () => {
       await waitFor(() => {
         expect(screen.getByText('Sessão Inicial - Anamnese')).toBeTruthy();
       });
+    });
+  });
+
+  describe('RegisterScreen', () => {
+    it('valida os campos antes de cadastrar', async () => {
+      await renderWithProvider(<RegisterScreen />);
+
+      await fireEvent.press(screen.getByLabelText('Cadastrar acesso'));
+      await waitFor(() => {
+        expect(screen.getByText('Informe seu nome completo.')).toBeTruthy();
+      });
+    });
+
+    it('cadastra e exibe o código de recuperação uma única vez', async () => {
+      const { current } = await renderWithProvider(<RegisterScreen />);
+
+      await waitFor(() => expect(current.authReady).toBe(true));
+      await fireEvent.changeText(
+        screen.getByLabelText('Nome completo do psicólogo'),
+        'Dra. Maria Oliveira'
+      );
+      await fireEvent.changeText(
+        screen.getByLabelText('E-mail de acesso'),
+        'maria@consultorio.com'
+      );
+      await fireEvent.changeText(
+        screen.getByLabelText('Senha de acesso'),
+        'SenhaReal123'
+      );
+      await fireEvent.changeText(
+        screen.getByLabelText('Confirmar senha'),
+        'SenhaReal123'
+      );
+      await fireEvent.press(screen.getByLabelText('Cadastrar acesso'));
+
+      await waitFor(() => {
+        expect(screen.getByText('Cadastro concluído')).toBeTruthy();
+      });
+      expect(screen.getByText(/^\d{6}$/)).toBeTruthy();
+      expect(current.db.users[0].email).toBe('maria@consultorio.com');
     });
   });
 });

@@ -13,7 +13,7 @@ import { AppProvider, useApp, AppContextData } from '@/context/AppContext';
  * Os testes de autenticação NÃO devem chamar isso (querem começar sem
  * sessão para verificar o fluxo de login).
  */
-export function mockAuthenticatedSession() {
+export function mockAsyncStorage() {
   const store: Record<string, string> = {};
   (AsyncStorage.getItem as jest.Mock).mockImplementation(
     async (key: string) => store[key] ?? null
@@ -28,6 +28,11 @@ export function mockAuthenticatedSession() {
       delete store[key];
     }
   );
+  return store;
+}
+
+export function mockAuthenticatedSession() {
+  const store = mockAsyncStorage();
   store['@psi_app_session_v1'] = 'u1';
   store['@psi_app_current_user_v1'] = JSON.stringify({
     id: 'u1',

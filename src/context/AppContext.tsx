@@ -60,6 +60,16 @@ export interface AppContextData {
   checkPassword: (senha: string) => Promise<boolean>;
   /** Troca a senha e devolve o novo código de recuperação (6 dígitos). */
   changePassword: (novaSenha: string) => Promise<{ recoveryCode: string }>;
+  /**
+   * Cadastra o e-mail e a senha reais do psicólogo (conta única),
+   * substituindo as credenciais padrão. NÃO autentica — o usuário volta
+   * ao login para entrar com os dados recém-cadastrados.
+   */
+  registerUser: (dados: {
+    name: string;
+    email: string;
+    senha: string;
+  }) => Promise<{ recoveryCode: string }>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<Pick<User, 'name' | 'email'>>) => Promise<void>;
   exportData: () => Promise<void>;
@@ -186,6 +196,29 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   const changePassword = async (novaSenha: string) => salvarSenha(novaSenha);
 
+  /**
+   * Cadastro único: substitui o usuário do seed pelo e-mail/nome reais e
+   * define a senha. Os prontuários/pacientes são preservados.
+   * Não cria sessão — a navegação volta ao login para conferir o acesso.
+   */
+  const registerUser = async ({ name, email, senha }: {
+    name: string;
+    email: string;
+    senha: string;
+  }) => {
+    const emailLimpo = email.trim().toLowerCase();
+    const usuarios = db.users.length ? db.users : defaultDb.users;
+    const primeiro = usuarios[0];
+    const atualizado: User = {
+      ...primeiro,
+      name: name.trim() || primeiro.name,
+      email: emailLimpo,
+    };
+    await saveDb({ ...db, users: [atualizado, ...usuarios.slice(1)] });
+    const { recoveryCode } = await salvarSenha(senha);
+    return { recoveryCode };
+  };
+
   const logout = async () => {
     setCurrentUser(null);
     setActiveScreen('login');
@@ -205,6 +238,12 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     } catch (e) {
       console.warn('AsyncStorage save user error', e);
     }
+    // o login consulta db.users — sem isso, trocar o e-mail no Perfil
+    // deixaria o usuário sem conseguir entrar novamente
+    await saveDb({
+      ...db,
+      users: db.users.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+    });
   };
 
   const exportData = async () => {
@@ -333,6 +372,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         login,
         checkPassword,
         changePassword,
+        registerUser,
         logout,
         updateUser,
         exportData,
