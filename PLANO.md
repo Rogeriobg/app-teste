@@ -81,9 +81,10 @@ para todas as telas:
 
 ### Não-objetivos
 
-- **Dark mode** — ~~não é prioridade da v1~~ **movido para a Etapa 6**
-  (ciclo 2 da esteira), apenas como preset "Noite Aconchegante", sem seguir
-  o tema do sistema na v1. Ver `ANALISE-ETAPA6.md`.
+- **Dark mode** — **continua fora do escopo** (decisão de 2026-11-27).
+  A Etapa 6 terá apenas 4 presets claros; o seletor Personalizado também
+  fica restrito a fundos claros suaves. `app.json` mantém
+  `userInterfaceStyle: light`. Ver `ANALISE-ETAPA6.md`.
 - **Multi-perfil** (equipe, supervisão) — só `role: 'psicologo'` existe.
 - **Sincronização em nuvem / servidor** — o produto é local-first.
 - **Notificações push / lembretes de sessão** — fora do escopo da v1.
@@ -178,11 +179,12 @@ quebrar contraste.
 
 ### Decisões de produto (ajustadas pela análise)
 
-1. **5 presets curados + "Personalizado" + "Restaurar padrão".**
+1. **4 presets curados + "Personalizado" + "Restaurar padrão".**
 2. **Prévia antes de aplicar** — o tema só muda no app inteiro ao tocar em
    "Aplicar tema". Implementar com `ThemeScope` (override local na prévia).
 3. **Personalização limitada** — o usuário não escolhe combinações
    ilegíveis; pares abaixo de 4,5:1 são bloqueados ou corrigidos com aviso.
+   **Fundos escuros não são permitidos** (decisão de 2026-11-27).
 4. **Tamanho de fonte** (`Pequeno`/`Padrão`/`Grande`) é acessibilidade.
 
 ### Presets (com as correções de contraste aplicadas)
@@ -193,18 +195,18 @@ quebrar contraste.
 | **Jardim Calmo** | `#F4F7F4` | `#FFFFFF` | `#567C61` | `#233026` | 4,72:1 ✅ | Equilíbrio, natureza |
 | **Terracota Suave** | `#FDF6F3` | `#FFFFFF` | `#A85F4B` | `#382621` | 4,77:1 ✅ | Calor, empatia |
 | **Brisa Serena** | `#F3F7FA` | `#FFFFFF` | `#527999` | `#1E2B36` | 4,61:1 ✅ | Clareza, confiança |
-| **Noite Aconchegante** (dark) | `#18171C` | `#232129` | `#A594C2` | `#F0EEF5` | 5,76:1 ✅ | Conforto noturno |
 
-> Os valores originais `#5B8266` (4,35:1) e `#C07A65` (3,38:1) **falhavam
-> WCAG AA** e foram ajustados mantendo a família de cor.
+> **Tema escuro removido do escopo (2026-11-27).** Os valores originais
+> `#5B8266` (4,35:1) e `#C07A65` (3,38:1) **falhavam WCAG AA** e foram
+> ajustados mantendo a família de cor.
 
 ### Regras do plano (alterações)
 
 - **Não-objetivo "Dark mode" removido** — existe só como preset Noite, sem
   seguir o tema do sistema na v1.
-- **`app.json`:** `userInterfaceStyle` de `light` → `automatic`, **mais**
-  `Appearance.setColorScheme(...)` para travar o scheme do app (senão o
-  sistema sobrescreve os presets claros em aparelho escuro).
+- **`app.json`:** `userInterfaceStyle` **permanece `light`** (decisão
+  2026-11-27). Sem preset escuro, não há `Appearance.setColorScheme` nem
+  variante `dark` no splash.
 - **Regra 1 (zero literal):** única exceção permitida — os presets vivem em
   `src/theme/presets.ts`. Cores de status continuam em `tokens.ts`; o tema
   troca só `background`, `surface`, `primary`, `text` e derivados.
@@ -221,7 +223,7 @@ quebrar contraste.
   **não** `'dark-content' | 'light-content'`.
 - `contrast.ts` — `luminance`, `contrastRatio`, `getReadableTextColor`.
 - `storage.ts` — **D1 resolvido**: AsyncStorage + `SplashScreen`.
-- `presets.ts` — os 5 temas (única exceção de hex literal).
+- `presets.ts` — os **4 temas claros** (única exceção de hex literal).
 
 ### Backlog P1–P9
 
@@ -229,25 +231,28 @@ quebrar contraste.
 |---|------|--------------------|--------|
 | **P1** | ThemeContext + tokens + `ThemeScope` + presets | `tsc` limpo; `useTheme()` devolve `colors`, `fontScale`, `setTheme`, `resetTheme`; teste de troca/restauração | Aberto |
 | **P2** | Migração dos componentes (base → dados → 7 rotas) | `grep` de `#` no `src/` retorna só `tokens.ts`/`presets.ts`; nenhum componente importa cor direto de `tokens` | Aberto |
-| **P3** | Persistência sem flash (AsyncStorage + SplashScreen) | Abrir com tema escuro salvo não mostra frame claro; ressalva: Expo Go não reproduz splash nativa (validar em release) | Aberto |
-| **P4** | Contraste automático + presets corrigidos | Todo par texto/fundo ≥ 4,5:1 (≥3:1 em ≥18px ou bold ≥14px); teste percorre os 5 presets | Aberto |
-| **P5** | StatusBar dinâmica | `'light'`/`'dark'` corretos nos 5 presets × 7 rotas | Aberto |
-| **P6** | Tela `/appearance` (via `/profile`) — prévia com `ThemeScope`, grade de temas, rodapé | "Aplicar tema" persiste; sair sem aplicar descarta; haptic de sucesso | Aberto |
+| **P3** | Persistência sem flash (AsyncStorage + SplashScreen) | Abrir com qualquer preset salvo não mostra frame de tema diferente; como todos os fundos são claros, um frame inicial é imperceptível | Aberto |
+| **P4** | Contraste automático + presets corrigidos | Todo par texto/fundo ≥ 4,5:1 (≥3:1 em ≥18px ou bold ≥14px); teste percorre os **4** presets | Aberto |
+| **P5** | StatusBar fixa | `style="dark"` (dark-content) nos 4 presets × 7 rotas — sem dinamismo | Aberto |
+| **P6** | Tela `/appearance` (via `/profile`) — prévia com `ThemeScope`, grade de 4 temas, rodapé | "Aplicar tema" persiste; sair sem aplicar descarta; haptic de sucesso | Aberto |
 | **P7** | Tamanho de fonte (3 níveis) | 3 escalas sem truncar em 360dp e 430dp — extensão da fase 4b medindo no DOM | Aberto |
-| **P8** | Seletor de cor personalizado com limites | cor do botão livre; fundo restrito; combinações <4,5:1 bloqueadas/corrigidas | Aberto |
+| **P8** | Seletor de cor personalizado com limites | cor do botão livre; **fundo restrito a tons claros suaves**; combinações <4,5:1 bloqueadas/corrigidas | Aberto |
 | **P9** | Restaurar padrão | Volta a Acolhimento + fonte Padrão, com confirmação | Aberto |
 
-### Riscos (R7–R10 + novos)
+### Riscos (R7–R12)
 
 | # | Risco | Mitigação |
 |---|-------|-----------|
 | R7 | Terracota com texto branco (3,38:1) | Preset corrigido para `#A85F4B` + `getReadableTextColor` |
 | **R11** | Jardim Calmo 4,35:1 | Preset corrigido para `#567C61` |
 | **R12** | MMKV exigiria dev build (Expo Go) | D1: AsyncStorage + SplashScreen |
-| **R13** | `userInterfaceStyle: automatic` sozinho não trava o scheme | `Appearance.setColorScheme` no provider |
+| **R14** | Seletor Personalizado permitir fundo escuro e trazer o problema de volta | Restringir a tons claros suaves no P8 |
 | R8 | Migração reintroduzir transbordo | `validate:layout` em cada grupo migrado |
 | R9 | Fonte Grande estourar headers | medição DOM em 3 escalas × 2 larguras |
 | R10 | Cobertura não cobrir `ThemeContext` | estender `coverageThreshold` |
+
+> **R13 eliminado** (`userInterfaceStyle` / `Appearance.setColorScheme`):
+> sem tema escuro, o `app.json` permanece `light`.
 
 ### Ordem recomendada (architect)
 

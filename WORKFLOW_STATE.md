@@ -29,24 +29,30 @@
 > Análise de viabilidade: `ANALISE-ETAPA6.md` — **viável com 6 correções**.
 > Decisões do architect (D1–D3) **pré-resolvidas pela análise**, mas sujeitas
 > a confirmação formal na etapa 2 deste ciclo.
+>
+> **Decisão de produto (2026-11-27): tema escuro FORA do escopo.**
+> 4 presets claros apenas; `app.json` permanece `light`; sem
+> `Appearance.setColorScheme`, sem StatusBar dinâmica e sem splash variante
+> dark. R13 eliminado; R14 adicionado (Personalizado não pode permitir fundo
+> escuro, senão o problema volta pela porta dos fundos).
 
 | Etapa | Agente | Status | Ciclo | Observações |
 |-------|--------|--------|-------|-------------|
-| 1 | planner | [PENDENTE] | 2 | Validar proposta da Etapa 6 com a análise (`ANALISE-ETAPA6.md`) e aceitar os 6 ajustes: D1 AsyncStorage, D2 verificar picker, presets corrigidos, tipo `StatusBarStyle`, `Appearance.setColorScheme`, gates evoluídos. |
-| 2 | architect | [PENDENTE] | 2 | Fechar D1–D3. Ordem: P1 → P4 → P2 → P3 → P5 → P7 → P6 → P8 → P9. Definir `ThemeScope`, restrição de layout estático nos gates e extensão do `validate:contrast`. |
+| 1 | planner | [PENDENTE] | 2 | Validar proposta da Etapa 6 com a análise (`ANALISE-ETAPA6.md`) e aceitar os ajustes: D1 AsyncStorage, D2 verificar picker, presets corrigidos, tipo `StatusBarStyle`, restrição a fundos claros, gates evoluídos. **Tema escuro fora.** |
+| 2 | architect | [PENDENTE] | 2 | Fechar D1–D3. Ordem: P1 → P4 → P2 → P3 → P5 → P7 → P6 → P8 → P9. Definir `ThemeScope`, restrição de layout estático nos gates e extensão do `validate:contrast` para os 4 presets. |
 | 3 | mobile-ui | [PENDENTE] | 2 | Implementar P1–P9 na ordem acima, um commit por item, com `validate:layout`/`validate:touch` a cada grupo migrado. Carregar skill `mobile-designer`. |
-| 4 | qa-vision | [PENDENTE] | 2 | Validar 5 presets × 3 tamanhos de fonte em 360dp e 430dp; fase 4c no aparelho (5 presets, sem flash, StatusBar). |
-| 5 | release-prep | [PENDENTE] | 2 | `app.json`: `userInterfaceStyle: automatic`; conferir plugins nativos novos (D2); atualizar RELEASE.md com o preset Noite e a ressalva da splash no Expo Go. |
+| 4 | qa-vision | [PENDENTE] | 2 | Validar **4 presets** × 3 tamanhos de fonte em 360dp e 430dp; fase 4c no aparelho (4 presets, persistência, StatusBar fixa). |
+| 5 | release-prep | [PENDENTE] | 2 | **`app.json` inalterado** (`userInterfaceStyle: light`); conferir plugins nativos novos (D2); atualizar RELEASE.md com os 4 presets. |
 
 ### Gate do Ciclo 2 — **PENDENTE**
 
 | # | Verificação | Status |
 |---|-------------|--------|
-| G1 | `validate:contrast` estendido — 5 presets × fundo próprio × `onPrimary` | A criar |
+| G1 | `validate:contrast` estendido — **4 presets** × fundo próprio × `onPrimary` | A criar |
 | G2 | `validate:layout` — 3 escalas de fonte em 360dp e 430dp (DOM) | A estender |
 | G3 | `validate:touch` — 44px | ✅ Reutilizar |
 | G4 | `validate:workflow` | ✅ Reutilizar |
-| G5 | Fase 4c — 5 presets × 3 fontes no aparelho real | A executar |
+| G5 | Fase 4c — **4 presets** × 3 fontes no aparelho real | A executar |
 
 **Regra:** se qualquer bug **médio/alto** deste ciclo ficar aberto, o gate volta a
 `BLOQUEADO` e nenhum item novo entra — mesma regra do Ciclo 1.

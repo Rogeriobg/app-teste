@@ -16,6 +16,44 @@ implementação falhar ou ser impossível de validar no celular.
 
 ---
 
+## ✂️ Decisão do produto (2026-11-27): tema escuro FORA do escopo
+
+O usuário decidiu **remover o preset "Noite Aconchegante"** da Etapa 6.
+A recomendação técnica é **aprovar** — foi exatamente a única parte que não
+podia ser verificada no ambiente dele (Expo Go + build manual).
+
+### Impacto da remoção
+
+| Item | Antes | Depois |
+|---|---|---|
+| Presets | 5 | **4** (todos claros) |
+| `app.json` `userInterfaceStyle` | `automatic` + `Appearance.setColorScheme` | **continua `light`** ✅ |
+| Risco R13 (sistema sobrescrever tema) | presente | **eliminado** |
+| StatusBar (P5) | dinâmica por preset | **fixa** em `style="dark"` — trivial |
+| Flash na abertura (P3) | dependia de build release para validar | frame claro sobre fundo claro → **imperceptível** |
+| Pares de contraste (P4) | 5 presets × 3 pares | 4 presets × 3 pares, todos ✅ |
+| Splash com variante `dark` | necessária | **desnecessária** |
+
+### Contraste dos 4 presets restantes (recalculado)
+
+| Preset | Texto/superfície | Primária/superfície | Veredito |
+|---|---|---|---|
+| Acolhimento | 14,11:1 | 4,82:1 | ✅ |
+| Jardim Calmo (`#567C61`) | 13,80:1 | 4,72:1 | ✅ |
+| Terracota Suave (`#A85F4B`) | 14,31:1 | 4,77:1 | ✅ |
+| Brisa Serena | 14,44:1 | 4,61:1 | ✅ |
+
+### ⚠️ Consequência obrigatória
+
+O seletor **Personalizado (P8) deve ser restrito a fundos claros suaves**.
+Sem isso o tema escuro volta pelo seletor, trazendo de volta o splash, o
+`setColorScheme` e a StatusBar dinâmica que acabamos de eliminar.
+
+**As 6 correções abaixo seguem válidas**, exceto a #5 (`Appearance.setColorScheme`)
+que deixa de existir — `userInterfaceStyle` permanece `light`.
+
+---
+
 ## ✅ O que está correto na proposta
 
 | Decisão | Avaliação |
@@ -81,7 +119,8 @@ plano B: seletor próprio com `Slider` + swatches (sem dependência nova).
 
 ### 3. Presets — **2 falham contraste AA** (confirmado por cálculo WCAG)
 
-Rodei o cálculo da própria proposta nos 5 presets:
+Rodei o cálculo da própria proposta **original** nos 5 presets (incluindo
+o Noite, depois removido do escopo):
 
 | Preset | Texto/superfície | Primária/superfície | Veredito |
 |---|---|---|---|
@@ -121,21 +160,12 @@ usar `'light' | 'dark'` diretamente. `'light-content'` causaria erro de TS.
 
 ---
 
-### 5. `userInterfaceStyle: automatic` **não basta**
+### 5. `userInterfaceStyle` — ~~`automatic` + `setColorScheme`~~ **resolvido**
 
-Com `automatic`, o sistema operacional ainda pode forçar o tema do dispositivo
-sobre o app. A proposta diz "o tema do app (não o do sistema) decide as cores"
-— para isso é preciso travar o scheme:
-
-```ts
-Appearance.setColorScheme(
-  presetId === 'noite' ? 'dark' : 'light'
-);
-```
-
-`Appearance.setColorScheme` existe no RN 0.88 (confirmado em
-`types_generated/.../Appearance.d.ts`). Sem isso, um usuário com o celular em
-modo escuro veria o preset Acolhimento com style escuro do sistema.
+Com a saída do tema escuro, `app.json` **continua `userInterfaceStyle: light`**.
+Não há mais necessidade de `Appearance.setColorScheme`, nem de variante
+`dark` no plugin do splash. (O problema original estava descrito aqui; a
+decisão de produto o eliminou.)
 
 ---
 
@@ -219,7 +249,7 @@ presets corrigidos — não migra para cor que depois muda.
 | `validate:contrast` estendido (presets × fundos × onPrimary) | A criar |
 | `validate:layout` (360/430, 3 escalas de fonte) | A estender |
 | `validate:touch` | ✅ existe |
-| Fase 4c — 5 presets × 3 fontes no aparelho | A executar |
+| Fase 4c - 4 presets × 3 fontes no aparelho | A executar |
 
 ---
 
