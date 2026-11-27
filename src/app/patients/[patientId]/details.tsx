@@ -700,9 +700,14 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     ...shadowCard,
   },
+  /**
+   * Alvo de toque de 44x44 px (Apple HIG / WCAG 2.5.8).
+   *
+   * O ícone continua com 20px; quem cresce é a **área de toque**.
+   */
   backBtn: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.lg,
     backgroundColor: colors.cardInner,
     borderWidth: 1,
@@ -719,7 +724,8 @@ const styles = StyleSheet.create({
     flexShrink: 1,
     textAlign: 'center',
   },
-  topBarSpacer: { width: 40, height: 40, flexShrink: 0 },
+  // espaço reservado simétrico ao backBtn (44px), para centralizar o título
+  topBarSpacer: { width: 44, height: 44, flexShrink: 0 },
 
   scroll: { padding: spacing.xl, gap: spacing.lg },
 
@@ -792,7 +798,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   sectionHeaderTitle: { flex: 1, minWidth: 0, flexShrink: 1 },
-  addRecordBtn: { paddingVertical: spacing.sm, minHeight: 40, flexShrink: 0 },
+  // botão "Novo" nao pode ficar abaixo de 44px de altura
+  addRecordBtn: { paddingVertical: spacing.sm, minHeight: 44, flexShrink: 0 },
 
   /* Informações */
   infoCard: { borderRadius: radius.xl, padding: spacing.lg, gap: spacing.md },
@@ -835,18 +842,38 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   recordIconArchived: { backgroundColor: colors.mutedSoft },
-  recordInfo: { flex: 1, minWidth: 0, gap: 2 },
+  // areas de toque: abrem o prontuário; mínimo 44px (HIG / WCAG 2.5.8)
+  recordInfo: { flex: 1, minWidth: 0, gap: 2, minHeight: 44, justifyContent: 'center' },
   recordTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
   recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
   recordDate: { ...typography.caption, color: colors.textTertiary },
-  recordContentWrap: { marginTop: -spacing.xs },
+  /**
+   * Área de toque que abre o prontuário.
+   *
+   * `alignSelf: 'stretch'` é importante: sem largura declarada, um filho
+   * de `View` pode ficar com a largura intrínseca do texto (18px no
+   * gate). Com stretch ele ocupa a largura do card — e o alvo de toque
+   * passa a ser a linha inteira, como esperado.
+   */
+  recordContentWrap: {
+    marginTop: -spacing.xs,
+    minHeight: 44,
+    alignSelf: 'stretch',
+    justifyContent: 'center',
+  },
   recordContent: { ...typography.bodyRegular, color: colors.textSecondary, lineHeight: 19 },
   recordContentArchived: { color: colors.textTertiary },
   recordActions: { flexDirection: 'row', gap: spacing.xs, flexShrink: 1, minWidth: 0 },
+  /**
+   * Alvo de toque de 44x44 px.
+   *
+   * Antes era 34x34 — abaixo do mínimo recomendado (Apple HIG) e do
+   * WCAG 2.5.8 (AA). O ícone continua 16px; só a área de toque cresce.
+   */
   iconAction: {
-    width: 34,
-    height: 34,
-    borderRadius: radius.md,
+    width: 44,
+    height: 44,
+    borderRadius: radius.lg,
     backgroundColor: colors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',

@@ -150,6 +150,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
+    // alvo de toque: nunca abaixo de 44px (HIG / WCAG 2.5.8)
+    minHeight: 44,
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',

@@ -368,7 +368,18 @@ const styles = StyleSheet.create({
   recordIconRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1, minWidth: 0 },
   recordTitle: { ...typography.headline, color: colors.textPrimary, flex: 1, minWidth: 0 },
   recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
-  viewBtn: { padding: spacing.sm },
+  /**
+   * Botão de editar prontuário: alvo de toque de 44x44 px.
+   *
+   * Antes era `padding: 6` com ícone 16 (~30px) — abaixo do mínimo.
+   */
+  viewBtn: {
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
+    flexShrink: 0,
+  },
   recordDate: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, ...typography.caption, color: colors.textSecondary, marginBottom: spacing.lg },
   recordContent: { ...typography.bodyRegular, color: colors.contentMuted, lineHeight: 20, marginBottom: spacing.lg },
   recordActions: { flexDirection: 'row', gap: spacing.lg },
@@ -408,6 +419,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.inputBorder,
     borderRadius: radius.lg,
+    // alvo de toque do calendário: mínimo 44px
+    minHeight: 44,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',

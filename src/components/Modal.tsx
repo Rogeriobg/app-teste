@@ -147,6 +147,9 @@ const styles = StyleSheet.create({
   btn: {
     flex: 1,
     paddingVertical: spacing.lg,
+    // botões do modal: mínimo 44px de altura (HIG / WCAG 2.5.8)
+    minHeight: 44,
+    justifyContent: 'center',
     borderRadius: radius.lg,
     alignItems: 'center',
   },

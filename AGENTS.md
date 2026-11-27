@@ -64,7 +64,10 @@ Run before declaring a UI task done:
 
 ```bash
 npm run validate:layout   # reprova transbordo horizontal
+npm run validate:touch    # reprova alvo de toque < 44x44 px
 ```
+
+Ambos rodam no CI e são portões obrigatórios.
 
 **UI tasks must load the `mobile-designer` skill** and record which rules
 were applied. See `AUDITORIA.md` for why this became mandatory.

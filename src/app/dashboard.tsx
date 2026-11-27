@@ -258,9 +258,13 @@ const styles = StyleSheet.create({
   },
   greeting: { ...typography.title2, color: colors.textPrimary },
   roleSubtext: { ...typography.caption, color: colors.brand, marginTop: 2 },
+  /**
+   * Botão de sair: alvo de toque de 44x44 px (era 40x40).
+   * A ação é destrutiva — não pode ser pequena nem fácil de errar.
+   */
   logoutBtn: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     borderRadius: radius.lg,
     backgroundColor: colors.dangerSoft,
     borderWidth: 1,
@@ -351,7 +355,8 @@ const styles = StyleSheet.create({
   },
   emptyActionText: { ...typography.label, color: colors.textOnBrand, flexShrink: 1, minWidth: 0 },
 
-  viewAll: { alignItems: 'center', paddingVertical: spacing.sm },
+  // link "Ver todos" também é alvo de toque: mínimo 44px de altura
+  viewAll: { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.sm, minHeight: 44, minWidth: 44, paddingHorizontal: spacing.lg },
   viewAllText: { ...typography.label, color: colors.brand },
 
   footer: { marginTop: spacing.lg, alignItems: 'center', gap: spacing.xs },

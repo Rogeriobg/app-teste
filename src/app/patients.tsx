@@ -422,6 +422,9 @@ const styles = StyleSheet.create({
   tabBtn: {
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
+    // filtros também são botões: mínimo 44x44 (HIG / WCAG 2.5.8)
+    minHeight: 44,
+    minWidth: 44,
     borderRadius: radius.lg,
     borderWidth: 1,
     borderColor: colors.inputBorder,
@@ -518,14 +521,27 @@ const styles = StyleSheet.create({
   /* Linha 4: Ícones de ação */
   rowActions: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
     gap: spacing.sm,
     alignItems: 'center',
     padding: spacing.lg,
     flexShrink: 1,
     minWidth: 0,
   },
+  /**
+   * Alvo de toque de 44x44 px para os 5 ícones de ação do card
+   * (editar, inativar, arquivar, detalhes, excluir).
+   *
+   * Antes era padding 8 + ícone 16 = 34px. O ícone continua 16px;
+   * quem cresce é a área de toque. Como são 5 botões numa linha,
+   * o container `rowActions` tem `flexWrap: 'wrap'` para não estourar
+   * a largura em telas estreitas.
+   */
   iconBtn: {
-    padding: spacing.md,
+    width: 44,
+    height: 44,
+    alignItems: 'center',
+    justifyContent: 'center',
     borderRadius: radius.lg,
     backgroundColor: colors.cardInner,
     flexShrink: 0,

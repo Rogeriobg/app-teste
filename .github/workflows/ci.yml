@@ -40,6 +40,9 @@ jobs:
       - name: Gate de layout (transbordo horizontal)
         run: npm run validate:layout
 
+      - name: Gate de áreas de toque (44x44 px)
+        run: npm run validate:touch
+
       - name: Testes (Jest) + cobertura
         run: npm run test:coverage
 
