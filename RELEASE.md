@@ -8,6 +8,18 @@
 
 ---
 
+## 🔑 Senha inicial (primeiro acesso)
+
+- E-mail: `psicologo@psicowave.com`
+- Senha padrão: **`PsiApp2026`**
+- Ao entrar, abra **Perfil → Segurança → Alterar senha**. A troca gera um
+  **código de recuperação de 6 dígitos** exibido uma única vez — guarde-o em
+  local seguro. Sem servidor/e-mail, é o único caminho de recuperação.
+- A senha nunca é salva em texto puro: SHA-256 com salt, em chave separada
+  do banco (fora do backup JSON).
+
+---
+
 ## 1. Antes do build
 
 ### Esteira e qualidade

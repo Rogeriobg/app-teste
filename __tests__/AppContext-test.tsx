@@ -31,7 +31,7 @@ describe('AppContext', () => {
 
       let result = false;
       await act(async () => {
-        result = await current.login('PSICOLOGO@PSICOWAVE.COM');
+        result = await current.login('PSICOLOGO@PSICOWAVE.COM', 'PsiApp2026');
       });
 
       expect(result).toBe(true);
@@ -45,7 +45,7 @@ describe('AppContext', () => {
 
       let result = true;
       await act(async () => {
-        result = await current.login('nao-cadastrado@email.com');
+        result = await current.login('nao-cadastrado@email.com', 'PsiApp2026');
       });
 
       expect(result).toBe(false);
@@ -57,7 +57,7 @@ describe('AppContext', () => {
       await waitFor(() => expect(current.currentUser).not.toBeNull());
 
       await act(async () => {
-        await current.login('psicologo@psicowave.com');
+        await current.login('psicologo@psicowave.com', 'PsiApp2026');
       });
 
       expect(AsyncStorage.setItem).toHaveBeenCalledWith(

@@ -50,6 +50,10 @@ describe('Telas', () => {
         screen.getByDisplayValue('psicologo@psicowave.com'),
         'psicologo@psicowave.com'
       );
+      await fireEvent.changeText(
+        screen.getByLabelText('Senha de acesso'),
+        'PsiApp2026'
+      );
       await fireEvent.press(screen.getByText('Entrar no Consultório'));
 
       await waitFor(() => {

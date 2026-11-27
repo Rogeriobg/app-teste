@@ -14,7 +14,7 @@ import { useThemeStyles } from '@/theme/hooks';
 import { useTheme } from '@/theme/context';
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
-import { Mail, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react-native';
+import { Mail, Lock, Eye, EyeOff, ArrowRight, Sparkles, ShieldCheck, HelpCircle } from 'lucide-react-native';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 export default function LoginScreen() {
@@ -23,6 +23,8 @@ export default function LoginScreen() {
   const css = useThemeStyles();
   const { theme } = useTheme();
   const [email, setEmail] = useState('psicologo@psicowave.com');
+  const [senha, setSenha] = useState('');
+  const [mostrarSenha, setMostrarSenha] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -31,12 +33,16 @@ export default function LoginScreen() {
       setError('Digite seu e-mail de acesso');
       return;
     }
+    if (!senha) {
+      setError('Digite sua senha');
+      return;
+    }
     setLoading(true);
     setError('');
     try {
-      const ok = await login(email.trim());
+      const ok = await login(email.trim(), senha);
       if (!ok) {
-        setError('E-mail não cadastrado. Use psicologo@psicowave.com');
+        setError('E-mail ou senha incorretos');
       } else {
         router.replace('/dashboard');
       }
@@ -80,8 +86,50 @@ export default function LoginScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
+              accessibilityLabel="E-mail do psicólogo"
             />
           </View>
+
+          <View style={styles.inputWrapper}>
+            <Lock size={18} color={colors.textMuted} style={styles.inputIcon} />
+            <TextInput
+              style={styles.input}
+              value={senha}
+              onChangeText={setSenha}
+              placeholder="Senha"
+              placeholderTextColor={colors.textMuted}
+              secureTextEntry={!mostrarSenha}
+              autoCapitalize="none"
+              autoComplete="current-password"
+              accessibilityLabel="Senha de acesso"
+              onSubmitEditing={handleLogin}
+            />
+            <TouchableOpacity
+              style={styles.olhoBtn}
+              onPress={() => setMostrarSenha((v) => !v)}
+              activeOpacity={0.8}
+              accessibilityRole="button"
+              accessibilityLabel={mostrarSenha ? 'Ocultar senha' : 'Mostrar senha'}
+              hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            >
+              {mostrarSenha ? (
+                <EyeOff size={18} color={colors.textMuted} />
+              ) : (
+                <Eye size={18} color={colors.textMuted} />
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            style={styles.esqueciBtn}
+            onPress={() => router.push('/recover-password')}
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Esqueci minha senha"
+          >
+            <HelpCircle size={14} color={theme.colors.primary} />
+            <Text style={[styles.esqueciText, css.primary]}>Esqueci minha senha</Text>
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={[styles.primaryButton, loading && styles.loadingButton]}
@@ -149,6 +197,16 @@ const styles = StyleSheet.create({
   },
   inputIcon: { marginRight: spacing.lg },
   input: { flex: 1, minWidth: 0, paddingVertical: spacing.lg, ...typography.body, color: colors.inputText },
+  olhoBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  esqueciBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    minHeight: 44,
+    marginBottom: spacing.sm,
+  },
+  esqueciText: { ...typography.label },
 
   primaryButton: {
     backgroundColor: colors.brand,

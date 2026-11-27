@@ -33,6 +33,8 @@ export interface InputProps {
   autoComplete?: any;
   /** Auto capitalizar */
   autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
+  /** Oculta o conteúdo (senhas) */
+  secureTextEntry?: boolean;
   /** Label de acessibilidade */
   accessibilityLabel?: string;
   /**
@@ -62,6 +64,7 @@ export function Input({
   autoComplete,
   autoCapitalize = 'none',
   accessibilityLabel,
+  secureTextEntry = false,
   onClear,
   clearAccessibilityLabel = 'Limpar campo',
 }: InputProps) {
@@ -89,6 +92,7 @@ export function Input({
           multiline={isMultiline}
           numberOfLines={numberOfLines}
           autoCapitalize={autoCapitalize}
+          secureTextEntry={secureTextEntry}
           autoComplete={autoComplete}
           accessibilityLabel={accessibilityLabel}
         />

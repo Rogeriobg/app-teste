@@ -20,6 +20,18 @@
 
 ---
 
+## 🔐 Senha do usuário (pedido do usuário, fora do Ciclo 2)
+
+**CONCLUÍDO** — R6 do `PLANO.md` resolvido.
+
+- Decisões fechadas com o usuário: senha padrão + troca no Perfil; recuperação por código local de 6 dígitos.
+- `expo-crypto` instalado: SHA-256 com salt aleatório por instalação. Credenciais em chave separada do banco (`@psi_app_auth_v1`), fora do backup JSON.
+- `AppContext`: `login(email, senha)`, `checkPassword`, `changePassword`, `ensureAuth`.
+- Telas: campo de senha com mostrar/ocultar + "Esqueci minha senha" (`/recover-password`); Perfil → Segurança → Alterar senha, com código de 6 dígitos exibido uma única vez.
+- 5 testes de auth; 152/152 no total, tsc/lint/validate:workflow limpos.
+
+---
+
 # ♻️ Ciclo 2 — Etapa 6: Temas e Aparência
 
 > Iniciado em 2026-11-27 após o Ciclo 1 fechar com gate **DESBLOQUEADO**.

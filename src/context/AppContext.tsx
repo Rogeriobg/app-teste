@@ -3,6 +3,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shareAsync } from 'expo-sharing';
 import { writeAsStringAsync, Paths } from 'expo-file-system';
 import defaultDbData from '../../database.json';
+import {
+  ensureAuth,
+  verifyPassword,
+  setPassword as salvarSenha,
+} from '@/services/auth';
 
 export interface User {
   id: string;
@@ -47,7 +52,12 @@ const defaultDb: Database = defaultDbData as unknown as Database;
 export interface AppContextData {
   db: Database;
   currentUser: User | null;
-  login: (email: string) => Promise<boolean>;
+  /** Autentica com e-mail **e senha**. */
+  login: (email: string, senha: string) => Promise<boolean>;
+  /** Valida a senha atual antes de trocar. */
+  checkPassword: (senha: string) => Promise<boolean>;
+  /** Troca a senha e devolve o novo código de recuperação (6 dígitos). */
+  changePassword: (novaSenha: string) => Promise<{ recoveryCode: string }>;
   logout: () => Promise<void>;
   updateUser: (updates: Partial<Pick<User, 'name' | 'email'>>) => Promise<void>;
   exportData: () => Promise<void>;
@@ -109,6 +119,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     let mounted = true;
+    // cria o estado de autenticação na primeira execução (senha padrão)
+    void ensureAuth();
     loadStorage().then(({ db, currentUser }) => {
       if (mounted) {
         setDb(db);
@@ -129,17 +141,21 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const login = async (email: string) => {
-    const found = db.users.find(u => u.email.toLowerCase() === email.toLowerCase());
-    if (found) {
-      setCurrentUser(found);
-      try {
-        await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
-      } catch {}
-      return true;
-    }
-    return false;
+  const login = async (email: string, senha: string) => {
+    const found = db.users.find(u => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (!found) return false;
+    if (!(await verifyPassword(senha))) return false;
+
+    setCurrentUser(found);
+    try {
+      await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
+    } catch {}
+    return true;
   };
+
+  const checkPassword = async (senha: string) => verifyPassword(senha);
+
+  const changePassword = async (novaSenha: string) => salvarSenha(novaSenha);
 
   const logout = async () => {
     setCurrentUser(null);
@@ -284,6 +300,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         db,
         currentUser,
         login,
+        checkPassword,
+        changePassword,
         logout,
         updateUser,
         exportData,

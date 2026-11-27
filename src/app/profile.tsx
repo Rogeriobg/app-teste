@@ -17,17 +17,24 @@ import {
 } from 'expo-haptics';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
-import { Button, Input, Card } from '@/components';
+import { Button, Input, Card, AppModal } from '@/components';
 import {
   Mail,
   ShieldCheck,
   Save,
   Download,
   LogOut,
+  Lock,
   Palette,
   ChevronRight,
 } from 'lucide-react-native';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import {
+  colors,
+  radius,
+  spacing,
+  typography,
+  colors as statusColors,
+} from '@/theme/tokens';
 
 const ACCENT = colors.brand;
 const BACKGROUND = colors.surface;
@@ -38,7 +45,7 @@ const BORDER = colors.border;
 const DANGER = colors.danger;
 
 export default function ProfileScreen() {
-  const { currentUser, updateUser, exportData, logout, db } = useApp();
+  const { currentUser, updateUser, exportData, logout, db, checkPassword, changePassword } = useApp();
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
   const { theme } = useTheme();
@@ -47,6 +54,44 @@ export default function ProfileScreen() {
   const [email, setEmail] = useState(currentUser?.email ?? '');
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
+
+  /* Segurança — troca de senha */
+  const [mostrandoSenha, setMostrandoSenha] = useState(false);
+  const [senhaAtual, setSenhaAtual] = useState('');
+  const [novaSenha, setNovaSenha] = useState('');
+  const [confirmarSenha, setConfirmarSenha] = useState('');
+  const [codigoRecuperacao, setCodigoRecuperacao] = useState<string | null>(null);
+  const [erroSenha, setErroSenha] = useState('');
+  const [salvandoSenha, setSalvandoSenha] = useState(false);
+
+  const salvarNovaSenha = async () => {
+    if (novaSenha.length < 6) {
+      setErroSenha('A nova senha precisa ter pelo menos 6 caracteres.');
+      return;
+    }
+    if (novaSenha !== confirmarSenha) {
+      setErroSenha('As senhas não coincidem.');
+      return;
+    }
+    setSalvandoSenha(true);
+    setErroSenha('');
+    try {
+      if (!(await checkPassword(senhaAtual))) {
+        setErroSenha('Senha atual incorreta.');
+        return;
+      }
+      const { recoveryCode } = await changePassword(novaSenha);
+      setCodigoRecuperacao(recoveryCode);
+      setSenhaAtual('');
+      setNovaSenha('');
+      setConfirmarSenha('');
+      await impactAsync(ImpactFeedbackStyle.Light);
+    } catch {
+      setErroSenha('Não foi possível alterar a senha.');
+    } finally {
+      setSalvandoSenha(false);
+    }
+  };
 
   const hasChanges =
     name.trim() !== currentUser?.name?.trim() ||
@@ -208,6 +253,24 @@ export default function ProfileScreen() {
           </Button>
         </View>
 
+        {/* Segurança — troca de senha + código de recuperação */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, css.text]}>Segurança</Text>
+          <Text style={[styles.sectionSub, css.textSecondary]}>
+            Troque sua senha e guarde o código de recuperação em local seguro.
+          </Text>
+
+          <Button
+            variant="outline"
+            onPress={() => setMostrandoSenha(true)}
+            style={styles.exportButton}
+            iconLeft={<Lock size={18} color={theme.colors.primary} />}
+            accessibilityLabel="Alterar senha"
+          >
+            Alterar senha
+          </Button>
+        </View>
+
         {/* Aparência — Etapa 6 */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, css.text]}>Aparência</Text>
@@ -265,6 +328,42 @@ export default function ProfileScreen() {
 
         <View style={styles.bottomSpacer} />
       </ScrollView>
+
+      <AppModal
+        visible={mostrandoSenha || !!codigoRecuperacao}
+        onDismiss={() => {
+          setMostrandoSenha(false);
+          setCodigoRecuperacao(null);
+          setErroSenha('');
+        }}
+        title={codigoRecuperacao ? 'Guarde este código' : 'Alterar senha'}
+        confirmTitle={codigoRecuperacao ? 'Entendi' : 'Salvar senha'}
+        confirmLoading={salvandoSenha}
+        onConfirm={codigoRecuperacao ? () => { setCodigoRecuperacao(null); setMostrandoSenha(false); } : salvarNovaSenha}
+      >
+        {codigoRecuperacao ? (
+          <>
+            <Text style={[styles.codigoTexto, css.text]}>
+              Seu código de recuperação (6 dígitos):
+            </Text>
+            <Text style={[styles.codigoNumero, css.primary]}>{codigoRecuperacao}</Text>
+            <Text style={[styles.codigoAviso, css.textSecondary]}>
+              Guarde-o em local seguro. Ele é necessário se você esquecer a senha.
+              Este é o único momento em que ele aparece.
+            </Text>
+          </>
+        ) : (
+          <>
+            {erroSenha ? <Text style={styles.erroSenha}>{erroSenha}</Text> : null}
+            <Input label="Senha atual" placeholder="Senha atual" secureTextEntry
+              value={senhaAtual} onChangeText={setSenhaAtual} accessibilityLabel="Senha atual" />
+            <Input label="Nova senha" placeholder="Mínimo 6 caracteres" secureTextEntry
+              value={novaSenha} onChangeText={setNovaSenha} accessibilityLabel="Nova senha" />
+            <Input label="Confirmar nova senha" placeholder="Repita a nova senha" secureTextEntry
+              value={confirmarSenha} onChangeText={setConfirmarSenha} accessibilityLabel="Confirmar nova senha" />
+          </>
+        )}
+      </AppModal>
     </View>
   );
 }
@@ -401,6 +500,16 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
   },
+  codigoTexto: { ...typography.bodyRegular, textAlign: 'center' },
+  codigoNumero: {
+    ...typography.display,
+    fontSize: 32,
+    letterSpacing: 6,
+    textAlign: 'center',
+    marginVertical: spacing.lg,
+  },
+  codigoAviso: { ...typography.bodyRegular, textAlign: 'center' },
+  erroSenha: { ...typography.bodyRegular, color: statusColors.danger, marginBottom: spacing.sm },
 
   logoutSection: {
     marginBottom: spacing.xxl,

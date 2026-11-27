@@ -143,7 +143,7 @@ para todas as telas:
 | **R3** | **`BACKLOG.md` removido** — o histórico de decisões do produto vive só no git. | Perda de contexto entre etapas. | Este `PLANO.md` é a nova fonte de escopo; o histórico permanece em `git show HEAD:BACKLOG.md`. |
 | **R4** | **`android/` existe localmente** — diretório gerado, ignorado pelo git. | Risco de alguém editar nativo à mão, contra o `AGENTS.md`. | Não editar; o projeto é CNG (config em `app.json`). |
 | **R5** | **Seed com 2 pacientes e 3 prontuários** — o app abre sempre com o mesmo conteúdo. | Estado de "primeiro uso" nunca é visto por quem já rodou o app; o vazio real não é testado. | Adicionar um item de QA: apagar o storage do app e percorrer o primeiro uso. |
-| **R6** | **Login aceita qualquer e-mail cadastrado** — `login()` só compara com a lista de usuários; não há senha. |ameaça mínima, mas o "E-mail não cadastrado" com o e-mail de exemplo hardcoded no login (`psicologo@psicowave.com`) é frágil. | Registrar como dívida: a v1 é single-user local, e a tela deve dizer isso explicitamente. |
+| **R6** | **Login aceita qualquer e-mail cadastrado** — `login()` só compara com a lista de usuários; não há senha. |ameaça mínima, mas o "E-mail não cadastrado" com o e-mail de exemplo hardcoded no login (`psicologo@psicowave.com`) é frágil. | ✅ **Resolvido** — login com e-mail + senha (hash SHA-256 com salt), senha padrão `PsiApp2026`, troca no Perfil e código de recuperação de 6 dígitos — 100% offline. |
 
 ---
 
