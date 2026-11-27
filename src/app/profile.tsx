@@ -144,7 +144,7 @@ export default function ProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
       >
         {/* Header com dados do psicólogo */}
-        <Card style={[styles.headerCard, { backgroundColor: css.surface.backgroundColor }]} elevated>
+        <Card style={[styles.headerCard, css.cardTint, css.cardBorder]} elevated>
           <View style={styles.headerContent}>
             <View style={styles.avatarWrapper}>
               <View style={[styles.avatarBadge, { backgroundColor: theme.colors.primary }]}>

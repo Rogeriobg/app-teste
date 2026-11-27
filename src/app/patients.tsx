@@ -229,7 +229,7 @@ export default function PatientsScreen() {
 
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {filteredPatients.length === 0 ? (
-          <Card style={styles.emptyCard} elevated>
+          <Card style={[styles.emptyCard, css.cardTint, css.cardBorder]} elevated>
             <Archive size={36} color={statusColors.textMuted} />
 
             {/* Estado vazio contextual: o texto diz exatamente por que a
@@ -286,7 +286,7 @@ export default function PatientsScreen() {
           </Card>
         ) : (
           filteredPatients.map((p: Patient) => (
-            <Card key={p.id} style={styles.patientCard} elevated>
+            <Card key={p.id} style={[styles.patientCard, css.cardTint, css.cardBorder]} elevated>
               {/* Linha 1: Apenas o nome */}
               <View style={styles.rowName}>
                 <Text style={[styles.rowNameText, css.fontHeadline]} numberOfLines={1} ellipsizeMode="tail">

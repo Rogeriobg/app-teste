@@ -607,10 +607,11 @@ function RecordCard({
   onDelete: () => void;
 }) {
   const { theme } = useTheme();
+  const css = useThemeStyles();
   const corPrimaria = theme.colors.primary;
 
   return (
-    <View style={[styles.recordCard, archived && styles.recordCardArchived]}>
+    <View style={[styles.recordCard, css.cardTint, css.cardBorder, archived && styles.recordCardArchived]}>
       <View style={styles.recordHeader}>
         <View style={[styles.recordIcon, archived && styles.recordIconArchived]}>
           <FileText size={18} color={archived ? colors.textTertiary : corPrimaria} />

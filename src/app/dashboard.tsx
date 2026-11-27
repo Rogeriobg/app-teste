@@ -173,7 +173,7 @@ export default function PsychologistDashboard() {
         <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Pacientes ativos</Text>
 
         {activePatients.length === 0 ? (
-          <View style={styles.emptyCard}>
+          <View style={[styles.emptyCard, css.cardTint, css.cardBorder]}>
             <View style={styles.emptyIcon}>
               <FileText size={22} color={colors.textMuted} />
             </View>
@@ -191,7 +191,7 @@ export default function PsychologistDashboard() {
         ) : (
           <View style={styles.patientList}>
             {activePatients.slice(0, 4).map((p: Patient) => (
-              <View key={p.id} style={styles.patientRow}>
+              <View key={p.id} style={[styles.patientRow, css.cardTint, css.cardBorder]}>
                 <View style={styles.avatarCircleSmall}>
                   <Users size={18} color={c.primary} />
                 </View>
