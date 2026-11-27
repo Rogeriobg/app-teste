@@ -226,12 +226,6 @@ export default function PatientDetailsScreen() {
     );
   };
 
-  const handleOpenReports = () => {
-    if (!patient) return;
-    router.push(`/patients/${patient.id}/reports?patientName=${encodeURIComponent(patient.name)}`);
-    Haptic.selection();
-  };
-
   const handleExportPdf = () => {
     if (!patient) return;
     router.push(`/patients/${patient.id}/export-pdf`);
@@ -483,11 +477,12 @@ export default function PatientDetailsScreen() {
           <ActionTile
             layout="horizontal"
             style={styles.actionCell}
-            title="Ver prontuários"
-            description="Ver e gerenciar sessões"
-            icon={<FileText size={18} color={ACCENT} />}
-            onPress={handleOpenReports}
-            accessibilityLabel="Ver prontuários do paciente"
+            title="Nova sessão"
+            description="Registrar atendimento"
+            icon={<Plus size={18} color={ACCENT} />}
+            onPress={handleOpenAddRecord}
+            accessibilityLabel="Registrar nova sessão"
+            accessibilityHint="Abre o formulário de nova sessão terapêutica"
           />
           <ActionTile
             layout="horizontal"

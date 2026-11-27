@@ -299,16 +299,21 @@ describe('PatientDetailsScreen — fluxos', () => {
   /* Navegação e modais                                                */
   /* ---------------------------------------------------------------- */
 
-  it('deve navegar para a tela de prontuários', async () => {
+  /**
+   * Não existe mais uma "tela de prontuários" separada (QA-6). A ação
+   * "Nova sessão" abre o formulário direto na tela de detalhes, que é a
+   * fonte única de listagem e CRUD dos prontuários.
+   */
+  it('deve abrir o formulário de nova sessão pela ação Nova sessão', async () => {
     await renderWithProvider(<PatientDetailsScreen />);
 
     await waitFor(() => expect(screen.getByText('Maria Oliveira')).toBeTruthy());
 
-    await fireEvent.press(screen.getByLabelText('Ver prontuários do paciente'));
+    await fireEvent.press(screen.getByLabelText('Registrar nova sessão'));
 
-    expect(router.push).toHaveBeenCalledWith(
-      '/patients/p1/reports?patientName=Maria%20Oliveira'
-    );
+    await waitFor(() => {
+      expect(screen.getByText('Novo Prontuário')).toBeTruthy();
+    });
   });
 
   it('deve navegar para a tela de exportação em PDF', async () => {
