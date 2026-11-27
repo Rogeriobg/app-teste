@@ -65,6 +65,7 @@ Run before declaring a UI task done:
 ```bash
 npm run validate:layout   # reprova transbordo horizontal
 npm run validate:touch    # reprova alvo de toque < 44x44 px
+npm run validate:contrast # reprova contraste abaixo de WCAG AA
 ```
 
 Ambos rodam no CI e são portões obrigatórios.

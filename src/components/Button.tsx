@@ -32,7 +32,7 @@ export interface ButtonProps {
 const VARIANT_STYLES: Record<ButtonVariant, { bg: string; border: string; color: string }> = {
   primary: { bg: colors.brand, border: colors.brand, color: colors.textOnBrand },
   secondary: { bg: colors.card, border: colors.border, color: colors.textPrimary },
-  outline: { bg: 'transparent', border: colors.brand, color: colors.brand },
+  outline: { bg: 'transparent', border: colors.brand, color: colors.brandText },
   danger: { bg: colors.dangerSoft, border: colors.dangerBorder, color: colors.danger },
   ghost: { bg: 'transparent', border: 'transparent', color: colors.textSecondary },
 };

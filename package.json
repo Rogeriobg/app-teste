@@ -58,6 +58,7 @@
     "validate:workflow": "node scripts/validate-workflow.cjs",
     "validate:layout": "node scripts/validate-layout.mjs",
     "validate:touch": "node scripts/validate-touch-targets.mjs",
+    "validate:contrast": "node scripts/validate-contrast.mjs",
     "secret:github": "node scripts/set-github-secret.mjs",
     "eas:setup": "node scripts/setup-eas-token.mjs",
     "eas:check-token": "node scripts/check-expo-token.mjs"

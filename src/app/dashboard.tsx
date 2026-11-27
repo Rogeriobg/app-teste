@@ -147,7 +147,7 @@ export default function PsychologistDashboard() {
             title="Gerenciar Pacientes"
             description="Cadastrar, editar e arquivar"
             icon={<Users size={20} color={colors.brand} />}
-            trailingIcon={<ChevronRight size={16} color={colors.textTertiary} />}
+            trailingIcon={<ChevronRight size={16} color={colors.textMuted} />}
             onPress={openPatients}
             accessibilityLabel="Gerenciar Pacientes"
             accessibilityHint="Abre a lista de pacientes para cadastrar, editar e arquivar"
@@ -156,7 +156,7 @@ export default function PsychologistDashboard() {
             title="Perfil & Configurações"
             description="Dados, exportação e sair"
             icon={<Settings size={20} color={colors.brand} />}
-            trailingIcon={<ChevronRight size={16} color={colors.textTertiary} />}
+            trailingIcon={<ChevronRight size={16} color={colors.textMuted} />}
             onPress={openProfile}
             accessibilityLabel="Perfil e Configurações"
             accessibilityHint="Abre os dados do psicólogo, a exportação de dados e a saída"
@@ -169,7 +169,7 @@ export default function PsychologistDashboard() {
         {activePatients.length === 0 ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
-              <FileText size={22} color={colors.textTertiary} />
+              <FileText size={22} color={colors.textMuted} />
             </View>
             <Text style={styles.emptyTitle}>Nenhum paciente ativo</Text>
             <Text style={styles.emptySub}>
@@ -257,7 +257,7 @@ const styles = StyleSheet.create({
     flexShrink: 0,
   },
   greeting: { ...typography.title2, color: colors.textPrimary },
-  roleSubtext: { ...typography.caption, color: colors.brand, marginTop: 2 },
+  roleSubtext: { ...typography.caption, color: colors.brandText, marginTop: 2 },
   /**
    * Botão de sair: alvo de toque de 44x44 px (era 40x40).
    * A ação é destrutiva — não pode ser pequena nem fácil de errar.
@@ -357,9 +357,9 @@ const styles = StyleSheet.create({
 
   // link "Ver todos" também é alvo de toque: mínimo 44px de altura
   viewAll: { alignItems: 'center', justifyContent: 'center', paddingVertical: spacing.sm, minHeight: 44, minWidth: 44, paddingHorizontal: spacing.lg },
-  viewAllText: { ...typography.label, color: colors.brand },
+  viewAllText: { ...typography.label, color: colors.brandText },
 
   footer: { marginTop: spacing.lg, alignItems: 'center', gap: spacing.xs },
   footerText: { ...typography.label, color: colors.textPrimary },
-  footerTextSmall: { ...typography.caption, color: colors.textTertiary },
+  footerTextSmall: { ...typography.caption, color: colors.textMuted },
 });

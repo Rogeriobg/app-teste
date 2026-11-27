@@ -41,7 +41,7 @@ export function Chip({ children, tone = 'neutral', icon, style }: ChipProps) {
 const CHIP_TONES: Record<ChipTone, { bg: string; fg: string }> = {
   positive: { bg: colors.successSoft, fg: colors.success },
   negative: { bg: colors.dangerSoft, fg: colors.danger },
-  brand: { bg: colors.brandSoft, fg: colors.brand },
+  brand: { bg: colors.brandSoft, fg: colors.brandText },
   neutral: { bg: colors.cardInner, fg: colors.textSecondary },
 };
 

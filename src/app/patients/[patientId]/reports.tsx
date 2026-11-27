@@ -261,7 +261,7 @@ export default function PatientReportsScreen() {
         <Input
           label="Título da Sessão / Relatório"
           placeholder="Ex: Sessão 01 - Anamnese e Vínculo"
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor={colors.textMuted}
           value={title}
           onChangeText={setTitle}
           accessibilityLabel="Título do relatório"
@@ -293,7 +293,7 @@ export default function PatientReportsScreen() {
         <Input
           label="Conteúdo do Prontuário (evolução)"
           placeholder="Relato da sessão, evolução clínica, intervenções realizadas..."
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor={colors.textMuted}
           value={content}
           onChangeText={setContent}
           multiline
@@ -310,7 +310,7 @@ export default function PatientReportsScreen() {
         <Input
           label=" "
           placeholder="Observações sigilosas, hipóteses diagnósticas..."
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor={colors.textMuted}
           value={privateNotes}
           onChangeText={setPrivateNotes}
           multiline
@@ -336,7 +336,7 @@ const styles = StyleSheet.create({
     ...shadowCard,
   },
   headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
-  headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
+  headerSubtitle: { ...typography.caption, color: colors.brandText, marginTop: spacing.xxs },
   /**
    * Container do título.
    *
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
   recordHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: spacing.md },
   recordIconRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, flex: 1, minWidth: 0 },
   recordTitle: { ...typography.headline, color: colors.textPrimary, flex: 1, minWidth: 0 },
-  recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
+  recordTitleArchived: { color: colors.textMuted, textDecorationLine: 'line-through' },
   /**
    * Botão de editar prontuário: alvo de toque de 44x44 px.
    *
@@ -431,6 +431,6 @@ const styles = StyleSheet.create({
   },
   datePickerIcon: { marginRight: spacing.md },
   datePickerText: { ...typography.body, color: colors.inputText, flex: 1, minWidth: 0 },
-  datePickerPlaceholder: { color: colors.textTertiary },
+  datePickerPlaceholder: { color: colors.textMuted },
   label: { ...typography.label, color: colors.labelText, marginBottom: spacing.sm, flexShrink: 1, minWidth: 0 },
 });

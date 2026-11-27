@@ -43,6 +43,9 @@ jobs:
       - name: Gate de áreas de toque (44x44 px)
         run: npm run validate:touch
 
+      - name: Gate de contraste (WCAG AA)
+        run: npm run validate:contrast
+
       - name: Testes (Jest) + cobertura
         run: npm run test:coverage
 

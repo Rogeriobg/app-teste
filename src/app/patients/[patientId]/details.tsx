@@ -845,8 +845,8 @@ const styles = StyleSheet.create({
   // areas de toque: abrem o prontuário; mínimo 44px (HIG / WCAG 2.5.8)
   recordInfo: { flex: 1, minWidth: 0, gap: 2, minHeight: 44, justifyContent: 'center' },
   recordTitle: { ...typography.body, fontWeight: '700', color: colors.textPrimary },
-  recordTitleArchived: { color: colors.textTertiary, textDecorationLine: 'line-through' },
-  recordDate: { ...typography.caption, color: colors.textTertiary },
+  recordTitleArchived: { color: colors.textMuted, textDecorationLine: 'line-through' },
+  recordDate: { ...typography.caption, color: colors.textMuted },
   /**
    * Área de toque que abre o prontuário.
    *
@@ -862,7 +862,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   recordContent: { ...typography.bodyRegular, color: colors.textSecondary, lineHeight: 19 },
-  recordContentArchived: { color: colors.textTertiary },
+  recordContentArchived: { color: colors.textMuted },
   recordActions: { flexDirection: 'row', gap: spacing.xs, flexShrink: 1, minWidth: 0 },
   /**
    * Alvo de toque de 44x44 px.

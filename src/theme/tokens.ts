@@ -52,9 +52,28 @@ export const colors = {
 
   textPrimary: '#133E2B',
   textSecondary: '#64748B',
-  textTertiary: '#94A3B8',
+  /**
+   * Terciário **para ícones e decoração**.
+   *
+   * Contraste 3,43:1 sobre branco — acima de 3:1, o mínimo para
+   * elementos gráficos não textuais (WCAG 1.4.11), mas abaixo de 4,5:1.
+   * Use `textMuted` para QUALQUER texto.
+   */
+  textTertiary: '#7C8CA1',
+  /**
+   * Texto terciário legível — 4,76:1 sobre branco (WCAG AA).
+   * Substitui `textTertiary` em datas, títulos arquivados, placeholders
+   * e rodapés. Mantém a mesma família visual do cinza Azulado.
+   */
+  textMuted: '#64748B',
 
+  /** Marca para ícones/fundos (3,74:1 — não usar em texto pequeno). */
   brand: '#0D9488',
+  /**
+   * Marca para TEXTO — 5,21:1 sobre branco (WCAG AA).
+   * Mesma família do teal; versão escurecida para rótulos e subtítulos.
+   */
+  brandText: '#0B7A70',
   brandSoft: '#E6F4ED',
   brandBorder: '#D1EFE2',
 

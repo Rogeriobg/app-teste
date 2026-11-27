@@ -214,7 +214,7 @@ export default function PatientsScreen() {
         <Input
           label="Buscar paciente"
           placeholder="Nome, e-mail ou telefone..."
-          placeholderTextColor={colors.textTertiary}
+          placeholderTextColor={colors.textMuted}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery('')}
@@ -225,7 +225,7 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {filteredPatients.length === 0 ? (
           <Card style={styles.emptyCard} elevated>
-            <Archive size={36} color={colors.textTertiary} />
+            <Archive size={36} color={colors.textMuted} />
 
             {/* Estado vazio contextual: o texto diz exatamente por que a
                 lista está vazia e oferece a ação de recuperação. */}
@@ -295,7 +295,7 @@ export default function PatientsScreen() {
                   <Users size={22} color={colors.brand} />
                 </View>
                 <View style={styles.rowEmailTextContainer}>
-                  <Mail size={14} color={colors.textTertiary} />
+                  <Mail size={14} color={colors.textMuted} />
                   <Text style={styles.rowEmailText} numberOfLines={1} ellipsizeMode="tail">
                     {p.email}
                   </Text>
@@ -304,7 +304,7 @@ export default function PatientsScreen() {
 
               {/* Linha 3: Ícone telefone | Número */}
               <View style={styles.rowPhone}>
-                <Phone size={14} color={colors.textTertiary} />
+                <Phone size={14} color={colors.textMuted} />
                 <Text style={styles.rowPhoneText} numberOfLines={1} ellipsizeMode="tail">
                   {p.phone}
                 </Text>
@@ -396,7 +396,7 @@ const styles = StyleSheet.create({
     ...shadowCard,
   },
   headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
-  headerSubtitle: { ...typography.caption, color: colors.brand, marginTop: spacing.xxs },
+  headerSubtitle: { ...typography.caption, color: colors.brandText, marginTop: spacing.xxs },
   /**
    * Container do título.
    *
@@ -432,7 +432,7 @@ const styles = StyleSheet.create({
   },
   tabActive: { backgroundColor: colors.brandSoft, borderColor: colors.brand },
   tabText: { ...typography.label, color: colors.textSecondary },
-  tabTextActive: { color: colors.brand, fontWeight: '700' },
+  tabTextActive: { color: colors.brandText, fontWeight: '700' },
 
   scroll: { padding: spacing.xl, paddingBottom: spacing.xxl + 24 },
   emptyCard: {

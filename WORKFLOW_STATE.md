@@ -14,7 +14,7 @@
 |-------|---------------|-------------|-------|-------------|
 | 1     | planner       | [REPROVADO] | 1     | Bug **QA-4/R5** aberto (seed fixa de 2 pacientes impede ver o primeiro uso real) e **R6** (login sem senha, dívida de produto não declarada ao usuário). Ambos de severidade baixa, mas registrados contra esta etapa — ver Gate de release. `PLANO.md` segue como fonte de escopo. |
 | 2     | architect     | [APROVADO]  | 1     | ARQUITETURA.md: decisões técnicas de A1–A5, tokens novos, extração de PatientFormModal, regra única de safe area e ordem de execução. **Nenhum bug aberto atribuído a esta etapa.** |
-| 3     | mobile-ui     | [REPROVADO] | 5     | Histórico: A1–A5 entregues; DEF-3 (f4c5270), DEF-6 (2373ef3) e DEF-5 (5c0c3af) corrigidos e **confirmados no aparelho**. **QA-3 resolvido**: 10 alvos de toque corrigidos para 44px + gate `npm run validate:touch`. **Bugs abertos de severidade média: QA-1/QA-2 (contraste 2,56:1 e 3,74:1), QA-6 (duas listas de prontuários com CRUD duplicado).** Não se inicia novo item de feature antes de zerá-los. |
+| 3     | mobile-ui     | [REPROVADO] | 5     | Histórico: A1–A5 entregues; DEF-3 (f4c5270), DEF-6 (2373ef3) e DEF-5 (5c0c3af) corrigidos e **confirmados no aparelho**. **QA-3 resolvido** (10 alvos → 44px + gate `validate:touch`). **QA-1/QA-2 resolvidos** (`textMuted` 4,76:1, `brandText` 5,21:1 + gate `validate:contrast`). **Bug médio aberto: QA-6** (duas listas de prontuários com CRUD duplicado). Não se inicia novo item de feature antes de zerá-lo. |
 | 4     | qa-vision     | [REPROVADO] | 5     | Histórico: QA.md, AUDITORIA.md, QA-4B.md e fase 4c executada no aparelho. **Aprovação do ciclo 4 revertida**: a etapa 4 registrou QA-1/QA-2/QA-3/QA-6 como abertos e ainda assim se aprovou — isso é incoerente. Regra aplicada: etapa 4 só é `[APROVADO]` com **zero bugs médios/alto em aberto**. |
 | 5     | release-prep  | [APROVADO]  | 1     | eas.json restaurado (R1) e validado; app.json e 6 assets conferidos; expo-doctor 20/20; RELEASE.md com checklist de 5 etapas; EXPO_TOKEN e EAS_BUILD_ENABLED confirmados. **R4 (`android/` local) fica como observação — não é bug de build.** |
 
@@ -31,21 +31,21 @@
 | DEF-3 — header transbordando em 360–375pt | Alta | 3 mobile-ui | ✅ Resolvido (f4c5270) | Não |
 | DEF-4 — ciclo de require no barrel | Média | 3 mobile-ui | ✅ Resolvido (edb1719) | Não |
 | **QA-3 — áreas de toque < 44px** (`backBtn` 40, `iconAction` 34, `iconBtn` ~38, `viewBtn` ~30) | **Média** | 3 mobile-ui | ✅ **Resolvido** — 10 alvos corrigidos para 44px + gate `validate:touch` | Não |
-| **QA-1 — contraste `textTertiary` 2,56:1** (abaixo de WCAG AA 4,5:1) | **Média** | 3 mobile-ui | 🔴 Aberto | **SIM** |
-| **QA-2 — contraste `brand` 3,74:1** (só passa em texto grande) | **Média** | 3 mobile-ui | 🔴 Aberto | **SIM** |
+| **QA-1 — contraste `textTertiary` 2,56:1** (abaixo de WCAG AA 4,5:1) | **Média** | 3 mobile-ui | ✅ **Resolvido** — `textMuted` 4,76:1 + gate `validate:contrast` | Não |
+| **QA-2 — contraste `brand` 3,74:1** (só passa em texto grande) | **Média** | 3 mobile-ui | ✅ **Resolvido** — `brandText` 5,21:1 + gate `validate:contrast` | Não |
 | **QA-6 — duas listas de prontuários com CRUD duplicado** | **Média** | 3 mobile-ui | 🔴 Aberto | **SIM** |
 | QA-4/R5 — seed fixa impede ver o primeiro uso real | Baixa | 1 planner | ⚠️ Aberto | Não |
 | R6 — login sem senha (single-user local) | Baixa | 1 planner | ⚠️ Aberto | Não |
 | R4 — `android/` existe localmente (CNG) | Baixa | 5 release-prep | ⚠️ Observação | Não |
 
-**Resultado do gate: 3 bugs médios abertos → BLOQUEADO.**
+**Resultado do gate: 1 bug médio aberto → BLOQUEADO.**
 
 ### Saída do bloqueio
 
 Ordem obrigatória (menor esforço → maior valor):
 
 1. ~~**QA-3** — areas de toque: subir `iconAction` 34→44, `backBtn`/`logoutBtn` 40→44, `iconBtn`/`viewBtn` → 44. Criado o gate `scripts/validate-touch-targets.mjs` (`npm run validate:touch`), no CI. Testado reintroduzindo o bug: reprova com a mensagem exata.~~ ✅ **Feito**
-2. **QA-1/QA-2** — contraste: `textTertiary` `#94A3B8` → `#64748B` (4,76:1) e `brand` só em texto ≥18px. Criar gate de cálculo WCAG no CI.
+2. ~~**QA-1/QA-2** — contraste. Criados `textMuted` (4,76:1) e `brandText` (5,21:1); `textTertiary` escurecido para 3,43:1 (gráficos); gate `scripts/validate-contrast.mjs` (`npm run validate:contrast`) no CI, testado reintroduzindo o bug.~~ ✅ **Feito**
 3. **QA-6** — duplicidade de prontuários: `details.tsx` vira fonte única; `reports.tsx` redireciona.
 
 Só depois desses três, reabre a esteira para novos itens do `PLANO.md`.
@@ -163,8 +163,8 @@ resolvida** — o `eas.json` foi restaurado e validado.
 
 | # | Pendência | Destino | Status |
 |---|-----------|---------|--------|
-| QA-1 | `textTertiary` (#94A3B8) com contraste 2,56:1 — abaixo de WCAG AA | Item B5 do `PLANO.md` | Aberto |
-| QA-2 | `brand` (#0D9488) com contraste 3,74:1 — só passa em texto grande | Item B5 do `PLANO.md` | Aberto |
+| QA-1 | `textTertiary` (#94A3B8) com contraste 2,56:1 — abaixo de WCAG AA | Item B5 do `PLANO.md` | ✅ Resolvido — `textMuted` |
+| QA-2 | `brand` (#0D9488) com contraste 3,74:1 — só passa em texto grande | Item B5 do `PLANO.md` | ✅ Resolvido — `brandText` |
 | QA-3 | Áreas de toque abaixo de 44×44 px (backBtn, logoutBtn, iconAction, iconBtn, viewBtn) | Itens M1–M8 / nova rodada | Aberto |
 | QA-4 | Seed de demonstração impede ver o primeiro uso real | Item de produto | Aberto |
 | QA-5 | `eas.json` regredido | Etapa 5 (release-prep) — risco R1 | ✅ Resolvido |

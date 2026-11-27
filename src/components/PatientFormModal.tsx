@@ -123,7 +123,7 @@ export function PatientFormModal({
       <Input
         label="Nome Completo"
         placeholder="Ex: Maria Oliveira"
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.textMuted}
         value={values.name}
         onChangeText={(v) => setField('name', v)}
         error={!!errors.name}
@@ -134,7 +134,7 @@ export function PatientFormModal({
       <Input
         label="E-mail"
         placeholder="Ex: maria@email.com"
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.textMuted}
         keyboardType="email-address"
         autoCapitalize="none"
         value={values.email}
@@ -147,7 +147,7 @@ export function PatientFormModal({
       <Input
         label="Telefone"
         placeholder="Ex: (11) 98888-7777"
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.textMuted}
         keyboardType="phone-pad"
         value={values.phone}
         onChangeText={(v) => setField('phone', v)}
@@ -163,7 +163,7 @@ export function PatientFormModal({
         accessibilityLabel="Selecionar data de nascimento"
         accessibilityHint="Abre o calendário para escolher a data"
       >
-        <Calendar size={18} color={colors.textTertiary} style={styles.datePickerIcon} />
+        <Calendar size={18} color={colors.textMuted} style={styles.datePickerIcon} />
         <Text style={[styles.datePickerText, !values.birthDate && styles.datePickerPlaceholder]}>
           {values.birthDate || 'AAAA-MM-DD'}
         </Text>
@@ -183,7 +183,7 @@ export function PatientFormModal({
       <Input
         label="Anamnese (resumo inicial)"
         placeholder="Queixa principal, histórico, observações..."
-        placeholderTextColor={colors.textTertiary}
+        placeholderTextColor={colors.textMuted}
         value={values.anamnesis}
         onChangeText={(v) => setField('anamnesis', v)}
         multiline
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   datePickerIcon: { marginRight: spacing.md },
   datePickerText: { ...typography.body, color: colors.inputText, flex: 1, minWidth: 0 },
-  datePickerPlaceholder: { color: colors.textTertiary },
+  datePickerPlaceholder: { color: colors.textMuted },
   footerNote: { marginTop: spacing.xs, marginBottom: spacing.xs },
-  footerNoteText: { ...typography.caption, color: colors.textTertiary, textAlign: 'center' },
+  footerNoteText: { ...typography.caption, color: colors.textMuted, textAlign: 'center' },
 });

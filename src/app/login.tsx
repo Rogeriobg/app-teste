@@ -66,13 +66,13 @@ export default function LoginScreen() {
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <View style={styles.inputWrapper}>
-            <Mail size={18} color={colors.textTertiary} style={styles.inputIcon} />
+            <Mail size={18} color={colors.textMuted} style={styles.inputIcon} />
             <TextInput
               style={styles.input}
               value={email}
               onChangeText={setEmail}
               placeholder="E-mail do psicólogo"
-              placeholderTextColor={colors.textTertiary}
+              placeholderTextColor={colors.textMuted}
               autoCapitalize="none"
               keyboardType="email-address"
               autoComplete="email"
@@ -113,7 +113,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   badgeRow: { flexDirection: 'row', alignItems: 'center', marginBottom: spacing.lg, gap: spacing.md, flexShrink: 1 },
-  badgeText: { ...typography.body, color: colors.brand, fontWeight: '700', flexShrink: 1, minWidth: 0 },
+  badgeText: { ...typography.body, color: colors.brandText, fontWeight: '700', flexShrink: 1, minWidth: 0 },
   heroIcon: { marginBottom: spacing.lg },
   title: { ...typography.title1, fontSize: 26, color: colors.textPrimary, marginBottom: spacing.md, letterSpacing: -0.3, textAlign: 'center' },
   subtitle: { ...typography.body, color: colors.textSecondary, lineHeight: 20, textAlign: 'center' },

@@ -50,7 +50,7 @@ export function Input({
   value,
   onChangeText,
   placeholder,
-  placeholderTextColor = colors.textTertiary,
+  placeholderTextColor = colors.textMuted,
   keyboardType = 'default',
   multiline = false,
   numberOfLines,
@@ -98,7 +98,7 @@ export function Input({
             accessibilityLabel={clearAccessibilityLabel}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <X size={16} color={colors.textTertiary} />
+            <X size={16} color={colors.textMuted} />
           </TouchableOpacity>
         ) : null}
       </View>

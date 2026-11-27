@@ -152,7 +152,7 @@ export default function ProfileScreen() {
                 {currentUser?.role ?? 'psicologo'}
               </Text>
               <View style={styles.headerContact}>
-                <Mail size={14} color={colors.textTertiary} />
+                <Mail size={14} color={colors.textMuted} />
                 <Text style={styles.headerEmail} numberOfLines={1} ellipsizeMode="tail">
                   {currentUser?.email ?? ''}
                 </Text>
