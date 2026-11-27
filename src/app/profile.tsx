@@ -7,6 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStyles } from '@/theme/hooks';
 import {
   selectionAsync,
   impactAsync,
@@ -35,6 +36,7 @@ const DANGER = colors.danger;
 export default function ProfileScreen() {
   const { currentUser, updateUser, exportData, logout, db } = useApp();
   const insets = useSafeAreaInsets();
+  const css = useThemeStyles();
 
   const [name, setName] = useState(currentUser?.name ?? '');
   const [email, setEmail] = useState(currentUser?.email ?? '');
@@ -127,7 +129,7 @@ export default function ProfileScreen() {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, css.page]}>
       <ScrollView
         contentContainerStyle={[
           styles.scroll,
@@ -137,7 +139,7 @@ export default function ProfileScreen() {
         contentInsetAdjustmentBehavior="automatic"
       >
         {/* Header com dados do psicólogo */}
-        <Card style={styles.headerCard} elevated>
+        <Card style={[styles.headerCard, { backgroundColor: css.surface.backgroundColor }]} elevated>
           <View style={styles.headerContent}>
             <View style={styles.avatarWrapper}>
               <View style={styles.avatarBadge}>
@@ -145,7 +147,7 @@ export default function ProfileScreen() {
               </View>
             </View>
             <View style={styles.headerInfo}>
-              <Text style={styles.headerName}>
+              <Text style={[styles.headerName, css.text]}>
                 {currentUser?.name ?? 'Psicólogo(a)'}
               </Text>
               <Text style={styles.headerRole}>
@@ -163,8 +165,8 @@ export default function ProfileScreen() {
 
         {/* Dados do psicólogo (editável) */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Dados do psicólogo</Text>
-          <Text style={styles.sectionSub}>
+          <Text style={[styles.sectionTitle, css.text]}>Dados do psicólogo</Text>
+          <Text style={[styles.sectionSub, css.textSecondary]}>
             Atualize seu nome e e-mail de acesso.
           </Text>
 
@@ -203,8 +205,8 @@ export default function ProfileScreen() {
 
         {/* Exportar dados */}
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Exportar dados</Text>
-          <Text style={styles.sectionSub}>
+          <Text style={[styles.sectionTitle, css.text]}>Exportar dados</Text>
+          <Text style={[styles.sectionSub, css.textSecondary]}>
             Gere um backup JSON com pacientes e prontuários para compartilhar ou salvar.
           </Text>
 

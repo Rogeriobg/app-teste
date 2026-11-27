@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Chip } from './Chip';
-import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export interface StatSummarySegment {
   /** Rótulo do segmento (ex.: "Prontuários ativos") */
@@ -48,18 +49,20 @@ export function StatSummary({
   accessibilityLabel,
   style,
 }: StatSummaryProps) {
+  const { theme } = useTheme();
+  const c = theme.colors;
   const soma = segments.reduce((acc, s) => acc + s.count, 0);
   const resumo = segments.map((s) => `${s.label} ${s.count}`).join(', ');
 
   return (
     <View
-      style={[styles.card, shadowCard, style]}
+      style={[styles.card, shadowCard, { backgroundColor: c.surface }, style]}
       accessible
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel ?? `${title}: ${total ?? soma}. ${resumo}`}
     >
       <View style={styles.header}>
-        <Text style={styles.title} numberOfLines={1}>
+        <Text style={[styles.title, { color: c.text }]} numberOfLines={1}>
           {title}
         </Text>
         {total !== undefined ? <Chip tone="brand">{total}</Chip> : null}
@@ -82,10 +85,10 @@ export function StatSummary({
           return (
             <View key={segment.label} style={styles.legendRow}>
               <View style={[styles.dot, cor]} />
-              <Text style={styles.legendLabel} numberOfLines={1}>
+              <Text style={[styles.legendLabel, { color: c.textSecondary }]} numberOfLines={1}>
                 {segment.label}
               </Text>
-              <Text style={styles.legendValue}>{segment.count}</Text>
+              <Text style={[styles.legendValue, { color: c.text }]}>{segment.count}</Text>
             </View>
           );
         })}
@@ -97,9 +100,9 @@ export function StatSummary({
 const styles = StyleSheet.create({
   card: {
     borderRadius: radius.xl,
-    backgroundColor: colors.card,
+    backgroundColor: statusColors.card,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: statusColors.border,
     padding: spacing.xl,
     gap: spacing.lg,
   },
@@ -109,12 +112,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: spacing.md,
   },
-  title: { ...typography.headline, color: colors.textPrimary, flexShrink: 1 },
+  title: { ...typography.headline, color: statusColors.textPrimary, flexShrink: 1 },
   bar: {
     flexDirection: 'row',
     height: 8,
     borderRadius: radius.pill,
-    backgroundColor: colors.cardInner,
+    backgroundColor: statusColors.cardInner,
     overflow: 'hidden',
   },
   legend: { gap: spacing.sm },
@@ -125,6 +128,6 @@ const styles = StyleSheet.create({
     minWidth: 0,
   },
   dot: { width: 8, height: 8, borderRadius: 4, flexShrink: 0 },
-  legendLabel: { ...typography.bodyRegular, color: colors.textSecondary, flex: 1, minWidth: 0 },
-  legendValue: { ...typography.headline, color: colors.textPrimary, fontSize: 15, flexShrink: 0 },
+  legendLabel: { ...typography.bodyRegular, color: statusColors.textSecondary, flex: 1, minWidth: 0 },
+  legendValue: { ...typography.headline, color: statusColors.textPrimary, fontSize: 15, flexShrink: 0 },
 });

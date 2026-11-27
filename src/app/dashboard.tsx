@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStyles } from '@/theme/hooks';
 import { useApp, MedicalRecord, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
 import {
@@ -37,6 +38,7 @@ function dataPorExtenso(): string {
 export default function PsychologistDashboard() {
   const { db, currentUser, logout, getPatientsByStatus } = useApp();
   const insets = useSafeAreaInsets();
+  const css = useThemeStyles();
 
   const activePatients = getPatientsByStatus('Ativo');
   const inactivePatients = getPatientsByStatus('Inativo');
@@ -53,19 +55,19 @@ export default function PsychologistDashboard() {
   const openProfile = () => router.push('/profile');
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, css.page]}>
       {/* Header */}
-      <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
+      <View style={[styles.header, css.surface, { paddingTop: insets.top + spacing.lg }]}>
         <View style={styles.headerRow}>
           <View style={styles.headerIdentity}>
             <View style={styles.avatarBadge}>
               <Sparkles size={16} color={colors.brand} />
             </View>
             <View style={styles.headerText}>
-              <Text style={styles.greeting} numberOfLines={1}>
+              <Text style={[styles.greeting, css.text]} numberOfLines={1}>
                 {formatarNome(currentUser?.name)}
               </Text>
-              <Text style={styles.roleSubtext} numberOfLines={1}>
+              <Text style={[styles.roleSubtext, css.primary]} numberOfLines={1}>
                 {saudacaoDoDia()} • {dataPorExtenso()}
               </Text>
             </View>
@@ -89,7 +91,7 @@ export default function PsychologistDashboard() {
         showsVerticalScrollIndicator={false}
       >
         {/* Visão geral — grade 2×2 (BoardUI Stat Cards) */}
-        <Text style={styles.sectionTitle}>Visão geral</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Visão geral</Text>
 
         <View style={styles.gridRow}>
           <StatCard
@@ -128,7 +130,7 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Prontuários — card único com barra de proporção */}
-        <Text style={styles.sectionTitle}>Prontuários</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Prontuários</Text>
 
         <StatSummary
           title="Prontuários do paciente"
@@ -140,7 +142,7 @@ export default function PsychologistDashboard() {
         />
 
         {/* Ações rápidas */}
-        <Text style={styles.sectionTitle}>Ações rápidas</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Ações rápidas</Text>
 
         <View style={styles.gridRow}>
           <ActionTile
@@ -164,15 +166,15 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Pacientes ativos (resumo) */}
-        <Text style={styles.sectionTitle}>Pacientes ativos</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Pacientes ativos</Text>
 
         {activePatients.length === 0 ? (
           <View style={styles.emptyCard}>
             <View style={styles.emptyIcon}>
               <FileText size={22} color={colors.textMuted} />
             </View>
-            <Text style={styles.emptyTitle}>Nenhum paciente ativo</Text>
-            <Text style={styles.emptySub}>
+            <Text style={[styles.emptyTitle, css.text]}>Nenhum paciente ativo</Text>
+            <Text style={[styles.emptySub, css.textSecondary]}>
               Cadastre o primeiro paciente para começar o prontuário.
             </Text>
             <TouchableOpacity style={styles.emptyAction} onPress={openPatients} activeOpacity={0.85}>

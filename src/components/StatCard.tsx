@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
 import { Chip, ChipTone } from './Chip';
-import { colors, radius, shadowCard, spacing, toneColors, typography, StatTone } from '@/theme/tokens';
+import { colors as statusColors, radius, shadowCard, spacing, toneColors, typography, StatTone } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export interface StatCardProps {
   /** Rótulo da métrica (ex.: "Ativos") */
@@ -60,11 +61,12 @@ export function StatCard({
   style,
   accessibilityLabel,
 }: StatCardProps) {
+  const { theme } = useTheme();
   const palette = toneColors[tone];
 
   return (
     <View
-      style={[styles.card, shadowCard, style]}
+      style={[styles.card, shadowCard, { backgroundColor: theme.colors.surface }, style]}
       accessible
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel ?? `${label}: ${value}`}
@@ -78,7 +80,7 @@ export function StatCard({
           {label}
         </Text>
         <View style={styles.valueRow}>
-          <Text style={styles.value} numberOfLines={1}>
+          <Text style={[styles.value, { color: theme.colors.text }]} numberOfLines={1}>
             {value}
           </Text>
           {chip ? (
@@ -98,9 +100,9 @@ const styles = StyleSheet.create({
     minWidth: 0,
     minHeight: 124,
     borderRadius: radius.xl,
-    backgroundColor: colors.card,
+    backgroundColor: statusColors.card,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: statusColors.border,
     padding: spacing.xl,
     justifyContent: 'space-between',
     gap: spacing.md,
@@ -111,7 +113,7 @@ const styles = StyleSheet.create({
     padding: spacing.sm,
   },
   body: { width: '100%', gap: 2 },
-  label: { ...typography.bodyRegular, color: colors.textSecondary },
+  label: { ...typography.bodyRegular, color: statusColors.textSecondary },
   valueRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -119,5 +121,5 @@ const styles = StyleSheet.create({
     gap: spacing.md,
     minWidth: 0,
   },
-  value: { ...typography.title1, color: colors.textPrimary, flexShrink: 1, minWidth: 0 },
+  value: { ...typography.title1, color: statusColors.textPrimary, flexShrink: 1, minWidth: 0 },
 });

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, ViewStyle } from 'react-native';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export type ChipTone = 'positive' | 'negative' | 'neutral' | 'brand';
 
@@ -22,7 +23,20 @@ export interface ChipProps {
  * opcional à esquerda e texto em `body-medium`.
  */
 export function Chip({ children, tone = 'neutral', icon, style }: ChipProps) {
-  const palette = CHIP_TONES[tone];
+  const { theme } = useTheme();
+  const c = theme.colors;
+
+  /**
+   * Cores resolvidas do tema: status vem dos tokens (não muda),
+   * as demais acompanham o preset ativo.
+   */
+  const tones: Record<ChipTone, { bg: string; fg: string }> = {
+    positive: { bg: statusColors.successSoft, fg: statusColors.success },
+    negative: { bg: statusColors.dangerSoft, fg: statusColors.danger },
+    brand: { bg: statusColors.brandSoft, fg: c.primary },
+    neutral: { bg: statusColors.cardInner, fg: c.textSecondary },
+  };
+  const palette = tones[tone];
 
   return (
     <View
@@ -37,13 +51,6 @@ export function Chip({ children, tone = 'neutral', icon, style }: ChipProps) {
     </View>
   );
 }
-
-const CHIP_TONES: Record<ChipTone, { bg: string; fg: string }> = {
-  positive: { bg: colors.successSoft, fg: colors.success },
-  negative: { bg: colors.dangerSoft, fg: colors.danger },
-  brand: { bg: colors.brandSoft, fg: colors.brandText },
-  neutral: { bg: colors.cardInner, fg: colors.textSecondary },
-};
 
 const styles = StyleSheet.create({
   container: {

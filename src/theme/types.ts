@@ -33,6 +33,18 @@ export interface ThemeColors {
   text: string;
   /** Texto secundário (metadados, legendas). */
   textSecondary: string;
+  /**
+   * Superfície secundária (tiles internos, fundo de inputs).
+   * Derivada de `surface` + `background` no `buildTheme`.
+   */
+  surfaceInner: string;
+  /**
+   * Fundo suave da cor primária (chips, ícones, tiles).
+   * Derivada de `primary` + `surface` no `buildTheme`.
+   */
+  primarySoft: string;
+  /** Borda suave derivada da primária. */
+  primaryBorder: string;
   /** Estilo dos ícones da StatusBar. Com 4 presets claros, sempre `'dark'`. */
   statusBar: StatusBarStyle;
 }
@@ -49,7 +61,10 @@ export interface Theme {
  * `onPrimary` não aparece aqui: é calculado no `ThemeProvider` a partir da
  * primária. Assim uma cor personalizada nunca fica com texto ilegível.
  */
-export type PresetColors = Omit<ThemeColors, 'onPrimary'>;
+export type PresetColors = Omit<
+  ThemeColors,
+  'onPrimary' | 'surfaceInner' | 'primarySoft' | 'primaryBorder'
+>;
 
 export interface Preset {
   id: string;

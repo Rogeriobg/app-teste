@@ -9,6 +9,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStyles } from '@/theme/hooks';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
@@ -53,6 +54,7 @@ export default function PatientDetailsScreen() {
   } = useApp();
 
   const insets = useSafeAreaInsets();
+  const css = useThemeStyles();
 
   const patient = db.patients.find((p: Patient) => p.id === patientId);
   const records = getRecordsByPatient(patientId);
@@ -266,7 +268,7 @@ export default function PatientDetailsScreen() {
 
   if (!patient) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, css.page]}>
         <ScrollView
           contentContainerStyle={[
             styles.scroll,
@@ -300,9 +302,9 @@ export default function PatientDetailsScreen() {
   const isArquivado = patient.status === 'Arquivado';
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, css.page]}>
       {/* Top bar */}
-      <View style={[styles.topBar, { paddingTop: insets.top + spacing.md }]}>
+      <View style={[styles.topBar, css.surface, { paddingTop: insets.top + spacing.md }]}>
         <TouchableOpacity
           style={styles.backBtn}
           onPress={() => router.back()}
@@ -326,13 +328,13 @@ export default function PatientDetailsScreen() {
         style={{ paddingBottom: insets.bottom + spacing.xxxl }}
       >
         {/* Hero do paciente */}
-        <View style={styles.heroCard}>
+        <View style={[styles.heroCard, css.surface]}>
           <View style={styles.avatarBadge}>
             <Users size={30} color={colors.textOnBrand} />
           </View>
 
           <View style={styles.heroInfo}>
-            <Text style={styles.patientName} numberOfLines={2}>
+            <Text style={[styles.patientName, css.text]} numberOfLines={2}>
               {patient.name}
             </Text>
             <StatusBadge status={patient.status as any} />
@@ -355,7 +357,7 @@ export default function PatientDetailsScreen() {
         </View>
 
         {/* Informações do paciente */}
-        <Text style={styles.sectionTitle}>Informações do paciente</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Informações do paciente</Text>
 
         <Card style={styles.infoCard} elevated>
           <View style={styles.infoRow}>
@@ -363,8 +365,8 @@ export default function PatientDetailsScreen() {
               <Calendar size={18} color={ACCENT} />
             </View>
             <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Data de nascimento</Text>
-              <Text style={styles.infoValue}>{patient.birthDate || 'Não informada'}</Text>
+              <Text style={[styles.infoLabel, css.textSecondary]}>Data de nascimento</Text>
+              <Text style={[styles.infoValue, css.text]}>{patient.birthDate || 'Não informada'}</Text>
             </View>
           </View>
           <View style={styles.divider} />
@@ -373,8 +375,8 @@ export default function PatientDetailsScreen() {
               <FileText size={18} color={ACCENT} />
             </View>
             <View style={styles.infoContent}>
-              <Text style={styles.infoLabel}>Anamnese</Text>
-              <Text style={styles.infoValue}>{patient.anamnesis || 'Não informada'}</Text>
+              <Text style={[styles.infoLabel, css.textSecondary]}>Anamnese</Text>
+              <Text style={[styles.infoValue, css.text]}>{patient.anamnesis || 'Não informada'}</Text>
             </View>
           </View>
         </Card>
@@ -461,7 +463,7 @@ export default function PatientDetailsScreen() {
         )}
 
         {/* Ações do paciente (thumb zone) */}
-        <Text style={styles.sectionTitle}>Ações</Text>
+        <Text style={[styles.sectionTitle, css.text]}>Ações</Text>
 
         <View style={styles.actionsGrid}>
           <ActionTile

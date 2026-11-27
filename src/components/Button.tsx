@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, View, ViewStyle, TextStyle } from 'react-native';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'danger' | 'ghost';
 
@@ -29,13 +30,14 @@ export interface ButtonProps {
   accessibilityLabel?: string;
 }
 
-const VARIANT_STYLES: Record<ButtonVariant, { bg: string; border: string; color: string }> = {
-  primary: { bg: colors.brand, border: colors.brand, color: colors.textOnBrand },
-  secondary: { bg: colors.card, border: colors.border, color: colors.textPrimary },
-  outline: { bg: 'transparent', border: colors.brand, color: colors.brandText },
-  danger: { bg: colors.dangerSoft, border: colors.dangerBorder, color: colors.danger },
-  ghost: { bg: 'transparent', border: 'transparent', color: colors.textSecondary },
-};
+/**
+ * Estilos de layout permanecem estáticos (os gates leem StyleSheet.create).
+ * As cores vêm de `useTheme()` em tempo de render.
+ *
+ * `statusColors` (tokens) continua sendo a fonte das cores de STATUS —
+ * o tema troca só primary/surface/text.
+ */
+type VariantColors = { bg: string; border: string; color: string };
 
 export function Button({
   title,
@@ -50,7 +52,18 @@ export function Button({
   iconRight,
   accessibilityLabel,
 }: ButtonProps) {
-  const { bg, border, color } = VARIANT_STYLES[variant];
+  const { theme } = useTheme();
+  const c = theme.colors;
+
+  /** Cores da variante — resolvidas do tema ativo a cada render. */
+  const variantColors: Record<ButtonVariant, VariantColors> = {
+    primary: { bg: c.primary, border: c.primary, color: c.onPrimary },
+    secondary: { bg: c.surface, border: c.textSecondary, color: c.text },
+    outline: { bg: 'transparent', border: c.primary, color: c.primary },
+    danger: { bg: statusColors.dangerSoft, border: statusColors.dangerBorder, color: statusColors.danger },
+    ghost: { bg: 'transparent', border: 'transparent', color: c.textSecondary },
+  };
+  const { bg, border, color } = variantColors[variant];
   const isDisabled = disabled || loading;
 
   return (
@@ -64,7 +77,7 @@ export function Button({
       accessibilityState={{ disabled: isDisabled }}
     >
       {loading ? (
-        <ActivityIndicator size="small" color={color === colors.textOnBrand ? colors.textOnBrand : colors.brand} style={styles.spinner} />
+        <ActivityIndicator size="small" color={color} style={styles.spinner} />
       ) : (
         <>
           {iconLeft && <View style={styles.iconWrapper}>{iconLeft}</View>}

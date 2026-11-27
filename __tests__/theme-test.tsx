@@ -145,7 +145,16 @@ describe('Theme — Provider e troca', () => {
     await render(
       <ThemeProvider>
         <ThemeScope
-          theme={{ ...preview, colors: { ...preview.colors, onPrimary: '#FFFFFF' } }}
+          theme={{
+            ...preview,
+            colors: {
+              ...preview.colors,
+              onPrimary: '#FFFFFF',
+              surfaceInner: preview.colors.surface,
+              primarySoft: preview.colors.primary,
+              primaryBorder: preview.colors.primary,
+            },
+          }}
           fontScale="small"
         >
           <Sonda />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export type ActionTileLayout = 'vertical' | 'horizontal';
 export type ActionTileTone = 'default' | 'danger';
@@ -54,7 +55,9 @@ export function ActionTile({
   accessibilityLabel,
   accessibilityHint,
 }: ActionTileProps) {
+  const { theme } = useTheme();
   const isDanger = tone === 'danger';
+  const c = theme.colors;
   const horizontal = layout === 'horizontal';
 
   return (
@@ -62,6 +65,7 @@ export function ActionTile({
       style={[
         styles.tile,
         shadowCard,
+        { backgroundColor: c.surface },
         horizontal && styles.tileHorizontal,
         isDanger && styles.tileDanger,
         style,
@@ -81,13 +85,13 @@ export function ActionTile({
 
       <View style={[styles.textBlock, horizontal && styles.textBlockHorizontal]}>
         <Text
-          style={[styles.title, horizontal && styles.titleHorizontal, isDanger && styles.titleDanger]}
+          style={[styles.title, { color: c.text }, horizontal && styles.titleHorizontal, isDanger && styles.titleDanger]}
           numberOfLines={2}
         >
           {title}
         </Text>
         {description ? (
-          <Text style={styles.description} numberOfLines={2}>
+          <Text style={[styles.description, { color: c.textSecondary }]} numberOfLines={2}>
             {description}
           </Text>
         ) : null}
@@ -105,9 +109,9 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: 0,
     borderRadius: radius.xl,
-    backgroundColor: colors.card,
+    backgroundColor: statusColors.card,
     borderWidth: 1,
-    borderColor: colors.border,
+    borderColor: statusColors.border,
     padding: spacing.xl,
     paddingBottom: spacing.xxl,
     gap: spacing.md,
@@ -122,14 +126,14 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.lg,
   },
   tileDanger: {
-    borderColor: colors.dangerBorder,
-    backgroundColor: colors.dangerSoft,
+    borderColor: statusColors.dangerBorder,
+    backgroundColor: statusColors.dangerSoft,
   },
   iconTile: {
     width: 40,
     height: 40,
     borderRadius: radius.lg,
-    backgroundColor: colors.brandSoft,
+    backgroundColor: statusColors.brandSoft,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -139,18 +143,18 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
   },
   iconTileDanger: {
-    backgroundColor: colors.dangerSoft,
+    backgroundColor: statusColors.dangerSoft,
     borderWidth: 1,
-    borderColor: colors.dangerBorder,
+    borderColor: statusColors.dangerBorder,
   },
   textBlock: { flex: 1, gap: 2 },
   textBlockHorizontal: { flex: 1, minWidth: 0, gap: 1 },
-  title: { ...typography.headline, color: colors.textPrimary },
+  title: { ...typography.headline, color: statusColors.textPrimary },
   // no layout horizontal o texto é mais estreito: um corpo menor evita
   // truncar "Editar paciente" em "Editar paci..."
   titleHorizontal: { ...typography.body, fontWeight: '700' },
-  titleDanger: { color: colors.danger },
-  description: { ...typography.bodyRegular, color: colors.textSecondary },
+  titleDanger: { color: statusColors.danger },
+  description: { ...typography.bodyRegular, color: statusColors.textSecondary },
   trailing: {
     position: 'absolute',
     right: spacing.xl,

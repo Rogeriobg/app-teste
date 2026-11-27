@@ -6,7 +6,8 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 // barrel criaria um ciclo de require (index -> PatientFormModal -> index)
 import { AppModal } from './Modal';
 import { Input } from './Input';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 /** Valores do formulário de paciente. */
 export interface PatientFormValues {
@@ -58,6 +59,7 @@ export function PatientFormModal({
    * paciente em edição), então o estado inicial já é o correto — sem
    * `setState` dentro de efeito (regra `react-hooks/set-state-in-effect`).
    */
+  const { theme } = useTheme();
   const [values, setValues] = useState<PatientFormValues>({
     name: initial?.name ?? '',
     email: initial?.email ?? '',
@@ -123,7 +125,7 @@ export function PatientFormModal({
       <Input
         label="Nome Completo"
         placeholder="Ex: Maria Oliveira"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={theme.colors.textSecondary}
         value={values.name}
         onChangeText={(v) => setField('name', v)}
         error={!!errors.name}
@@ -134,7 +136,7 @@ export function PatientFormModal({
       <Input
         label="E-mail"
         placeholder="Ex: maria@email.com"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={theme.colors.textSecondary}
         keyboardType="email-address"
         autoCapitalize="none"
         value={values.email}
@@ -147,7 +149,7 @@ export function PatientFormModal({
       <Input
         label="Telefone"
         placeholder="Ex: (11) 98888-7777"
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={theme.colors.textSecondary}
         keyboardType="phone-pad"
         value={values.phone}
         onChangeText={(v) => setField('phone', v)}
@@ -163,7 +165,7 @@ export function PatientFormModal({
         accessibilityLabel="Selecionar data de nascimento"
         accessibilityHint="Abre o calendário para escolher a data"
       >
-        <Calendar size={18} color={colors.textMuted} style={styles.datePickerIcon} />
+        <Calendar size={18} color={statusColors.textMuted} style={styles.datePickerIcon} />
         <Text style={[styles.datePickerText, !values.birthDate && styles.datePickerPlaceholder]}>
           {values.birthDate || 'AAAA-MM-DD'}
         </Text>
@@ -183,7 +185,7 @@ export function PatientFormModal({
       <Input
         label="Anamnese (resumo inicial)"
         placeholder="Queixa principal, histórico, observações..."
-        placeholderTextColor={colors.textMuted}
+        placeholderTextColor={theme.colors.textSecondary}
         value={values.anamnesis}
         onChangeText={(v) => setField('anamnesis', v)}
         multiline
@@ -203,25 +205,25 @@ export function PatientFormModal({
 const styles = StyleSheet.create({
   label: {
     ...typography.label,
-    color: colors.labelText,
+    color: statusColors.labelText,
     marginBottom: spacing.sm,
   },
   datePickerInput: {
     borderWidth: 1,
-    borderColor: colors.inputBorder,
+    borderColor: statusColors.inputBorder,
     borderRadius: radius.lg,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
-    backgroundColor: colors.inputBg,
+    backgroundColor: statusColors.inputBg,
     marginBottom: spacing.lg,
     minHeight: 44,
   },
   datePickerIcon: { marginRight: spacing.md },
-  datePickerText: { ...typography.body, color: colors.inputText, flex: 1, minWidth: 0 },
-  datePickerPlaceholder: { color: colors.textMuted },
+  datePickerText: { ...typography.body, color: statusColors.inputText, flex: 1, minWidth: 0 },
+  datePickerPlaceholder: { color: statusColors.textMuted },
   footerNote: { marginTop: spacing.xs, marginBottom: spacing.xs },
-  footerNoteText: { ...typography.caption, color: colors.textMuted, textAlign: 'center' },
+  footerNoteText: { ...typography.caption, color: statusColors.textMuted, textAlign: 'center' },
 });

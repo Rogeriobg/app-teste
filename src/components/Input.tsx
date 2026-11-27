@@ -1,7 +1,8 @@
 import React from 'react';
 import { StyleSheet, TextInput, Text, View, ViewStyle, TextStyle, TouchableOpacity } from 'react-native';
 import { X } from 'lucide-react-native';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export interface InputProps {
   /** Rótulo acima do input */
@@ -50,7 +51,7 @@ export function Input({
   value,
   onChangeText,
   placeholder,
-  placeholderTextColor = colors.textMuted,
+  placeholderTextColor,
   keyboardType = 'default',
   multiline = false,
   numberOfLines,
@@ -64,6 +65,8 @@ export function Input({
   onClear,
   clearAccessibilityLabel = 'Limpar campo',
 }: InputProps) {
+  const { theme } = useTheme();
+  const corPlaceholder = placeholderTextColor ?? theme.colors.textSecondary;
   const isMultiline = multiline === true || (typeof multiline === 'number' && multiline > 0);
 
   return (
@@ -81,7 +84,7 @@ export function Input({
           value={value}
           onChangeText={onChangeText}
           placeholder={placeholder}
-          placeholderTextColor={placeholderTextColor}
+          placeholderTextColor={corPlaceholder}
           keyboardType={keyboardType}
           multiline={isMultiline}
           numberOfLines={numberOfLines}
@@ -98,7 +101,7 @@ export function Input({
             accessibilityLabel={clearAccessibilityLabel}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
           >
-            <X size={16} color={colors.textMuted} />
+            <X size={16} color={theme.colors.textSecondary} />
           </TouchableOpacity>
         ) : null}
       </View>
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
   },
   label: {
     ...typography.label,
-    color: colors.labelText,
+    color: statusColors.labelText,
     marginBottom: spacing.sm,
   },
   fieldRow: {
@@ -126,13 +129,13 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     borderWidth: 1,
-    borderColor: colors.inputBorder,
+    borderColor: statusColors.inputBorder,
     borderRadius: radius.lg,
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.lg,
     ...typography.body,
-    color: colors.inputText,
-    backgroundColor: colors.inputBg,
+    color: statusColors.inputText,
+    backgroundColor: statusColors.inputBg,
   },
   inputWithAdornment: {
     borderTopRightRadius: 0,
@@ -148,21 +151,21 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderLeftWidth: 0,
-    borderColor: colors.inputBorder,
+    borderColor: statusColors.inputBorder,
     borderTopRightRadius: radius.lg,
     borderBottomRightRadius: radius.lg,
-    backgroundColor: colors.inputBg,
+    backgroundColor: statusColors.inputBg,
   },
   inputMultiline: {
     height: 96,
     textAlignVertical: 'top',
   },
   inputError: {
-    borderColor: colors.danger,
+    borderColor: statusColors.danger,
   },
   errorText: {
     ...typography.label,
-    color: colors.danger,
+    color: statusColors.danger,
     marginTop: spacing.xs,
   },
 });

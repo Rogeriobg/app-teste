@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import * as SplashScreen from 'expo-splash-screen';
 
-import { getReadableTextColor } from './contrast';
+import { getReadableTextColor, mixColors } from './contrast';
 import { getPreset, DEFAULT_PRESET_ID } from './presets';
 import { loadTheme, saveTheme } from './storage';
 import {
@@ -19,9 +19,30 @@ import {
   type ThemeState,
 } from './types';
 
-const ThemeContext = createContext<ThemeContextValue>(
-  {} as ThemeContextValue
-);
+/**
+ * Tema de fallback para uso sem provider.
+ *
+ * Componentes isolados (testes, Storybook) e telas renderizadas antes do
+ * provider carregar não podem receber `theme === undefined` — isso
+ * quebraria 95 testes de uma vez e seria um crash em runtime se algum
+ * componente escapasse do provider.
+ *
+ * O fallback é o preset padrão com `onPrimary` calculado pela mesma
+ * função de produção. Não é um "tema falso": é exatamente o Acolhimento.
+ */
+const FALLBACK_THEME: Theme = buildTheme(DEFAULT_THEME_STATE);
+
+const noop = () => {};
+
+const ThemeContext = createContext<ThemeContextValue>({
+  theme: FALLBACK_THEME,
+  fontScale: DEFAULT_THEME_STATE.fontScale,
+  setPreset: noop,
+  setCustom: noop,
+  setFontScale: noop,
+  resetTheme: noop,
+  ready: true,
+});
 
 /**
  * Monta o tema efetivo: preset + overrides personalizados + `onPrimary`
@@ -32,6 +53,8 @@ function buildTheme(state: ThemeState): Theme {
   const primary = state.custom?.primary ?? preset.colors.primary;
   const background = state.custom?.background ?? preset.colors.background;
 
+  const surface = preset.colors.surface;
+
   return {
     ...preset,
     colors: {
@@ -39,6 +62,11 @@ function buildTheme(state: ThemeState): Theme {
       primary,
       background,
       onPrimary: getReadableTextColor(primary),
+      // Derivadas: mantêm a coerência do preset sem exigir que cada tema
+      // defina dezenas de tons. Ajustes de arquitetura do M2.
+      surfaceInner: mixColors(surface, background, 0.45),
+      primarySoft: mixColors(surface, primary, 0.12),
+      primaryBorder: mixColors(surface, primary, 0.3),
     },
   };
 }

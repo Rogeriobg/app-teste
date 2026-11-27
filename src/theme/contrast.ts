@@ -41,6 +41,20 @@ export const getReadableTextColor = (bg: string): string => {
   return branco >= preto ? '#FFFFFF' : '#000000';
 };
 
+/** Mistura duas cores: `peso` é a fração de `b` (0..1). */
+export const mixColors = (a: string, b: string, peso: number): string => {
+  const canal = (hex: string, i: number) => {
+    const n = parseInt(hex.replace('#', ''), 16);
+    return (n >> i) & 255;
+  };
+  const partes = [16, 8, 0].map((shift) =>
+    Math.round(canal(a, shift) * (1 - peso) + canal(b, shift) * peso)
+      .toString(16)
+      .padStart(2, '0')
+  );
+  return `#${partes.join('')}`.toUpperCase();
+};
+
 /**
  * Croma (max - min dos canais), de 0 a 1.
  *

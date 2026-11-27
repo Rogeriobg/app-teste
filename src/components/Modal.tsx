@@ -10,7 +10,8 @@ import {
   ViewStyle,
   TextStyle,
 } from 'react-native';
-import { colors, radius, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
 
 export interface ModalProps {
   /** Visibilidade do modal */
@@ -53,6 +54,9 @@ export function AppModal({
   titleStyle,
   backdropPressToClose = true,
 }: ModalProps) {
+  const { theme } = useTheme();
+  const c = theme.colors;
+
   return (
     <Modal
       visible={visible}
@@ -60,7 +64,7 @@ export function AppModal({
       transparent
       onDismiss={onDismiss}
     >
-      <View style={styles.overlay}>
+      <View style={[styles.overlay, { backgroundColor: statusColors.overlay }]}>
         <TouchableOpacity
           style={styles.backdrop}
           onPress={backdropPressToClose ? onDismiss : undefined}
@@ -69,23 +73,23 @@ export function AppModal({
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           style={styles.keyboard}
         >
-          <View style={[styles.content, contentStyle]}>
+          <View style={[styles.content, { backgroundColor: c.surface }, contentStyle]}>
             {title && (
               <View style={styles.header}>
-                <Text style={[styles.title, titleStyle]}>{title}</Text>
+                <Text style={[styles.title, { color: c.text }, titleStyle]}>{title}</Text>
               </View>
             )}
             {children}
             <View style={styles.actions}>
               <TouchableOpacity
-                style={[styles.btn, styles.btnCancel]}
+                style={[styles.btn, styles.btnCancel, { backgroundColor: statusColors.mutedSurface }]}
                 onPress={onDismiss}
                 activeOpacity={0.8}
               >
-                <Text style={styles.btnTextCancel}>{cancelTitle}</Text>
+                <Text style={[styles.btnTextCancel, { color: c.textSecondary }]}>{cancelTitle}</Text>
               </TouchableOpacity>
               <TouchableOpacity
-                style={[styles.btn, styles.btnConfirm, confirmDisabled && styles.btnDisabled]}
+                style={[styles.btn, { backgroundColor: c.primary }, confirmDisabled && styles.btnDisabled]}
                 onPress={!confirmDisabled ? onConfirm : undefined}
                 activeOpacity={0.8}
                 disabled={confirmDisabled}
@@ -93,9 +97,9 @@ export function AppModal({
                 accessibilityState={{ disabled: confirmDisabled }}
               >
                 {confirmLoading ? (
-                  <Text style={styles.btnTextConfirm}>Processando...</Text>
+                  <Text style={[styles.btnTextConfirm, { color: c.onPrimary }]}>Processando...</Text>
                 ) : (
-                  <Text style={styles.btnTextConfirm}>{confirmTitle}</Text>
+                  <Text style={[styles.btnTextConfirm, { color: c.onPrimary }]}>{confirmTitle}</Text>
                 )}
               </TouchableOpacity>
             </View>
@@ -109,7 +113,7 @@ export function AppModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: colors.overlay,
+    backgroundColor: statusColors.overlay,
     justifyContent: 'center',
     padding: spacing.xxl,
   },
@@ -120,10 +124,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   content: {
-    backgroundColor: colors.card,
+    backgroundColor: statusColors.card,
     borderRadius: radius.xxl,
     padding: spacing.xxl,
-    shadowColor: colors.shadowNeutral,
+    shadowColor: statusColors.shadowNeutral,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
@@ -136,7 +140,7 @@ const styles = StyleSheet.create({
   },
   title: {
     ...typography.title2,
-    color: colors.textPrimary,
+    color: statusColors.textPrimary,
     textAlign: 'center',
   },
   actions: {
@@ -154,10 +158,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   btnCancel: {
-    backgroundColor: colors.mutedSurface,
+    backgroundColor: statusColors.mutedSurface,
   },
   btnConfirm: {
-    backgroundColor: colors.brand,
+    backgroundColor: statusColors.brand,
   },
   btnDisabled: {
     opacity: 0.6,
@@ -165,11 +169,11 @@ const styles = StyleSheet.create({
   btnTextCancel: {
     ...typography.body,
     fontWeight: 'bold',
-    color: colors.textSecondary,
+    color: statusColors.textSecondary,
   },
   btnTextConfirm: {
     ...typography.body,
     fontWeight: 'bold',
-    color: colors.textOnBrand,
+    color: statusColors.textOnBrand,
   },
 });

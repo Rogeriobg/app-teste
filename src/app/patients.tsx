@@ -24,7 +24,9 @@ import {
   FileText,
   X,
 } from 'lucide-react-native';
-import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { colors as statusColors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
+import { useTheme } from '@/theme/context';
+import { useThemeStyles } from '@/theme/hooks';
 
 const tabs = [
   { key: 'todos' as const, label: 'Todos' },
@@ -45,6 +47,9 @@ export default function PatientsScreen() {
   } = useApp();
 
   const insets = useSafeAreaInsets();
+  const { theme } = useTheme();
+  const c = theme.colors;
+  const css = useThemeStyles();
 
   const [activeTab, setActiveTab] = useState<'todos' | 'ativos' | 'inativos' | 'arquivados'>('todos');
   const [modalVisible, setModalVisible] = useState(false);
@@ -174,13 +179,13 @@ export default function PatientsScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={[styles.header, { paddingTop: insets.top + spacing.lg }]}>
+    <View style={[styles.container, css.page]}>
+      <View style={[styles.header, css.surface, { paddingTop: insets.top + spacing.lg }]}>
         <View style={styles.headerIdentity}>
-          <Text style={styles.headerTitle} numberOfLines={1} ellipsizeMode="tail">
+          <Text style={[styles.headerTitle, css.text]} numberOfLines={1} ellipsizeMode="tail">
             Meus Pacientes
           </Text>
-          <Text style={styles.headerSubtitle} numberOfLines={1} ellipsizeMode="tail">
+          <Text style={[styles.headerSubtitle, css.primary]} numberOfLines={1} ellipsizeMode="tail">
             Cadastro, edição e prontuário
           </Text>
         </View>
@@ -188,7 +193,7 @@ export default function PatientsScreen() {
           variant="primary"
           onPress={handleOpenAdd}
           style={styles.headerAction}
-          iconLeft={<Plus size={18} color={colors.textOnBrand} />}
+          iconLeft={<Plus size={18} color={statusColors.textOnBrand} />}
           accessibilityLabel="Cadastrar novo paciente"
         >
           Novo Paciente
@@ -200,11 +205,11 @@ export default function PatientsScreen() {
         {tabs.map(({ key, label }) => (
           <TouchableOpacity
             key={key}
-            style={[styles.tabBtn, activeTab === key && styles.tabActive]}
+            style={[styles.tabBtn, css.surface, activeTab === key && [styles.tabActive, css.primarySoft, css.primaryBorder]]}
             onPress={() => setActiveTab(key)}
             activeOpacity={0.8}
           >
-            <Text style={[styles.tabText, activeTab === key && styles.tabTextActive]}>{label}</Text>
+            <Text style={[styles.tabText, css.textSecondary, activeTab === key && [styles.tabTextActive, css.primary]]}>{label}</Text>
           </TouchableOpacity>
         ))}
       </View>
@@ -214,7 +219,7 @@ export default function PatientsScreen() {
         <Input
           label="Buscar paciente"
           placeholder="Nome, e-mail ou telefone..."
-          placeholderTextColor={colors.textMuted}
+          placeholderTextColor={statusColors.textMuted}
           value={searchQuery}
           onChangeText={setSearchQuery}
           onClear={() => setSearchQuery('')}
@@ -225,7 +230,7 @@ export default function PatientsScreen() {
       <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
         {filteredPatients.length === 0 ? (
           <Card style={styles.emptyCard} elevated>
-            <Archive size={36} color={colors.textMuted} />
+            <Archive size={36} color={statusColors.textMuted} />
 
             {/* Estado vazio contextual: o texto diz exatamente por que a
                 lista está vazia e oferece a ação de recuperação. */}
@@ -239,7 +244,7 @@ export default function PatientsScreen() {
                   variant="outline"
                   onPress={handleClearSearch}
                   style={styles.emptyBtn}
-                  iconLeft={<X size={16} color={colors.brand} />}
+                  iconLeft={<X size={16} color={c.primary} />}
                   accessibilityLabel="Limpar busca"
                 >
                   Limpar busca
@@ -255,7 +260,7 @@ export default function PatientsScreen() {
                   variant="primary"
                   onPress={handleOpenAdd}
                   style={styles.emptyBtn}
-                  iconLeft={<Plus size={16} color={colors.textOnBrand} />}
+                  iconLeft={<Plus size={16} color={statusColors.textOnBrand} />}
                   accessibilityLabel="Cadastrar primeiro paciente"
                 >
                   Cadastrar paciente
@@ -271,7 +276,7 @@ export default function PatientsScreen() {
                   variant="outline"
                   onPress={handleShowAll}
                   style={styles.emptyBtn}
-                  iconLeft={<Users size={16} color={colors.brand} />}
+                  iconLeft={<Users size={16} color={c.primary} />}
                   accessibilityLabel="Ver todos os pacientes"
                 >
                   Ver todos
@@ -292,10 +297,10 @@ export default function PatientsScreen() {
               {/* Linha 2: Avatar | Email */}
               <View style={styles.rowEmail}>
                 <View style={styles.avatarCircle}>
-                  <Users size={22} color={colors.brand} />
+                  <Users size={22} color={c.primary} />
                 </View>
                 <View style={styles.rowEmailTextContainer}>
-                  <Mail size={14} color={colors.textMuted} />
+                  <Mail size={14} color={statusColors.textMuted} />
                   <Text style={styles.rowEmailText} numberOfLines={1} ellipsizeMode="tail">
                     {p.email}
                   </Text>
@@ -304,7 +309,7 @@ export default function PatientsScreen() {
 
               {/* Linha 3: Ícone telefone | Número */}
               <View style={styles.rowPhone}>
-                <Phone size={14} color={colors.textMuted} />
+                <Phone size={14} color={statusColors.textMuted} />
                 <Text style={styles.rowPhoneText} numberOfLines={1} ellipsizeMode="tail">
                   {p.phone}
                 </Text>
@@ -319,7 +324,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Editar paciente ${p.name}`}
                 >
-                  <Edit2 size={16} color={colors.info} />
+                  <Edit2 size={16} color={statusColors.info} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.iconBtn, p.status === 'Ativo' ? styles.btnToggleActive : styles.btnToggleInactive]}
@@ -329,9 +334,9 @@ export default function PatientsScreen() {
                   accessibilityLabel={`${p.status === 'Ativo' ? 'Inativar' : 'Reativar'} paciente ${p.name}`}
                 >
                   {p.status === 'Ativo' ? (
-                    <Pause size={16} color={colors.warning} />
+                    <Pause size={16} color={statusColors.warning} />
                   ) : (
-                    <CheckCircle2 size={16} color={colors.success} />
+                    <CheckCircle2 size={16} color={statusColors.success} />
                   )}
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -341,7 +346,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`${p.status === 'Arquivado' ? 'Restaurar' : 'Arquivar'} paciente ${p.name}`}
                 >
-                  <Archive size={16} color={colors.contentSecondary} />
+                  <Archive size={16} color={statusColors.contentSecondary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={styles.iconBtn}
@@ -350,7 +355,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Ver detalhes do paciente ${p.name}`}
                 >
-                  <FileText size={16} color={colors.brand} />
+                  <FileText size={16} color={c.primary} />
                 </TouchableOpacity>
                 <TouchableOpacity
                   style={[styles.iconBtn, styles.btnDelete]}
@@ -359,7 +364,7 @@ export default function PatientsScreen() {
                   accessibilityRole="button"
                   accessibilityLabel={`Excluir paciente ${p.name}`}
                 >
-                  <Trash2 size={16} color={colors.danger} />
+                  <Trash2 size={16} color={statusColors.danger} />
                 </TouchableOpacity>
               </View>
             </Card>
@@ -383,20 +388,20 @@ export default function PatientsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: colors.surface },
+  container: { flex: 1, backgroundColor: statusColors.card },
   header: {
-    backgroundColor: colors.card,
+    backgroundColor: statusColors.card,
     paddingHorizontal: spacing.xxl,
     paddingBottom: spacing.xl,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderColor: colors.border,
+    borderColor: statusColors.border,
     ...shadowCard,
   },
-  headerTitle: { ...typography.title2, fontSize: 20, color: colors.textPrimary },
-  headerSubtitle: { ...typography.caption, color: colors.brandText, marginTop: spacing.xxs },
+  headerTitle: { ...typography.title2, fontSize: 20, color: statusColors.textPrimary },
+  headerSubtitle: { ...typography.caption, color: statusColors.brandText, marginTop: spacing.xxs },
   /**
    * Container do título.
    *
@@ -427,12 +432,12 @@ const styles = StyleSheet.create({
     minWidth: 44,
     borderRadius: radius.lg,
     borderWidth: 1,
-    borderColor: colors.inputBorder,
-    backgroundColor: colors.card,
+    borderColor: statusColors.inputBorder,
+    backgroundColor: statusColors.card,
   },
-  tabActive: { backgroundColor: colors.brandSoft, borderColor: colors.brand },
-  tabText: { ...typography.label, color: colors.textSecondary },
-  tabTextActive: { color: colors.brandText, fontWeight: '700' },
+  tabActive: { backgroundColor: statusColors.brandSoft, borderColor: statusColors.brand },
+  tabText: { ...typography.label, color: statusColors.textSecondary },
+  tabTextActive: { color: statusColors.brandText, fontWeight: '700' },
 
   scroll: { padding: spacing.xl, paddingBottom: spacing.xxl + 24 },
   emptyCard: {
@@ -441,16 +446,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginHorizontal: spacing.xl,
   },
-  emptyTitle: { ...typography.headline, color: colors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm },
-  emptySub: { ...typography.bodyRegular, color: colors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
+  emptyTitle: { ...typography.headline, color: statusColors.textPrimary, marginTop: spacing.lg, marginBottom: spacing.sm },
+  emptySub: { ...typography.bodyRegular, color: statusColors.textSecondary, textAlign: 'center', marginBottom: spacing.lg },
   emptyBtn: { marginTop: spacing.xs, minWidth: 200 },
 
   patientCard: {
     marginBottom: spacing.lg,
     borderRadius: radius.xl,
     borderWidth: 1,
-    borderColor: colors.border,
-    backgroundColor: colors.card,
+    borderColor: statusColors.border,
+    backgroundColor: statusColors.card,
     ...shadowCard,
     overflow: 'hidden',
   },
@@ -466,7 +471,7 @@ const styles = StyleSheet.create({
   rowNameText: {
     ...typography.title2,
     fontSize: 17,
-    color: colors.textPrimary,
+    color: statusColors.textPrimary,
     flex: 1,
     minWidth: 0,
   },
@@ -477,17 +482,17 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.dividerSoft,
+    borderBottomColor: statusColors.dividerSoft,
   },
   avatarCircle: {
     width: 44,
     height: 44,
     borderRadius: 22,
-    backgroundColor: colors.brandSoft,
+    backgroundColor: statusColors.brandSoft,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: colors.brandBorder,
+    borderColor: statusColors.brandBorder,
     flexShrink: 0,
     marginRight: spacing.lg,
   },
@@ -499,7 +504,7 @@ const styles = StyleSheet.create({
   },
   rowEmailText: {
     ...typography.body,
-    color: colors.inputText,
+    color: statusColors.inputText,
     flex: 1,
     minWidth: 0,
   },
@@ -510,11 +515,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.lg,
     paddingVertical: spacing.md,
     borderBottomWidth: 1,
-    borderBottomColor: colors.dividerSoft,
+    borderBottomColor: statusColors.dividerSoft,
   },
   rowPhoneText: {
     ...typography.body,
-    color: colors.inputText,
+    color: statusColors.inputText,
     flex: 1,
     minWidth: 0,
   },
@@ -543,11 +548,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: radius.lg,
-    backgroundColor: colors.cardInner,
+    backgroundColor: statusColors.cardInner,
     flexShrink: 0,
   },
-  btnToggleActive: { backgroundColor: colors.warningSoft },
-  btnToggleInactive: { backgroundColor: colors.successSoft },
-  btnArchive: { backgroundColor: colors.mutedSoft },
-  btnDelete: { backgroundColor: colors.dangerSoft },
+  btnToggleActive: { backgroundColor: statusColors.warningSoft },
+  btnToggleInactive: { backgroundColor: statusColors.successSoft },
+  btnArchive: { backgroundColor: statusColors.mutedSoft },
+  btnDelete: { backgroundColor: statusColors.dangerSoft },
 });

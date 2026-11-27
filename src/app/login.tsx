@@ -10,6 +10,7 @@ import {
   Platform,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStyles } from '@/theme/hooks';
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { Mail, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react-native';
@@ -18,6 +19,7 @@ import { colors, radius, spacing, typography } from '@/theme/tokens';
 export default function LoginScreen() {
   const { login } = useApp();
   const insets = useSafeAreaInsets();
+  const css = useThemeStyles();
   const [email, setEmail] = useState('psicologo@psicowave.com');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -48,21 +50,21 @@ export default function LoginScreen() {
         showsVerticalScrollIndicator={false}
       >
         {/* Hero Section */}
-        <View style={styles.heroCard}>
+        <View style={[styles.heroCard, css.primarySoft]}>
           <View style={styles.badgeRow}>
             <Sparkles size={16} color={colors.brand} />
-            <Text style={styles.badgeText} numberOfLines={1} ellipsizeMode="tail">
+            <Text style={[styles.badgeText, css.primary]} numberOfLines={1} ellipsizeMode="tail">
               PsiApp • Consultório Pessoal
             </Text>
           </View>
           <ShieldCheck size={32} color={colors.brand} style={styles.heroIcon} />
-          <Text style={styles.title}>Consultório Psicológico</Text>
-          <Text style={styles.subtitle}>Cadastro, prontuário e relatórios dos seus pacientes.</Text>
+          <Text style={[styles.title, css.text]}>Consultório Psicológico</Text>
+          <Text style={[styles.subtitle, css.textSecondary]}>Cadastro, prontuário e relatórios dos seus pacientes.</Text>
         </View>
 
         {/* Form Card */}
-        <View style={styles.formCard}>
-          <Text style={styles.formTitle}>Acesso ao Consultório</Text>
+        <View style={[styles.formCard, css.surface]}>
+          <Text style={[styles.formTitle, css.text]}>Acesso ao Consultório</Text>
           {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
           <View style={styles.inputWrapper}>

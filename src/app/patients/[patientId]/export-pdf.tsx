@@ -7,6 +7,7 @@ import {
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useThemeStyles } from '@/theme/hooks';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync, isAvailableAsync } from 'expo-sharing';
@@ -34,6 +35,7 @@ export default function ExportPdfScreen() {
   const { db, getRecordsByPatient } = useApp();
 
   const insets = useSafeAreaInsets();
+  const css = useThemeStyles();
 
   const patient = db.patients.find((p: Patient) => p.id === patientId);
   const records = getRecordsByPatient(patientId);
@@ -385,7 +387,7 @@ export default function ExportPdfScreen() {
 
   if (!patient) {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, css.page]}>
         <ScrollView
           contentContainerStyle={[
             styles.scroll,
