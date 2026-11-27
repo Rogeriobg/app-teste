@@ -102,3 +102,22 @@ automated tests mask them. Verified during cycles 2–4 (see
    `shareAsync`/`FileSystem` cannot catch permission errors. Any feature
    touching a native module must be verified on a real device (phase 4c)
    before `[APROVADO]`.
+
+## Pipeline: bug-first, no new features while blocked
+
+`WORKFLOW_STATE.md` is the single source of truth. These rules are
+non-negotiable:
+
+1. **`[APROVADO]` means "no open high/medium bug assigned to this stage"** —
+   not "the latest cycle passed". A stage with old open bugs stays
+   `[REPROVADO]`.
+2. **Check the "Gate de release" table before proposing any new work.** If
+   it says `BLOQUEADO`, fix the blocking bugs first. Never suggest a new
+   feature while medium/high bugs are open.
+3. **QA cannot approve itself while it has open bugs.** Registering a bug
+   and approving in the same cycle is contradictory.
+4. **Every fix gets a verification gate.** If a bug was found visually
+   (overflow, touch size, contrast), add an automated gate so it cannot
+   regress — see `scripts/validate-layout.mjs` as the model.
+5. **Bugs before features, always.** The order is: blocking bugs → low
+   severity cleanup → new features. Never the reverse.
