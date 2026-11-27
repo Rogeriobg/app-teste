@@ -281,28 +281,38 @@ export default function ExportPdfScreen() {
     setGenerating(true);
     try {
       const html = buildHtml();
-      const { uri } = await printToFileAsync({
+
+      /**
+       * O PDF vem como **base64**, e não como URI de arquivo.
+       *
+       * O `expo-print` grava o PDF em `<cacheDir>/Print/<uuid>.pdf`, um
+       * diretório que nem o `FileProvider` do `expo-sharing` nem o
+       * `expo-file-system` conseguem ler ("Not allowed to read file" /
+       * "Missing 'READ' permission"). Com `base64: true`, o próprio
+       * `expo-print` lê o arquivo que ele criou e devolve o conteúdo —
+       * nenhum módulo precisa tocar no diretório `Print/`.
+       */
+      const { base64 } = await printToFileAsync({
         html,
-        base64: false,
+        base64: true,
       });
+      if (!base64) {
+        throw new Error('O gerador de PDF não devolveu o conteúdo do arquivo.');
+      }
 
       await Haptic.success();
 
       /**
-       * O PDF gerado pelo `expo-print` fica em `<cacheDir>/Print/` e o
-       * `FileProvider` do `expo-sharing` **não consegue ler** esse caminho
-       * ("Not allowed to read file under given url").
-       *
-       * A correção: copiar o PDF para o **documentDirectory** (que o
-       * `expo-sharing` autoriza), com um nome legível, e compartilhar a
-       * partir dali. O arquivo também fica disponível para o usuário
-       * abrir depois pelo explorador de arquivos.
+       * O PDF é gravado no **documentDirectory**, que o `expo-sharing`
+       * autoriza a compartilhar, com um nome legível. O arquivo também
+       * fica disponível para o usuário abrir depois pelo explorador de
+       * arquivos.
        */
       const destino = new File(
         Paths.document,
         `prontuario-${(patient?.name ?? 'paciente').replace(/[^a-zA-Z0-9-]/g, '_')}.pdf`
       );
-      await copiarPara(destino, uri);
+      await destino.write(base64, { encoding: 'base64' });
 
       await handleSharePdf(destino);
     } catch (error) {
@@ -312,22 +322,6 @@ export default function ExportPdfScreen() {
     } finally {
       setGenerating(false);
     }
-  };
-
-  /**
-   * Copia o PDF gerado pelo `expo-print` para um `File` do
-   * `expo-file-system`.
-   *
-   * O `expo-print` devolve um URI de arquivo comum; o `File` do
-   * `expo-file-system` escreve no local que o `expo-sharing` autoriza.
-   */
-  const copiarPara = async (destino: File, origemUri: string) => {
-    const origem = new File(origemUri);
-    if (!destino.exists) {
-      destino.create({ overwrite: true });
-    }
-    await origem.copy(destino);
-    return destino;
   };
 
   const handleSharePdf = async (arquivo: File) => {

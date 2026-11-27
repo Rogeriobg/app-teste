@@ -55,16 +55,21 @@ jest.mock('expo-print', () => ({
  * Mock da API **nova** (`File`, `Directory`, `Paths`) e da antiga
  * (`writeAsStringAsync`, `cacheDirectory`...).
  *
- * A API nova é usada pela exportação de PDF: o PDF gerado pelo
- * `expo-print` é copiado para `new File(Paths.document, 'x.pdf')` antes de
- * ser compartilhado — porque o `FileProvider` do `expo-sharing` não
- * consegue ler o diretório `Print/` do cache.
+ * A API nova é usada pela exportação de PDF: o conteúdo do PDF (base64
+ * vindo do `expo-print`) é escrito em `new File(Paths.document, 'x.pdf')`
+ * antes de ser compartilhado — porque nem o `FileProvider` do
+ * `expo-sharing` nem o `expo-file-system` conseguem ler o diretório
+ * `Print/` do cache onde o `expo-print` grava.
  */
 jest.mock('expo-file-system', () => {
+  /** Escritas feitas via `File.write()` — para asserções dos testes. */
+  const writes: Array<{ uri: string; content: unknown; options?: unknown }> = [];
+  /** Instâncias de `File` criadas — para asserções dos testes. */
+  const instances: Array<Record<string, jest.Mock>> = [];
+
   const makeFile = (uri: string) => {
     const parts = uri.split('/').filter(Boolean);
     const name = parts[parts.length - 1] ?? '';
-    const dir = parts.slice(0, -1).join('/');
     return {
       uri,
       name,
@@ -76,7 +81,9 @@ jest.mock('expo-file-system', () => {
       delete: jest.fn(),
       copy: jest.fn(async () => undefined),
       move: jest.fn(async () => undefined),
-      write: jest.fn(async () => undefined),
+      write: jest.fn(async (content: unknown, options?: unknown) => {
+        writes.push({ uri, content, options });
+      }),
       text: jest.fn(async () => ''),
       base64: jest.fn(async () => ''),
     };
@@ -93,9 +100,14 @@ jest.mock('expo-file-system', () => {
         .filter(Boolean)
         .join('/');
       Object.assign(this, makeFile(flat || 'file:///cache/file.pdf'));
+      instances.push(this as unknown as Record<string, jest.Mock>);
     }
     static canPreview = jest.fn(async () => true);
     static preview = jest.fn(async () => undefined);
+    /** Histórico global de escritas (`File.write`). */
+    static __writes = writes;
+    /** Instâncias criadas (`new File(...)`). */
+    static __instances = instances;
   }
 
   class DirectoryMock {

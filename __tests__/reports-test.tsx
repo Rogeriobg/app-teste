@@ -16,6 +16,8 @@ const mockedPrintToFileAsync = printToFileAsync as jest.Mock;
 const mockedShareAsync = shareAsync as jest.Mock;
 
 const PDF_URI = 'file:///tmp/psi-app-test.pdf';
+/** Conteúdo fake do PDF (o que o `expo-print` devolve com `base64: true`). */
+const PDF_BASE64 = 'JVBERi0xLjQKJcTl8uXrp/Og0MTGjA==';
 
 let alertSpy: jest.SpyInstance;
 
@@ -50,7 +52,7 @@ describe('Relatórios e Exportação', () => {
 
     // comportamento padrão dos mocks nativos (reset limpa as implementações "once")
     mockedPrintToFileAsync.mockReset();
-    mockedPrintToFileAsync.mockImplementation(async () => ({ uri: PDF_URI }));
+    mockedPrintToFileAsync.mockImplementation(async () => ({ uri: PDF_URI, base64: PDF_BASE64 }));
     mockedShareAsync.mockReset();
     mockedShareAsync.mockImplementation(async () => undefined);
 
@@ -59,6 +61,10 @@ describe('Relatórios e Exportação', () => {
     (File.canPreview as jest.Mock).mockResolvedValue(true);
     (File.preview as jest.Mock).mockReset();
     (File.preview as jest.Mock).mockResolvedValue(undefined);
+
+    // limpa o histórico de escritas do File mock
+    const fileComHistorico = File as unknown as { __writes: unknown[] };
+    if (fileComHistorico.__writes) fileComHistorico.__writes.length = 0;
 
     alertSpy = jest.spyOn(Alert, 'alert').mockImplementation(() => {});
   });
@@ -408,15 +414,25 @@ describe('Relatórios e Exportação', () => {
       await waitFor(() => expect(mockedShareAsync).toHaveBeenCalledTimes(1));
       /**
        * O PDF é compartilhado a partir do **documentDirectory**, com nome
-       * legível — o `FileProvider` do `expo-sharing` não consegue ler o
-       * diretório `Print/` do cache (onde o `expo-print` grava), o que
-       * causava "Not allowed to read file under given url".
+       * legível — nem o `FileProvider` do `expo-sharing` nem o
+       * `expo-file-system` conseguem ler o diretório `Print/` do cache
+       * (onde o `expo-print` grava).
        */
       expect(mockedShareAsync).toHaveBeenCalledWith(
         expect.stringContaining('document'),
         expect.objectContaining({ mimeType: 'application/pdf' })
       );
       expect(mockedShareAsync.mock.calls[0][0]).toContain('prontuario-Maria_Oliveira.pdf');
+
+      /**
+       * O conteúdo veio como **base64** do `expo-print` e foi escrito no
+       * destino com `encoding: 'base64'` — nenhum módulo precisa ler o
+       * diretório `Print/`, que não tem permissão de leitura.
+       */
+      expect(mockedPrintToFileAsync.mock.calls[0][0].base64).toBe(true);
+      const escritas = (File as unknown as { __writes: Array<{ uri: string; options?: { encoding?: string } }> }).__writes;
+      expect(escritas).toHaveLength(1);
+      expect(escritas[0].options).toEqual(expect.objectContaining({ encoding: 'base64' }));
 
       /**
        * O compartilhamento acontece **antes** de qualquer `Alert`.
