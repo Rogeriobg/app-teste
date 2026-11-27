@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
-import { renderWithProvider } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import LoginScreen from '@/app/login';
 import DashboardScreen from '@/app/dashboard';
 import PatientsScreen from '@/app/patients';
@@ -31,7 +31,7 @@ describe('Telas', () => {
     it('deve mostrar erro quando o e-mail está vazio', async () => {
       const { current } = await renderWithProvider(<LoginScreen />);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await fireEvent.changeText(screen.getByDisplayValue('psicologo@psicowave.com'), '   ');
       await fireEvent.press(screen.getByText('Entrar no Consultório'));
@@ -44,7 +44,7 @@ describe('Telas', () => {
     it('deve redirecionar para /dashboard após login válido', async () => {
       const { current } = await renderWithProvider(<LoginScreen />);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await fireEvent.changeText(
         screen.getByDisplayValue('psicologo@psicowave.com'),
@@ -63,6 +63,8 @@ describe('Telas', () => {
   });
 
   describe('DashboardScreen', () => {
+    beforeEach(() => mockAuthenticatedSession());
+
     it('deve exibir as estatísticas de pacientes e prontuários', async () => {
       await renderWithProvider(<DashboardScreen />);
 
@@ -136,6 +138,8 @@ describe('Telas', () => {
   });
 
   describe('PatientsScreen', () => {
+    beforeEach(() => mockAuthenticatedSession());
+
     it('deve listar os pacientes do seed', async () => {
       await renderWithProvider(<PatientsScreen />);
 
@@ -188,6 +192,8 @@ describe('Telas', () => {
   });
 
   describe('ProfileScreen', () => {
+    beforeEach(() => mockAuthenticatedSession());
+
     it('deve exibir os dados do psicólogo e as seções', async () => {
       await renderWithProvider(<ProfileScreen />);
 
@@ -223,6 +229,8 @@ describe('Telas', () => {
   });
 
   describe('PatientDetailsScreen', () => {
+    beforeEach(() => mockAuthenticatedSession());
+
     it('deve exibir o nome e o status do paciente', async () => {
       mockedUseLocalSearchParams.mockReturnValue({ patientId: 'p1' });
 

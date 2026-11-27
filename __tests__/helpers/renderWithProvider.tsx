@@ -1,6 +1,41 @@
 import React from 'react';
 import { render } from '@testing-library/react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { AppProvider, useApp, AppContextData } from '@/context/AppContext';
+
+/**
+ * Simula uma sessão já autenticada para testes de telas internas.
+ *
+ * Antes da senha, o seed virava `currentUser` automaticamente — os testes
+ * de dashboard/perfil/prontuários dependiam disso. Agora o login é
+ * obrigatório, então eles precisam declarar a sessão explicitamente.
+ *
+ * Os testes de autenticação NÃO devem chamar isso (querem começar sem
+ * sessão para verificar o fluxo de login).
+ */
+export function mockAuthenticatedSession() {
+  const store: Record<string, string> = {};
+  (AsyncStorage.getItem as jest.Mock).mockImplementation(
+    async (key: string) => store[key] ?? null
+  );
+  (AsyncStorage.setItem as jest.Mock).mockImplementation(
+    async (key: string, value: string) => {
+      store[key] = value;
+    }
+  );
+  (AsyncStorage.removeItem as jest.Mock).mockImplementation(
+    async (key: string) => {
+      delete store[key];
+    }
+  );
+  store['@psi_app_session_v1'] = 'u1';
+  store['@psi_app_current_user_v1'] = JSON.stringify({
+    id: 'u1',
+    name: 'Dr(a). Psicólogo(a)',
+    email: 'psicologo@psicowave.com',
+    role: 'psicologo',
+  });
+}
 
 /**
  * Renderiza uma árvore dentro do AppProvider e expõe o contexto de forma viva.

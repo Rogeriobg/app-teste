@@ -28,7 +28,9 @@
 - `expo-crypto` instalado: SHA-256 com salt aleatório por instalação. Credenciais em chave separada do banco (`@psi_app_auth_v1`), fora do backup JSON.
 - `AppContext`: `login(email, senha)`, `checkPassword`, `changePassword`, `ensureAuth`.
 - Telas: campo de senha com mostrar/ocultar + "Esqueci minha senha" (`/recover-password`); Perfil → Segurança → Alterar senha, com código de 6 dígitos exibido uma única vez.
-- 5 testes de auth; 152/152 no total, tsc/lint/validate:workflow limpos.
+- **Correção de migração (feedback do aparelho):** instalações antigas com `@psi_app_current_user_v1` entravam no dashboard e pulavam a senha. Novo marcador `@psi_app_session_v1` — só uma sessão que passou pelo `login()` restaura o usuário; `currentUser` começa `null` e `index.tsx` espera `authReady` (sem flash de login). O banco de dados é preservado, apenas a sessão antiga é descartada.
+- `ProfileScreen` passou a derivar nome/e-mail do `currentUser` (estado de edição separado) porque a sessão agora chega de forma assíncrona — o campo não fica mais vazio se a tela montar antes da carga.
+- 5 testes de auth; 152/152 no total, tsc/lint e 6 gates limpos. Testeável no Expo Go (`expo-crypto` é suportado).
 
 ---
 

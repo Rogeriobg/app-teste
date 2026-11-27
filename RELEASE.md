@@ -17,6 +17,9 @@
   local seguro. Sem servidor/e-mail, é o único caminho de recuperação.
 - A senha nunca é salva em texto puro: SHA-256 com salt, em chave separada
   do banco (fora do backup JSON).
+- **Quem usava o app antes da senha:** ao atualizar, a sessão antiga é
+  descartada e o app abre no login (os dados de pacientes/prontuários ficam
+  intactos). Entre com a senha padrão acima.
 
 ---
 

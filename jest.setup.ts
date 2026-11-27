@@ -146,6 +146,40 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+/* ---------- expo-crypto (senha do usuario) ----------
+ * Implementação determinística com o crypto do Node para os testes.
+ */
+jest.mock('expo-crypto', () => {
+  const nodeCrypto = require('crypto');
+  return {
+    CryptoDigestAlgorithm: { SHA256: 'SHA-256' },
+    digestStringAsync: jest.fn(async (_alg: string, data: string) =>
+      nodeCrypto.createHash('sha256').update(data).digest('hex')
+    ),
+    getRandomBytesAsync: jest.fn(async (n: number) =>
+      new Uint8Array(nodeCrypto.randomBytes(n))
+    ),
+    getRandomBytes: jest.fn((n: number) => new Uint8Array(nodeCrypto.randomBytes(n))),
+    randomUUID: jest.fn(() => nodeCrypto.randomUUID()),
+  };
+});
+
+/* ---------- reanimated-color-picker (Etapa 6 / P8) ----------
+ * O picker usa worklets de verdade; no Jest basta um mock que expose
+ * os componentes para a tela de Aparência poder ser testada.
+ */
+jest.mock('reanimated-color-picker', () => {
+  const React = require('react');
+  const { View } = require('react-native');
+  return {
+    __esModule: true,
+    default: ({ children, onComplete }: { children?: unknown; onComplete?: (c: { hex: string }) => void }) =>
+      React.createElement(View, { testID: 'color-picker', onColorChange: onComplete }, children),
+    Panel3: () => React.createElement(View, { testID: 'color-panel' }),
+    Preview: () => React.createElement(View, { testID: 'color-preview' }),
+  };
+});
+
 /* ---------- expo-splash-screen (Etapa 6 / D1) ---------- */
 jest.mock('expo-splash-screen', () => ({
   preventAutoHideAsync: jest.fn(async () => true),

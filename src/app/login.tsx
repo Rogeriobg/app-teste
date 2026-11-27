@@ -128,7 +128,9 @@ export default function LoginScreen() {
             accessibilityLabel="Esqueci minha senha"
           >
             <HelpCircle size={14} color={theme.colors.primary} />
-            <Text style={[styles.esqueciText, css.primary]}>Esqueci minha senha</Text>
+            <Text style={[styles.esqueciText, css.primary]} numberOfLines={1} ellipsizeMode="tail">
+              Esqueci minha senha
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -197,7 +199,7 @@ const styles = StyleSheet.create({
   },
   inputIcon: { marginRight: spacing.lg },
   input: { flex: 1, minWidth: 0, paddingVertical: spacing.lg, ...typography.body, color: colors.inputText },
-  olhoBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
+  olhoBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
   esqueciBtn: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     minHeight: 44,
     marginBottom: spacing.sm,
   },
-  esqueciText: { ...typography.label },
+  esqueciText: { ...typography.label, flexShrink: 1, minWidth: 0 },
 
   primaryButton: {
     backgroundColor: colors.brand,

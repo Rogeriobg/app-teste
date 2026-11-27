@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
 import { writeAsStringAsync } from 'expo-file-system';
-import { renderWithProvider } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import { spyOnAlert, pressAlertButton } from './helpers/alert';
 import ProfileScreen from '@/app/profile';
 
@@ -19,6 +19,8 @@ describe('ProfileScreen — fluxos', () => {
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
     (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);
     (AsyncStorage.removeItem as jest.Mock).mockResolvedValue(undefined);
+    // sessão autenticada DEPOIS dos mocks genéricos, para não ser sobrescrita
+    mockAuthenticatedSession();
     mockedShareAsync.mockImplementation(async () => undefined);
     mockedWriteAsStringAsync.mockImplementation(async () => undefined);
     alertSpy = spyOnAlert();

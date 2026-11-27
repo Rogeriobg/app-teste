@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync } from 'expo-sharing';
 import { File } from 'expo-file-system';
-import { renderWithProvider } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import ExportPdfScreen from '@/app/patients/[patientId]/export-pdf';
 
 const mockedUseLocalSearchParams = useLocalSearchParams as jest.Mock;
@@ -40,6 +40,7 @@ const pressAlertButton = async (label: string) => {
 
 describe('Relatórios e Exportação', () => {
   beforeEach(() => {
+    mockAuthenticatedSession();
     jest.clearAllMocks();
 
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
@@ -76,6 +77,7 @@ describe('Relatórios e Exportação', () => {
   /* ------------------------------------------------------------------ */
   describe('ExportPdfScreen', () => {
     beforeEach(() => {
+    mockAuthenticatedSession();
       mockedUseLocalSearchParams.mockReturnValue({ patientId: 'p1' });
     });
 

@@ -70,7 +70,7 @@ export default function RecoverPasswordScreen() {
         >
           <ChevronLeft size={22} color={theme.colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.title, css.text]}>Recuperar acesso</Text>
+        <Text style={[styles.title, css.text]} numberOfLines={1}>Recuperar acesso</Text>
         <View style={styles.spacer} />
       </View>
 
@@ -139,9 +139,9 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: colors.border,
   },
-  backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center' },
-  title: { ...typography.title2, flex: 1, minWidth: 0, marginLeft: spacing.sm },
-  spacer: { width: 44, height: 44 },
+  backBtn: { width: 44, height: 44, alignItems: 'center', justifyContent: 'center', flexShrink: 0 },
+  title: { ...typography.title2, flex: 1, minWidth: 0, flexShrink: 1, marginLeft: spacing.sm },
+  spacer: { width: 44, height: 44, flexShrink: 0 },
   scroll: { padding: spacing.xl },
   card: {
     borderRadius: radius.xl,

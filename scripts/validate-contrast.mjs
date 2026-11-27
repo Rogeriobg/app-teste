@@ -158,7 +158,51 @@ for (const [nome, minimo] of Object.entries(MINIMOS)) {
   }
 }
 
-// 2. usos proibidos no JSX
+// 2. presets da Etapa 6 (P4) — cada preset contra seus proprios fundos
+const PRESETS_FILE = path.join(SRC, 'theme', 'presets.ts');
+if (fs.existsSync(PRESETS_FILE)) {
+  const src = fs.readFileSync(PRESETS_FILE, 'utf8');
+  // extrai blocos: id: '...', colors: { ... }
+  const presetRe = /id:\s*'([^']+)'[\s\S]*?colors:\s*\{([\s\S]*?)\}/g;
+  let pm;
+  while ((pm = presetRe.exec(src)) !== null) {
+    const id = pm[1];
+    const corpo = pm[2];
+    const cor = (nome) => {
+      const m = new RegExp(nome + "\\s*:\\s*'(#[0-9A-Fa-f]{6})'").exec(corpo);
+      return m ? m[1].toUpperCase() : null;
+    };
+    const bg = cor('background');
+    const surf = cor('surface');
+    const prim = cor('primary');
+    const text = cor('text');
+    if (!bg || !surf || !prim || !text) {
+      problemas.push({ arquivo: 'src/theme/presets.ts', linha: 0, mensagem: `preset '${id}' com cor faltando` });
+      continue;
+    }
+    for (const [par, a, b] of [['texto/superficie', text, surf], ['texto/fundo', text, bg], ['primaria/superficie', prim, surf]]) {
+      const razao = contraste(a, b);
+      if (razao + 0.001 < MIN_TEXTO) {
+        problemas.push({ arquivo: 'src/theme/presets.ts', linha: 0, mensagem: `preset '${id}' ${par}: ${razao.toFixed(2)}:1 (${a} sobre ${b}) - minimo ${MIN_TEXTO}:1` });
+      }
+    }
+    // onPrimary derivado (branco ou preto, o de maior contraste)
+    const on = contraste(prim, '#FFFFFF') >= contraste(prim, '#000000') ? '#FFFFFF' : '#000000';
+    const razaoOn = contraste(prim, on);
+    if (razaoOn + 0.001 < MIN_TEXTO) {
+      problemas.push({ arquivo: 'src/theme/presets.ts', linha: 0, mensagem: `preset '${id}' onPrimary ${on} sobre ${prim}: ${razaoOn.toFixed(2)}:1 - minimo ${MIN_TEXTO}:1` });
+    }
+    // fundo claro suave (DP2/R14): luminancia >= 0,6 e croma <= 0,12
+    const lum = luminancia(bg);
+    const nums = [1,3,5].map((i) => parseInt(bg.slice(i,i+2),16)/255);
+    const croma = Math.max(...nums) - Math.min(...nums);
+    if (lum < 0.6 || croma > 0.12) {
+      problemas.push({ arquivo: 'src/theme/presets.ts', linha: 0, mensagem: `preset '${id}' fundo ${bg} nao e claro suave (luminancia ${lum.toFixed(2)}, croma ${croma.toFixed(2)}) - fundo escuro foi removido do escopo` });
+    }
+  }
+}
+
+// 3. usos proibidos no JSX
 for (const arquivo of walk(SRC)) {
   for (const p of analisarUso(arquivo)) {
     problemas.push({ arquivo: p.file, linha: p.line, mensagem: p.mensagem });

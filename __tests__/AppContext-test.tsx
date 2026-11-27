@@ -1,6 +1,6 @@
 import { act, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { renderWithProvider } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import { MedicalRecord, Patient } from '@/context/AppContext';
 
 const DB_KEY = '@psi_app_db_json_v1';
@@ -15,19 +15,17 @@ describe('AppContext', () => {
   });
 
   describe('Autenticação', () => {
-    it('deve iniciar com o usuário padrão do seed', async () => {
+    it('deve iniciar sem sessão até autenticar (senha obrigatória)', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => {
-        expect(current.currentUser).not.toBeNull();
-      });
-      expect(current.currentUser?.email).toBe('psicologo@psicowave.com');
+      await waitFor(() => expect(current.authReady).toBe(true));
+      expect(current.currentUser).toBeNull();
     });
 
     it('deve autenticar com e-mail válido (case-insensitive)', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       let result = false;
       await act(async () => {
@@ -41,7 +39,7 @@ describe('AppContext', () => {
     it('deve rejeitar e-mail não cadastrado', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       let result = true;
       await act(async () => {
@@ -54,7 +52,7 @@ describe('AppContext', () => {
     it('deve persistir o usuário logado no AsyncStorage', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await act(async () => {
         await current.login('psicologo@psicowave.com', 'PsiApp2026');
@@ -69,7 +67,7 @@ describe('AppContext', () => {
     it('deve encerrar a sessão e remover o usuário do storage', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await act(async () => {
         await current.logout();
@@ -81,10 +79,13 @@ describe('AppContext', () => {
   });
 
   describe('updateUser', () => {
+    // operações de perfil exigem sessão autenticada (senha obrigatória)
+    beforeEach(() => mockAuthenticatedSession());
+
     it('deve atualizar nome e e-mail do usuário logado', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await act(async () => {
         await current.updateUser({ name: 'Dra. Ana Costa', email: 'ana@psicowave.com' });
@@ -97,7 +98,7 @@ describe('AppContext', () => {
     it('deve persistir o usuário atualizado no AsyncStorage', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
 
       await act(async () => {
         await current.updateUser({ name: 'Dra. Ana Costa' });
@@ -112,7 +113,7 @@ describe('AppContext', () => {
     it('não deve alterar o usuário quando não há sessão ativa', async () => {
       const { current } = await renderWithProvider(<></>);
 
-      await waitFor(() => expect(current.currentUser).not.toBeNull());
+      await waitFor(() => expect(current.authReady).toBe(true));
       await act(async () => {
         await current.logout();
       });

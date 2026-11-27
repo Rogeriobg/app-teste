@@ -52,6 +52,8 @@ const defaultDb: Database = defaultDbData as unknown as Database;
 export interface AppContextData {
   db: Database;
   currentUser: User | null;
+  /** `false` até o storage (sessão + banco) terminar de carregar. */
+  authReady: boolean;
   /** Autentica com e-mail **e senha**. */
   login: (email: string, senha: string) => Promise<boolean>;
   /** Valida a senha atual antes de trocar. */
@@ -91,10 +93,19 @@ export interface AppContextData {
 export const AppContext = createContext<AppContextData>({} as AppContextData);
 const STORAGE_KEY = '@psi_app_db_json_v1';
 const CURRENT_USER_KEY = '@psi_app_current_user_v1';
+/**
+ * Marcador de sessão autenticada.
+ *
+ * Sessões salvas ANTES da existência da senha não têm este marcador,
+ * então são descartadas e o usuário é levado ao login. Sem isso, o
+ * `index.tsx` via `currentUser` e pulava a autenticação.
+ */
+const SESSION_KEY = '@psi_app_session_v1';
 
 export const AppProvider = ({ children }: { children: ReactNode }) => {
   const [db, setDb] = useState<Database>(defaultDb);
-  const [currentUser, setCurrentUser] = useState<User | null>(defaultDb.users[0]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   const [activeScreen, setActiveScreen] = useState<'login' | 'dashboard' | 'patients' | 'reports'>('login');
   const [selectedPatientId, setSelectedPatientId] = useState<string | null>(null);
   const [selectedPatientName, setSelectedPatientName] = useState<string | null>(null);
@@ -107,13 +118,25 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultDb));
       }
 
-      const storedUser = await AsyncStorage.getItem(CURRENT_USER_KEY);
-      const currentUser = storedUser ? JSON.parse(storedUser) : defaultDb.users[0];
+      /**
+       * Só restaura a sessão se houver marcador de login autenticado.
+       *
+       * Antes da senha, qualquer `currentUser` salvo bastava — agora
+       * sessões antigas são ignoradas e o app abre no login (R6).
+       */
+      const sessao = await AsyncStorage.getItem(SESSION_KEY);
+      const storedUser = sessao
+        ? await AsyncStorage.getItem(CURRENT_USER_KEY)
+        : null;
 
-      return { db, currentUser };
+      if (!sessao && storedUser) {
+        await AsyncStorage.removeItem(CURRENT_USER_KEY);
+      }
+
+      return { db, currentUser: storedUser ? JSON.parse(storedUser) : null };
     } catch (e) {
       console.warn('AsyncStorage fallback to memory/default', e);
-      return { db: defaultDb, currentUser: defaultDb.users[0] };
+      return { db: defaultDb, currentUser: null };
     }
   };
 
@@ -121,12 +144,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     let mounted = true;
     // cria o estado de autenticação na primeira execução (senha padrão)
     void ensureAuth();
-    loadStorage().then(({ db, currentUser }) => {
-      if (mounted) {
-        setDb(db);
-        setCurrentUser(currentUser);
-      }
-    });
+    loadStorage()
+      .then(({ db, currentUser }) => {
+        if (mounted) {
+          setDb(db);
+          setCurrentUser(currentUser);
+        }
+      })
+      .finally(() => {
+        if (mounted) setAuthReady(true);
+      });
     return () => {
       mounted = false;
     };
@@ -149,6 +176,8 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setCurrentUser(found);
     try {
       await AsyncStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
+      // marcador: só uma sessão que passou pela senha restoration o usuário
+      await AsyncStorage.setItem(SESSION_KEY, found.id);
     } catch {}
     return true;
   };
@@ -162,6 +191,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setActiveScreen('login');
     setSelectedPatient(null, null);
     try {
+      await AsyncStorage.removeItem(SESSION_KEY);
       await AsyncStorage.removeItem(CURRENT_USER_KEY);
     } catch {}
   };
@@ -299,6 +329,7 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
       value={{
         db,
         currentUser,
+        authReady,
         login,
         checkPassword,
         changePassword,

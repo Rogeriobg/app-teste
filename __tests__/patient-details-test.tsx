@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router, useLocalSearchParams } from 'expo-router';
-import { renderWithProvider } from './helpers/renderWithProvider';
+import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import { spyOnAlert, pressAlertButton } from './helpers/alert';
 import PatientDetailsScreen from '@/app/patients/[patientId]/details';
 
@@ -12,6 +12,7 @@ describe('PatientDetailsScreen — fluxos', () => {
   let alertSpy: jest.SpyInstance;
 
   beforeEach(() => {
+    mockAuthenticatedSession();
     jest.clearAllMocks();
     (AsyncStorage.getItem as jest.Mock).mockResolvedValue(null);
     (AsyncStorage.setItem as jest.Mock).mockResolvedValue(undefined);

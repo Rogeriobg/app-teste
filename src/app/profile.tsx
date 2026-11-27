@@ -50,8 +50,13 @@ export default function ProfileScreen() {
   const css = useThemeStyles();
   const { theme } = useTheme();
 
-  const [name, setName] = useState(currentUser?.name ?? '');
-  const [email, setEmail] = useState(currentUser?.email ?? '');
+  // A sessão é restaurada do AsyncStorage de forma assíncrona: `null` indica
+  // "ainda sem edição", então o valor exibido vem direto do currentUser assim
+  // que ele chega — sem efeito e sem sobrescrever o que o usuário digitou.
+  const [nameEdit, setNameEdit] = useState<string | null>(null);
+  const [emailEdit, setEmailEdit] = useState<string | null>(null);
+  const name = nameEdit ?? currentUser?.name ?? '';
+  const email = emailEdit ?? currentUser?.email ?? '';
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
 
@@ -130,6 +135,9 @@ export default function ProfileScreen() {
     setSaving(true);
     try {
       await updateUser({ name: name.trim(), email: email.trim() });
+      // limpa a edição: os valores passam a vir do currentUser atualizado
+      setNameEdit(null);
+      setEmailEdit(null);
       await Haptic.success();
       Alert.alert('Sucesso', 'Dados atualizados com sucesso!');
     } catch {
@@ -224,7 +232,7 @@ export default function ProfileScreen() {
             label="Nome completo"
             placeholder="Ex: Dr(a). Maria Oliveira"
             value={name}
-            onChangeText={setName}
+            onChangeText={setNameEdit}
             autoCapitalize="words"
             accessibilityLabel="Nome completo do psicólogo"
           />
@@ -233,7 +241,7 @@ export default function ProfileScreen() {
             label="E-mail de acesso"
             placeholder="Ex: psicologo@psicowave.com"
             value={email}
-            onChangeText={setEmail}
+            onChangeText={setEmailEdit}
             keyboardType="email-address"
             autoCapitalize="none"
             autoComplete="email"
