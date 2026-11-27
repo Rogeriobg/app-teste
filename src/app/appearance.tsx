@@ -13,6 +13,7 @@ import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { Check, ChevronLeft, RotateCcw, Palette } from 'lucide-react-native';
 
 import { Button } from '@/components';
+import CustomColorPicker from '@/components/CustomColorPicker';
 import { useTheme, ThemeScope } from '@/theme/context';
 import { useThemeStyles } from '@/theme/hooks';
 import { PRESETS, DEFAULT_PRESET_ID } from '@/theme/presets';
@@ -45,6 +46,8 @@ export default function AppearanceScreen() {
   const [customPrimary, setCustomPrimary] = useState<string | null>(null);
   const [customBackground, setCustomBackground] = useState<string | null>(null);
   const [selectedFontScale, setSelectedFontScale] = useState<FontScale>(fontScale);
+  /** P8: mostra o seletor quando o usuário toca em "Personalizado". */
+  const [mostrandoPicker, setMostrandoPicker] = useState(false);
 
   const previewTheme = useMemo<Theme>(() => {
     const base = PRESETS.find((p) => p.id === presetId) ?? PRESETS[0];
@@ -89,6 +92,7 @@ export default function AppearanceScreen() {
     setPresetId(id);
     setCustomPrimary(null);
     setCustomBackground(null);
+    setMostrandoPicker(false);
     await selectionAsync();
   };
 
@@ -200,11 +204,10 @@ export default function AppearanceScreen() {
               (customPrimary || customBackground) && styles.themeCardAtivo,
             ]}
             onPress={() => {
-              // P8 — seletor de cor com limites. Por enquanto usa as cores do tema
-              // atual como ponto de partida (o picker vem no M4).
+              setMostrandoPicker(true);
               setPresetId(theme.id);
-              setCustomPrimary(previewTheme.colors.primary);
-              setCustomBackground(previewTheme.colors.background);
+              setCustomPrimary((atual) => atual ?? previewTheme.colors.primary);
+              setCustomBackground((atual) => atual ?? previewTheme.colors.background);
             }}
             activeOpacity={0.85}
             accessible
@@ -220,6 +223,15 @@ export default function AppearanceScreen() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        {mostrandoPicker ? (
+          <CustomColorPicker
+            primary={previewTheme.colors.primary}
+            background={previewTheme.colors.background}
+            onPrimaryChange={(hex) => setCustomPrimary(hex)}
+            onBackgroundChange={(hex) => setCustomBackground(hex)}
+          />
+        ) : null}
 
         {!fundoValidoOuAtual ? (
           <Text style={[styles.aviso, { color: statusColors.danger }]}>

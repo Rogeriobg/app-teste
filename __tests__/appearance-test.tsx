@@ -73,6 +73,20 @@ describe('Tela de Aparência (Etapa 6)', () => {
     expect(estado.fontScale).toBe('large');
   });
 
+  it('P8 - Personalizado abre o seletor de cor com limites', async () => {
+    await renderWithTheme(<AppearanceScreen />);
+
+    expect(screen.queryByTestId('color-picker')).toBeNull();
+
+    await fireEvent.press(screen.getByLabelText('Tema personalizado'));
+
+    await waitFor(() => {
+      // dois pickers: primária e fundo
+      expect(screen.getAllByTestId('color-picker')).toHaveLength(2);
+    });
+    expect(screen.getAllByTestId('color-preview')).toHaveLength(2);
+  });
+
   it('restaurar padrão pede confirmação', async () => {
     await renderWithTheme(<AppearanceScreen />);
 
