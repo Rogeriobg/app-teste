@@ -4,18 +4,35 @@
 |-------|---------------|-------------|-------|-------------|
 | 1     | planner       | [APROVADO]  | 1     | PLANO.md criado: visão do produto, inventário de 7 rotas, direção de design (tokens BoardUI) e backlog priorizado — 5 Alta (A1–A5), 8 Média (M1–M8), 5 Baixa (B1–B5) + 6 riscos (R1–R6). Substitui o BACKLOG.md removido. |
 | 2     | architect     | [APROVADO]  | 1     | ARQUITETURA.md criado: decisões técnicas de A1–A5, tokens novos para a tokenização, extração de PatientFormModal, regra única de safe area e ordem de execução A2 → A5 → A1 → A3 → A4 (refatorações transversais primeiro). Contratos de teste por item. |
-| 3     | mobile-ui     | [REPROVADO]  | 3     | **Ciclo 1 [APROVADO]** (A2 37e40fd, A5 fd9ae31, A1 88419e1, A3+A4 5643eb8). **Ciclo 2 [REPROVADO]** — DEF-3: header de `/patients` com o botão "Novo Paciente" transbordando a tela em 360–375pt (41 containers `row` em 11 arquivos). **Ciclo 3 [REPROVADO]** — DEF-6: `Button` com `flex: 1` no texto fazia o botão esticar no Yoga nativo (não reproduz no web). Corrigidos em f4c5270 e 2373ef3; o gate `validate:layout` agora cobre as duas causas. |
-| 4     | qa-vision     | [REPROVADO]  | 3     | **Ciclo 1 [APROVADO]** — QA.md validou A1–A5 (142/142 testes, cobertura 89–96%), mas **só de forma estática**: nenhum aparelho foi testado e o critério de A5 cobria só posição vertical, não transbordo horizontal. **Ciclo 2 [APROVADO]** — auditoria (AUDITORIA.md) + fase 4b (QA-4B.md): 7/7 rotas limpas em 390px; DEF-4 corrigido. **Ciclo 3 [REPROVADO]** — DEF-5 e DEF-6 reportados pelo usuário **no aparelho real**: nem o web nem os testes automatizados reproduzem comportamento nativo (diálogo nativo sobre o share sheet; `flex: 1` no Yoga nativo). |
+| 3     | mobile-ui     | [APROVADO]  | 4     | **Ciclo 1** A2/A5/A1/A3+A4 (37e40fd, fd9ae31, 88419e1, 5643eb8). **Ciclo 2 [REPROVADO]** DEF-3: header de `/patients` transbordando em 360–375pt (41 containers `row` em 11 arquivos) — corrigido f4c5270. **Ciclo 3 [REPROVADO]** DEF-6: `Button` com `flex: 1` no texto esticava no Yoga nativo — corrigido 2373ef3. **Ciclo 4 [APROVADO]** — DEF-5 resolvido (5c0c3af) e **confirmado no aparelho real pelo usuário**: exportação de PDF e layout do header funcionando. O gate `validate:layout` cobre as três causas (transbordo, `flex: 1` em container fixo, texto sem `numberOfLines`). |
+| 4     | qa-vision     | [APROVADO]  | 4     | **Ciclo 1** QA.md (estático — lição registrada). **Ciclo 2** auditoria (AUDITORIA.md) + fase 4b (QA-4B.md, 7/7 rotas limpas em 390px; DEF-4 corrigido). **Ciclo 3 [REPROVADO]** DEF-5/DEF-6 só apareceram no aparelho real. **Ciclo 4 [APROVADO]** — fase 4c executada: o usuário percorreu o fluxo principal no celular real (login → pacientes → prontuário → **exportar PDF funcionando**) e confirmou os defeitos corrigidos. 143/143 testes, tsc/lint/validate:layout limpos. |
 | 5     | release-prep  | [APROVADO]  | 1     | eas.json regredido restaurado do HEAD (risco R1 resolvido) — valida com `npm run validate:eas` ✅. app.json conferido: name/slug/version/orientation/scheme/bundleIdentifier/package/buildNumber/versionCode/projectId/owner, todos os 6 assets presentes. expo-doctor 20/20. RELEASE.md reescrito com checklist marcado (5 etapas, não 4) e comandos reais. Secret EXPO_TOKEN e variable EAS_BUILD_ENABLED confirmados no GitHub. Build continua MANUAL por decisão do usuário. |
 
 ## Relatório de bugs do QA (preenchido pela etapa 4 quando [REPROVADO])
+
+### Ciclo 4 — [APROVADO] (fase 4c: aparelho real)
+
+O usuário percorreu o fluxo principal **no celular real** e confirmou:
+
+- ✅ **Exportação de PDF funcionando** — gera, salva em `Documents` com nome
+  legível (`prontuario-<Paciente>.pdf`) e abre o compartilhamento
+- ✅ Header de `/patients` com título e botão "Novo Paciente" lado a lado
+
+A fase 4c era o elo que faltava: **nenhuma ferramenta automatizada
+reproduz comportamento nativo** (permissão de arquivo, diálogo nativo,
+FileProvider, Yoga). Dois defeitos (DEF-5, DEF-6) exigiram **três ciclos**
+de correção guiada pelo relatório do usuário no aparelho.
+
+**Regra consolidada para os próximos ciclos:** a etapa 4 só é
+`[APROVADO]` com a fase 4c executada — o usuário percorrendo o fluxo
+principal no aparelho real.
 
 ### Ciclo 3 — [REPROVADO] (aparelho real)
 
 Dois defeitos reportados pelo usuário **no celular real**, que nenhuma
 verificação anterior pegou:
 
-**DEF-5 (alta) — Exportar PDF falhava com "Não foi possível compartilhar o PDF"**
+**DEF-5 (alta) — Exportar PDF falhava** — ✅ **RESOLVIDO (5c0c3af, confirmado no aparelho)**
 
 - **Onde:** `src/app/patients/[patientId]/export-pdf.tsx`
 - **Causa raiz (1ª tentativa, incompleta):** o `Alert.alert('PDF gerado com sucesso')`
@@ -41,7 +58,7 @@ verificação anterior pegou:
   resolvia), e o web **não reproduz** a permissão de leitura do
   `FileProvider` nem a sobreposição de diálogo nativo.
 
-**DEF-6 (alta) — Botão "Novo Paciente" ocupava a largura toda no celular**
+**DEF-6 (alta) — Botão "Novo Paciente" ocupava a largura toda no celular** — ✅ **RESOLVIDO (2373ef3, confirmado no aparelho)**
 
 - **Onde:** `src/components/Button.tsx` (afeta `/patients` e `/reports`)
 - **Causa raiz:** o `Button` tinha **`flex: 1` no texto**. No Yoga nativo o
@@ -59,6 +76,14 @@ verificação anterior pegou:
 > apareceram no **aparelho real**. O web e os testes automatizados **não são
 > suficientes** para layout e para comportamento nativo. A fase 4b precisa
 > incluir o aparelho do usuário como etapa obrigatória, não apenas o web.
+
+> **Lição técnica (módulos nativos do Expo):** o diretório
+> `<cacheDir>/Print/` onde o `expo-print` grava PDFs **não é legível** por
+> nenhum outro módulo — nem o `expo-sharing` (`FileProvider`), nem o
+> `expo-file-system`. Só o próprio `expo-print` acessa. O padrão correto é
+> `printToFileAsync({ base64: true })` + `File.write(base64,
+> { encoding: 'base64' })` no `Paths.document`, e compartilhar a partir
+> dali. Registrado como invariante em `AGENTS.md` (seção Layout/nativos).
 
 ### Ciclo 2 — [REPROVADO]
 
@@ -108,7 +133,7 @@ resolvida** — o `eas.json` foi restaurado e validado.
 | # | Correção | Onde | Status |
 |---|----------|------|--------|
 | P1 | **Gate de layout** — reprova quando um filho de `row` não pode encolher ou quando um texto em `row` não tem `numberOfLines` | `scripts/validate-layout.mjs`, `npm run validate:layout`, CI | ✅ Implementado |
-| P2 | **Etapa 4 passa a ter 3 fases** — 4a estática (critérios + invariantes + gates), 4b no web renderizado (7 rotas em 2 larguras + console) e **4c no aparelho real** (o usuário percorre o fluxo principal). Sem a 4c, a etapa 4 **não pode** ser `[APROVADO]` | Regra da esteira | ⏳ **4c pendente** — DEF-5 e DEF-6 só apareceram no aparelho |
+| P2 | **Etapa 4 passa a ter 3 fases** — 4a estática (critérios + invariantes + gates), 4b no web renderizado (7 rotas em 2 larguras + console) e **4c no aparelho real** (o usuário percorre o fluxo principal). Sem a 4c, a etapa 4 **não pode** ser `[APROVADO]` | Regra da esteira | ✅ **4c executada no ciclo 4** — exportação de PDF e layout confirmados no aparelho |
 | P3 | **Todo item de UI carrega a skill `mobile-designer`** e registra quais regras aplicou | `AGENTS.md` | ✅ Implementado |
 | P4 | **Item de backlog transversal** — "nenhum elemento transborda a largura da tela" (T7), aplicável a todas as rotas | `PLANO.md` | ⏳ Pendente |
 | P5 | **Critérios de aceite de UI** revisados independentemente dos itens — uma lista de invariantes que vale para toda tela | `PLANO.md` | ⏳ Pendente |

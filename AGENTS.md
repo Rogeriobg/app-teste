@@ -68,3 +68,37 @@ npm run validate:layout   # reprova transbordo horizontal
 
 **UI tasks must load the `mobile-designer` skill** and record which rules
 were applied. See `AUDITORIA.md` for why this became mandatory.
+
+## Native module invariants (learned on-device)
+
+Behaviors below were **only** reproducible on a real device — web and
+automated tests mask them. Verified during cycles 2–4 (see
+`WORKFLOW_STATE.md`).
+
+1. **`expo-print`'s output directory is unreadable.** The PDF written to
+   `<cacheDir>/Print/<uuid>.pdf` cannot be read by any other module — not
+   by `expo-sharing`'s `FileProvider` (`Not allowed to read file under
+   given url`) nor by `expo-file-system` (`Missing 'READ' permission`).
+   Only `expo-print` itself can read it.
+   → The correct pattern is:
+
+   ```ts
+   const { base64 } = await printToFileAsync({ html, base64: true });
+   const destino = new File(Paths.document, 'name.pdf');
+   await destino.write(base64, { encoding: 'base64' });
+   await shareAsync(destino.uri, { mimeType: 'application/pdf', UTI: '.pdf' });
+   ```
+
+2. **No `Alert.alert` before a native share sheet.** A native dialog sits
+   on top of the screen and breaks the share sheet opened right after.
+   Share first; report success/failure after.
+
+3. **Native flex ≠ CSS flex.** `flex: 1` on a Text inside a fixed-width
+   component (`flexShrink: 0`) makes the whole component stretch on the
+   Yoga native engine. Web CSS masks it (`width: auto`). Enforced by
+   `npm run validate:layout`.
+
+4. **Mocked modules prove nothing about native behavior.** Tests that mock
+   `shareAsync`/`FileSystem` cannot catch permission errors. Any feature
+   touching a native module must be verified on a real device (phase 4c)
+   before `[APROVADO]`.
