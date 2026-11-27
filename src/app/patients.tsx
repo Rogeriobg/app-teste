@@ -182,10 +182,10 @@ export default function PatientsScreen() {
     <View style={[styles.container, css.page]}>
       <View style={[styles.header, css.surface, { paddingTop: insets.top + spacing.lg }]}>
         <View style={styles.headerIdentity}>
-          <Text style={[styles.headerTitle, css.text]} numberOfLines={1} ellipsizeMode="tail">
+          <Text style={[styles.headerTitle, css.text, css.fontTitle2]} numberOfLines={1} ellipsizeMode="tail">
             Meus Pacientes
           </Text>
-          <Text style={[styles.headerSubtitle, css.primary]} numberOfLines={1} ellipsizeMode="tail">
+          <Text style={[styles.headerSubtitle, css.primary, css.fontCaption]} numberOfLines={1} ellipsizeMode="tail">
             Cadastro, edição e prontuário
           </Text>
         </View>
@@ -289,7 +289,7 @@ export default function PatientsScreen() {
             <Card key={p.id} style={styles.patientCard} elevated>
               {/* Linha 1: Apenas o nome */}
               <View style={styles.rowName}>
-                <Text style={styles.rowNameText} numberOfLines={1} ellipsizeMode="tail">
+                <Text style={[styles.rowNameText, css.fontHeadline]} numberOfLines={1} ellipsizeMode="tail">
                   {p.name}
                 </Text>
               </View>

@@ -41,6 +41,7 @@ const ThemeContext = createContext<ThemeContextValue>({
   setCustom: noop,
   setFontScale: noop,
   resetTheme: noop,
+  applyTheme: noop,
   ready: true,
 });
 
@@ -142,6 +143,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     });
   }, []);
 
+  /**
+   * Aplica várias mudanças de uma vez com UMA gravação.
+   *
+   * Sem isso, `aplicar` da tela de Aparência chamava setPreset → setCustom →
+   * setFontScale em sequência; cada `saveTheme` assíncrono podia vencer com
+   * um estado parcial (a fonte "large" era perdida). Preferir esta função
+   * para mudanças atômicas do tema.
+   */
+  const applyTheme = useCallback((next: ThemeState) => {
+    setState(next);
+    void saveTheme(next);
+  }, []);
+
   const resetTheme = useCallback(() => {
     update({
       presetId: DEFAULT_PRESET_ID,
@@ -159,9 +173,10 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setCustom,
       setFontScale,
       resetTheme,
+      applyTheme,
       ready,
     }),
-    [theme, state.fontScale, setPreset, setCustom, setFontScale, resetTheme, ready]
+    [theme, state.fontScale, setPreset, setCustom, setFontScale, resetTheme, applyTheme, ready]
   );
 
   if (!ready) return null;
@@ -208,6 +223,11 @@ export function ThemeScope({
         }
       },
       resetTheme: () => {
+        if (__DEV__) {
+          console.warn('[ThemeScope] prévia é somente leitura; use Aplicar tema');
+        }
+      },
+      applyTheme: () => {
         if (__DEV__) {
           console.warn('[ThemeScope] prévia é somente leitura; use Aplicar tema');
         }

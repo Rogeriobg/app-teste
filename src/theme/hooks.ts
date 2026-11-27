@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { StyleSheet } from 'react-native';
 import { useTheme } from './context';
+import { scaled } from './font';
 
 /**
  * Overrides de COR para estilos de rota.
@@ -19,7 +20,7 @@ import { useTheme } from './context';
  * ```
  */
 export function useThemeStyles() {
-  const { theme } = useTheme();
+  const { theme, fontScale } = useTheme();
   const c = theme.colors;
 
   return useMemo(
@@ -43,6 +44,20 @@ export function useThemeStyles() {
         primarySoft: { backgroundColor: c.primarySoft },
         /** borda suave da primária */
         primaryBorder: { borderColor: c.primaryBorder },
+
+        /**
+         * Escalas de texto (P7) — aplicar no array de style:
+         * `style={[styles.foo, css.fontBody]}`
+         *
+         * `scaled` preserva `numberOfLines`/`minWidth: 0` dos estilos
+         * originais (vindo do array), só ajusta fontSize/lineHeight.
+         */
+        fontDisplay: scaled({ fontSize: 30, lineHeight: 36 }, fontScale),
+        fontTitle1: scaled({ fontSize: 24, lineHeight: 30 }, fontScale),
+        fontTitle2: scaled({ fontSize: 19, lineHeight: 26 }, fontScale),
+        fontHeadline: scaled({ fontSize: 16, lineHeight: 22 }, fontScale),
+        fontBody: scaled({ fontSize: 14, lineHeight: 20 }, fontScale),
+        fontCaption: scaled({ fontSize: 12, lineHeight: 16 }, fontScale),
       }),
     [
       c.background,
@@ -53,6 +68,7 @@ export function useThemeStyles() {
       c.primary,
       c.primarySoft,
       c.primaryBorder,
+      fontScale,
     ]
   );
 }

@@ -46,6 +46,9 @@ jobs:
       - name: Gate de contraste (WCAG AA)
         run: npm run validate:contrast
 
+      - name: Gate de escala de fonte (P7)
+        run: npm run validate:font
+
       - name: Testes (Jest) + cobertura
         run: npm run test:coverage
 

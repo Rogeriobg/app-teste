@@ -334,7 +334,7 @@ export default function PatientDetailsScreen() {
           </View>
 
           <View style={styles.heroInfo}>
-            <Text style={[styles.patientName, css.text]} numberOfLines={2}>
+            <Text style={[styles.patientName, css.text, css.fontTitle1]} numberOfLines={2}>
               {patient.name}
             </Text>
             <StatusBadge status={patient.status as any} />
@@ -357,7 +357,7 @@ export default function PatientDetailsScreen() {
         </View>
 
         {/* Informações do paciente */}
-        <Text style={[styles.sectionTitle, css.text]}>Informações do paciente</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Informações do paciente</Text>
 
         <Card style={styles.infoCard} elevated>
           <View style={styles.infoRow}>
@@ -463,7 +463,7 @@ export default function PatientDetailsScreen() {
         )}
 
         {/* Ações do paciente (thumb zone) */}
-        <Text style={[styles.sectionTitle, css.text]}>Ações</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Ações</Text>
 
         <View style={styles.actionsGrid}>
           <ActionTile

@@ -64,7 +64,7 @@ export default function PsychologistDashboard() {
               <Sparkles size={16} color={colors.brand} />
             </View>
             <View style={styles.headerText}>
-              <Text style={[styles.greeting, css.text]} numberOfLines={1}>
+              <Text style={[styles.greeting, css.text, css.fontTitle2]} numberOfLines={1}>
                 {formatarNome(currentUser?.name)}
               </Text>
               <Text style={[styles.roleSubtext, css.primary]} numberOfLines={1}>
@@ -91,7 +91,7 @@ export default function PsychologistDashboard() {
         showsVerticalScrollIndicator={false}
       >
         {/* Visão geral — grade 2×2 (BoardUI Stat Cards) */}
-        <Text style={[styles.sectionTitle, css.text]}>Visão geral</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Visão geral</Text>
 
         <View style={styles.gridRow}>
           <StatCard
@@ -130,7 +130,7 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Prontuários — card único com barra de proporção */}
-        <Text style={[styles.sectionTitle, css.text]}>Prontuários</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Prontuários</Text>
 
         <StatSummary
           title="Prontuários do paciente"
@@ -142,7 +142,7 @@ export default function PsychologistDashboard() {
         />
 
         {/* Ações rápidas */}
-        <Text style={[styles.sectionTitle, css.text]}>Ações rápidas</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Ações rápidas</Text>
 
         <View style={styles.gridRow}>
           <ActionTile
@@ -166,7 +166,7 @@ export default function PsychologistDashboard() {
         </View>
 
         {/* Pacientes ativos (resumo) */}
-        <Text style={[styles.sectionTitle, css.text]}>Pacientes ativos</Text>
+        <Text style={[styles.sectionTitle, css.text, css.fontHeadline]}>Pacientes ativos</Text>
 
         {activePatients.length === 0 ? (
           <View style={styles.emptyCard}>

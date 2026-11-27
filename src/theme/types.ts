@@ -101,6 +101,8 @@ export interface ThemeContextValue {
   setFontScale: (scale: FontScale) => void;
   /** Volta a Acolhimento + fonte Padrão (P9). */
   resetTheme: () => void;
+  /** Aplica várias mudanças de uma vez, com uma única gravação. */
+  applyTheme: (next: ThemeState) => void;
   /** `false` até o AsyncStorage terminar de carregar (D1 / A1). */
   ready: boolean;
 }

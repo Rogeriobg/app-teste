@@ -4,10 +4,12 @@ import {
   Text,
   View,
   ScrollView,
+  TouchableOpacity,
   Alert,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStyles } from '@/theme/hooks';
+import { useTheme } from '@/theme/context';
 import {
   selectionAsync,
   impactAsync,
@@ -22,6 +24,8 @@ import {
   Save,
   Download,
   LogOut,
+  Palette,
+  ChevronRight,
 } from 'lucide-react-native';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
@@ -37,6 +41,7 @@ export default function ProfileScreen() {
   const { currentUser, updateUser, exportData, logout, db } = useApp();
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
+  const { theme } = useTheme();
 
   const [name, setName] = useState(currentUser?.name ?? '');
   const [email, setEmail] = useState(currentUser?.email ?? '');
@@ -203,6 +208,28 @@ export default function ProfileScreen() {
           </Button>
         </View>
 
+        {/* Aparência — Etapa 6 */}
+        <View style={styles.section}>
+          <Text style={[styles.sectionTitle, css.text]}>Aparência</Text>
+          <Text style={[styles.sectionSub, css.textSecondary]}>
+            Escolha as cores do app e o tamanho do texto.
+          </Text>
+
+          <TouchableOpacity
+            style={[styles.appearanceBtn, css.surface]}
+            onPress={() => router.push('/appearance')}
+            activeOpacity={0.85}
+            accessible
+            accessibilityRole="button"
+            accessibilityLabel="Abrir aparência"
+            accessibilityHint="Temas e tamanho de fonte"
+          >
+            <Palette size={20} color={theme.colors.primary} />
+            <Text style={[styles.appearanceBtnText, css.text]}>Temas e fonte</Text>
+            <ChevronRight size={18} color={theme.colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
+
         {/* Exportar dados */}
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, css.text]}>Exportar dados</Text>
@@ -356,6 +383,23 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     paddingVertical: spacing.lg,
     marginTop: spacing.xs,
+  },
+  /** Botão de entrada para /appearance — 44px de toque (QA-3) */
+  appearanceBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    minHeight: 48,
+    paddingHorizontal: spacing.lg,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  appearanceBtnText: {
+    ...typography.body,
+    fontWeight: '600',
+    flex: 1,
+    minWidth: 0,
   },
 
   logoutSection: {
