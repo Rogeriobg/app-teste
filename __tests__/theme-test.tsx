@@ -10,6 +10,7 @@ import {
   isSoftLightBackground,
   luminance,
   chroma,
+  mixColors,
 } from '@/theme/contrast';
 import { PRESETS } from '@/theme/presets';
 import { loadTheme, saveTheme } from '@/theme/storage';
@@ -153,6 +154,8 @@ describe('Theme — Provider e troca', () => {
               surfaceInner: preview.colors.surface,
               primarySoft: preview.colors.primary,
               primaryBorder: preview.colors.primary,
+              cardTint: preview.colors.surface,
+              cardBorder: preview.colors.surface,
             },
           }}
           fontScale="small"
@@ -178,6 +181,17 @@ describe('Theme — fundos dos presets reforçados', () => {
       expect(contrastRatio(preset.colors.text, fundo)).toBeGreaterThanOrEqual(4.5);
       expect(luminance(fundo)).toBeLessThan(0.9); // mais forte que quase-branco
     });
+  });
+});
+
+describe('Theme — cards com cor', () => {
+  it('cada preset deriva um cardTint suave da primária, legível e diferente da superfície', () => {
+    for (const preset of PRESETS) {
+      const tint = mixColors(preset.colors.surface, preset.colors.primary, 0.08);
+      expect(tint).not.toBe(preset.colors.surface);
+      expect(contrastRatio(preset.colors.text, tint)).toBeGreaterThanOrEqual(4.5);
+      expect(luminance(tint)).toBeGreaterThanOrEqual(0.6);
+    }
   });
 });
 

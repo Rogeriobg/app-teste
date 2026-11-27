@@ -65,6 +65,8 @@ export default function AppearanceScreen() {
         surfaceInner: mixColors(surface, background, 0.45),
         primarySoft: mixColors(surface, primary, 0.12),
         primaryBorder: mixColors(surface, primary, 0.3),
+        cardTint: mixColors(surface, primary, 0.08),
+        cardBorder: mixColors(surface, primary, 0.18),
       },
     };
   }, [presetId, customPrimary, customBackground]);

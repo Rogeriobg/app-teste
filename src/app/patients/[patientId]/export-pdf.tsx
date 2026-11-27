@@ -22,6 +22,7 @@ import {
   ChevronRight,
   AlertCircle,
 } from 'lucide-react-native';
+import { mixColors } from '@/theme/contrast';
 import { colors, radius, spacing, typography } from '@/theme/tokens';
 
 const ACCENT = colors.brand;
@@ -448,7 +449,7 @@ export default function ExportPdfScreen() {
             total={records.length}
             segments={[
               { label: 'Ativos', count: activeRecords.length, color: ACCENT },
-              { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
+              { label: 'Arquivados', count: archivedRecords.length, color: mixColors(theme.colors.surface, theme.colors.primary, 0.3) },
             ]}
           />
 

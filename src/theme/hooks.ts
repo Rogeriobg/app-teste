@@ -40,6 +40,10 @@ export function useThemeStyles() {
         primary: { color: c.primary },
         /** cor primária como fundo */
         primaryBg: { backgroundColor: c.primary },
+        /** tom de card do tema */
+        cardTint: { backgroundColor: c.cardTint },
+        /** borda de card do tema */
+        cardBorder: { borderColor: c.cardBorder },
         /** fundo suave da primária (chips, tabs ativos) */
         primarySoft: { backgroundColor: c.primarySoft },
         /** borda suave da primária */
@@ -68,6 +72,8 @@ export function useThemeStyles() {
       c.primary,
       c.primarySoft,
       c.primaryBorder,
+      c.cardTint,
+      c.cardBorder,
       fontScale,
     ]
   );

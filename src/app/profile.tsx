@@ -147,8 +147,8 @@ export default function ProfileScreen() {
         <Card style={[styles.headerCard, { backgroundColor: css.surface.backgroundColor }]} elevated>
           <View style={styles.headerContent}>
             <View style={styles.avatarWrapper}>
-              <View style={styles.avatarBadge}>
-                <ShieldCheck size={26} color={colors.textOnBrand} />
+              <View style={[styles.avatarBadge, { backgroundColor: theme.colors.primary }]}>
+                <ShieldCheck size={26} color={theme.colors.onPrimary} />
               </View>
             </View>
             <View style={styles.headerInfo}>
@@ -200,7 +200,7 @@ export default function ProfileScreen() {
             onPress={handleSave}
             disabled={!hasChanges || saving}
             loading={saving}
-            style={styles.saveButton}
+            style={[styles.saveButton, { backgroundColor: theme.colors.primary }]}
             iconLeft={<Save size={18} color={colors.textOnBrand} />}
             accessibilityLabel="Salvar alterações dos dados do psicólogo"
           >

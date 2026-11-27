@@ -45,6 +45,15 @@ export interface ThemeColors {
   primarySoft: string;
   /** Borda suave derivada da primária. */
   primaryBorder: string;
+  /**
+   * Tom de card do tema — calculado da primária com baixa saturação.
+   *
+   * Dá personalidade aos cards sem competir com o texto: o card fica
+   * levemente tingido da cor do tema (cards "com cor", como pedido).
+   */
+  cardTint: string;
+  /** Borda do card, derivada do tint. */
+  cardBorder: string;
   /** Estilo dos ícones da StatusBar. Com 4 presets claros, sempre `'dark'`. */
   statusBar: StatusBarStyle;
 }
@@ -63,7 +72,7 @@ export interface Theme {
  */
 export type PresetColors = Omit<
   ThemeColors,
-  'onPrimary' | 'surfaceInner' | 'primarySoft' | 'primaryBorder'
+  'onPrimary' | 'surfaceInner' | 'primarySoft' | 'primaryBorder' | 'cardTint' | 'cardBorder'
 >;
 
 export interface Preset {

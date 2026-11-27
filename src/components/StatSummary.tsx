@@ -56,7 +56,7 @@ export function StatSummary({
 
   return (
     <View
-      style={[styles.card, shadowCard, { backgroundColor: c.surface }, style]}
+      style={[styles.card, shadowCard, { backgroundColor: c.cardTint, borderColor: c.cardBorder }, style]}
       accessible
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel ?? `${title}: ${total ?? soma}. ${resumo}`}

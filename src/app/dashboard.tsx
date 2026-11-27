@@ -19,6 +19,7 @@ import {
 } from 'lucide-react-native';
 import { formatarNome } from '@/utils/nome';
 import { ActionTile, StatCard, StatSummary } from '@/components';
+import { mixColors } from '@/theme/contrast';
 import { colors, radius, shadowCard, spacing, typography } from '@/theme/tokens';
 
 function saudacaoDoDia(): string {
@@ -139,8 +140,8 @@ export default function PsychologistDashboard() {
           title="Prontuários do paciente"
           total={totalRecords}
           segments={[
-            { label: 'Prontuários ativos', count: activeRecords, color: colors.brand },
-            { label: 'Prontuários arquivados', count: archivedRecords, color: colors.muted },
+            { label: 'Prontuários ativos', count: activeRecords, color: c.primary },
+            { label: 'Prontuários arquivados', count: archivedRecords, color: mixColors(c.surface, c.primary, 0.3) },
           ]}
         />
 
@@ -202,8 +203,8 @@ export default function PsychologistDashboard() {
                     {p.email}
                   </Text>
                 </View>
-                <View style={styles.statusBadgeActive}>
-                  <Text style={styles.statusText}>Ativo</Text>
+                <View style={[styles.statusBadgeActive, css.primarySoft]}>
+                  <Text style={[styles.statusText, css.primary]}>Ativo</Text>
                 </View>
               </View>
             ))}

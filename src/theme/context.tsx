@@ -68,6 +68,9 @@ function buildTheme(state: ThemeState): Theme {
       surfaceInner: mixColors(surface, background, 0.45),
       primarySoft: mixColors(surface, primary, 0.12),
       primaryBorder: mixColors(surface, primary, 0.3),
+      // Cards: tom suave da primária sobre a superfície (cards "com cor")
+      cardTint: mixColors(surface, primary, 0.08),
+      cardBorder: mixColors(surface, primary, 0.18),
     },
   };
 }

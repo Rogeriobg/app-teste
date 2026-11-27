@@ -66,7 +66,7 @@ export function StatCard({
 
   return (
     <View
-      style={[styles.card, shadowCard, { backgroundColor: theme.colors.surface }, style]}
+      style={[styles.card, shadowCard, { backgroundColor: theme.colors.cardTint, borderColor: theme.colors.cardBorder }, style]}
       accessible
       accessibilityRole="summary"
       accessibilityLabel={accessibilityLabel ?? `${label}: ${value}`}

@@ -65,7 +65,7 @@ export function ActionTile({
       style={[
         styles.tile,
         shadowCard,
-        { backgroundColor: c.surface },
+        { backgroundColor: c.cardTint, borderColor: c.cardBorder },
         horizontal && styles.tileHorizontal,
         isDanger && styles.tileDanger,
         style,

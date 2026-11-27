@@ -15,6 +15,7 @@ import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
 import { Button, Card, Input, StatusBadge, AppModal, StatSummary, ActionTile, PatientFormModal, PatientFormValues } from '@/components';
+import { mixColors } from '@/theme/contrast';
 import { colors, radius, shadowCard, shadowRaised, spacing, typography } from '@/theme/tokens';
 import {
   Users,
@@ -403,8 +404,8 @@ export default function PatientDetailsScreen() {
           title="Resumo dos prontuários"
           total={records.length}
           segments={[
-            { label: 'Ativos', count: activeRecords.length, color: colors.brand },
-            { label: 'Arquivados', count: archivedRecords.length, color: colors.muted },
+            { label: 'Ativos', count: activeRecords.length, color: theme.colors.primary },
+            { label: 'Arquivados', count: archivedRecords.length, color: mixColors(theme.colors.surface, theme.colors.primary, 0.3) },
           ]}
         />
 

@@ -27,14 +27,20 @@ export function Card({
   backgroundColor,
 }: CardProps) {
   const { theme } = useTheme();
-  const fundo = backgroundColor ?? theme.colors.surface;
+  // cards "com cor": tom suave derivado da primária do tema
+  const fundo = backgroundColor ?? theme.colors.cardTint;
 
   return (
     <View
       style={[
         styles.card,
         elevated && styles.elevated,
-        { borderRadius, padding, backgroundColor: fundo },
+        {
+          borderRadius,
+          padding,
+          backgroundColor: fundo,
+          borderColor: theme.colors.cardBorder,
+        },
         style,
       ]}
     >
@@ -46,7 +52,7 @@ export function Card({
 const styles = StyleSheet.create({
   card: {
     borderWidth: 1,
-    // borda neutra: não muda com o tema (mesma família de cinza suave)
+    // borda é substituída no JSX por theme.colors.cardBorder
     borderColor: statusColors.border,
   },
   elevated: {

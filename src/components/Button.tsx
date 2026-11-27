@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, View, ViewStyle, TextStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Text, ActivityIndicator, View, StyleProp, ViewStyle, TextStyle } from 'react-native';
 import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
 import { useTheme } from '@/theme/context';
 
@@ -18,8 +18,8 @@ export interface ButtonProps {
   disabled?: boolean;
   /** Estado de carregamento (mostra spinner no lugar do texto) */
   loading?: boolean;
-  /** Estilo adicional do container */
-  style?: ViewStyle;
+  /** Estilo adicional do container (aceita array, padrão RN) */
+  style?: StyleProp<ViewStyle>;
   /** Estilo adicional do texto */
   textStyle?: TextStyle;
   /** Ícone à esquerda (React Native element) */
