@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStyles } from '@/theme/hooks';
+import { useTheme } from '@/theme/context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { printToFileAsync } from 'expo-print';
 import { shareAsync, isAvailableAsync } from 'expo-sharing';
@@ -36,6 +37,7 @@ export default function ExportPdfScreen() {
 
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
+  const { theme } = useTheme();
 
   const patient = db.patients.find((p: Patient) => p.id === patientId);
   const records = getRecordsByPatient(patientId);
@@ -487,7 +489,7 @@ export default function ExportPdfScreen() {
             variant="outline"
             onPress={handleBack}
             style={styles.backButton}
-            iconLeft={<ChevronRight size={18} color={ACCENT} />}
+            iconLeft={<ChevronRight size={18} color={theme.colors.primary} />}
             accessibilityLabel="Voltar aos detalhes do paciente"
           >
             Voltar

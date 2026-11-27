@@ -18,7 +18,8 @@ export const PRESETS: Preset[] = [
     id: 'acolhimento',
     name: 'Acolhimento',
     colors: {
-      background: '#FAF8F5',
+      // fundo reforçado (lavanda suave) — mantém lum >= 0,6 e croma <= 0,12
+      background: '#F0E8F6',
       surface: '#FFFFFF',
       primary: '#7C6A96',
       text: '#2D2A32',
@@ -30,7 +31,7 @@ export const PRESETS: Preset[] = [
     id: 'jardim',
     name: 'Jardim Calmo',
     colors: {
-      background: '#F4F7F4',
+      background: '#E5F0E7',
       surface: '#FFFFFF',
       // original #5B8266 (4,35:1) falhava AA -> #567C61 (4,72:1)
       primary: '#567C61',
@@ -43,7 +44,7 @@ export const PRESETS: Preset[] = [
     id: 'terracota',
     name: 'Terracota Suave',
     colors: {
-      background: '#FDF6F3',
+      background: '#F9E7DE',
       surface: '#FFFFFF',
       // original #C07A65 (3,38:1) falhava AA -> #A85F4B (4,77:1)
       primary: '#A85F4B',
@@ -56,7 +57,7 @@ export const PRESETS: Preset[] = [
     id: 'brisa',
     name: 'Brisa Serena',
     colors: {
-      background: '#F3F7FA',
+      background: '#E3EEF7',
       surface: '#FFFFFF',
       primary: '#527999',
       text: '#1E2B36',

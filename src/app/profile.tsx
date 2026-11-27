@@ -243,7 +243,7 @@ export default function ProfileScreen() {
             disabled={exporting}
             loading={exporting}
             style={styles.exportButton}
-            iconLeft={<Download size={18} color={ACCENT} />}
+            iconLeft={<Download size={18} color={theme.colors.primary} />}
             accessibilityLabel="Exportar dados do PsiApp"
           >
             {exporting ? 'Exportando...' : 'Exportar dados (JSON)'}

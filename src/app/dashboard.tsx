@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStyles } from '@/theme/hooks';
+import { useTheme } from '@/theme/context';
 import { useApp, MedicalRecord, Patient } from '@/context/AppContext';
 import { router } from 'expo-router';
 import {
@@ -39,6 +40,8 @@ export default function PsychologistDashboard() {
   const { db, currentUser, logout, getPatientsByStatus } = useApp();
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
+  const { theme } = useTheme();
+  const c = theme.colors;
 
   const activePatients = getPatientsByStatus('Ativo');
   const inactivePatients = getPatientsByStatus('Inativo');
@@ -61,7 +64,7 @@ export default function PsychologistDashboard() {
         <View style={styles.headerRow}>
           <View style={styles.headerIdentity}>
             <View style={styles.avatarBadge}>
-              <Sparkles size={16} color={colors.brand} />
+              <Sparkles size={16} color={c.primary} />
             </View>
             <View style={styles.headerText}>
               <Text style={[styles.greeting, css.text, css.fontTitle2]} numberOfLines={1}>
@@ -98,7 +101,7 @@ export default function PsychologistDashboard() {
             label="Total de Pacientes"
             value={totalPatients}
             tone="brand"
-            icon={<Users size={20} color={colors.brand} />}
+            icon={<Users size={20} color={c.primary} />}
             chip="Total"
             chipTone="brand"
           />
@@ -148,7 +151,7 @@ export default function PsychologistDashboard() {
           <ActionTile
             title="Gerenciar Pacientes"
             description="Cadastrar, editar e arquivar"
-            icon={<Users size={20} color={colors.brand} />}
+            icon={<Users size={20} color={c.primary} />}
             trailingIcon={<ChevronRight size={16} color={colors.textMuted} />}
             onPress={openPatients}
             accessibilityLabel="Gerenciar Pacientes"
@@ -157,7 +160,7 @@ export default function PsychologistDashboard() {
           <ActionTile
             title="Perfil & Configurações"
             description="Dados, exportação e sair"
-            icon={<Settings size={20} color={colors.brand} />}
+            icon={<Settings size={20} color={c.primary} />}
             trailingIcon={<ChevronRight size={16} color={colors.textMuted} />}
             onPress={openProfile}
             accessibilityLabel="Perfil e Configurações"
@@ -189,7 +192,7 @@ export default function PsychologistDashboard() {
             {activePatients.slice(0, 4).map((p: Patient) => (
               <View key={p.id} style={styles.patientRow}>
                 <View style={styles.avatarCircleSmall}>
-                  <Users size={18} color={colors.brand} />
+                  <Users size={18} color={c.primary} />
                 </View>
                 <View style={styles.patientRowInfo}>
                   <Text style={styles.patientRowName} numberOfLines={1}>

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStyles } from '@/theme/hooks';
+import { useTheme } from '@/theme/context';
 import { useApp } from '@/context/AppContext';
 import { router } from 'expo-router';
 import { Mail, ArrowRight, Sparkles, ShieldCheck } from 'lucide-react-native';
@@ -20,6 +21,7 @@ export default function LoginScreen() {
   const { login } = useApp();
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
+  const { theme } = useTheme();
   const [email, setEmail] = useState('psicologo@psicowave.com');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -52,12 +54,12 @@ export default function LoginScreen() {
         {/* Hero Section */}
         <View style={[styles.heroCard, css.primarySoft]}>
           <View style={styles.badgeRow}>
-            <Sparkles size={16} color={colors.brand} />
+            <Sparkles size={16} color={theme.colors.primary} />
             <Text style={[styles.badgeText, css.primary]} numberOfLines={1} ellipsizeMode="tail">
               PsiApp • Consultório Pessoal
             </Text>
           </View>
-          <ShieldCheck size={32} color={colors.brand} style={styles.heroIcon} />
+          <ShieldCheck size={32} color={theme.colors.primary} style={styles.heroIcon} />
           <Text style={[styles.title, css.text]}>Consultório Psicológico</Text>
           <Text style={[styles.subtitle, css.textSecondary]}>Cadastro, prontuário e relatórios dos seus pacientes.</Text>
         </View>

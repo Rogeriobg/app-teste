@@ -167,6 +167,20 @@ describe('Theme — Provider e troca', () => {
   });
 });
 
+describe('Theme — fundos dos presets reforçados', () => {
+  it('todos os fundos são mais fortes que o padrão antigo e continuam legíveis', () => {
+    const antigos = ['#FAF8F5', '#F4F7F4', '#FDF6F3', '#F3F7FA'];
+    PRESETS.forEach((preset, i) => {
+      const fundo = preset.colors.background.toUpperCase();
+      // cor diferente do antigo (reforçada) e dentro dos limites
+      expect(fundo).not.toBe(antigos[i]);
+      expect(isSoftLightBackground(fundo)).toBe(true);
+      expect(contrastRatio(preset.colors.text, fundo)).toBeGreaterThanOrEqual(4.5);
+      expect(luminance(fundo)).toBeLessThan(0.9); // mais forte que quase-branco
+    });
+  });
+});
+
 describe('Theme — escala de fonte', () => {
   it('aplica multiplicadores sem arredondar para zero', () => {
     expect(FONT_SCALE.small).toBe(0.9);

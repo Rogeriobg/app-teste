@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useThemeStyles } from '@/theme/hooks';
+import { useTheme } from '@/theme/context';
 import { selectionAsync, impactAsync, ImpactFeedbackStyle } from 'expo-haptics';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useApp, Patient, MedicalRecord } from '@/context/AppContext';
@@ -34,7 +35,7 @@ import {
   Download,
 } from 'lucide-react-native';
 
-const ACCENT = colors.brand;
+const ACCENT = colors.brand; // fallback — usar theme.colors.primary no JSX
 
 export default function PatientDetailsScreen() {
   const { patientId } = useLocalSearchParams() as { patientId: string };
@@ -55,6 +56,7 @@ export default function PatientDetailsScreen() {
 
   const insets = useSafeAreaInsets();
   const css = useThemeStyles();
+  const { theme } = useTheme();
 
   const patient = db.patients.find((p: Patient) => p.id === patientId);
   const records = getRecordsByPatient(patientId);
@@ -342,13 +344,13 @@ export default function PatientDetailsScreen() {
 
           <View style={styles.contactRow}>
             <View style={styles.contactChip}>
-              <Mail size={14} color={ACCENT} />
+              <Mail size={14} color={theme.colors.primary} />
               <Text style={styles.contactChipText} numberOfLines={1}>
                 {patient.email}
               </Text>
             </View>
             <View style={styles.contactChip}>
-              <Phone size={14} color={ACCENT} />
+              <Phone size={14} color={theme.colors.primary} />
               <Text style={styles.contactChipText} numberOfLines={1}>
                 {patient.phone}
               </Text>
@@ -362,7 +364,7 @@ export default function PatientDetailsScreen() {
         <Card style={styles.infoCard} elevated>
           <View style={styles.infoRow}>
             <View style={styles.infoIcon}>
-              <Calendar size={18} color={ACCENT} />
+              <Calendar size={18} color={theme.colors.primary} />
             </View>
             <View style={styles.infoContent}>
               <Text style={[styles.infoLabel, css.textSecondary]}>Data de nascimento</Text>
@@ -372,7 +374,7 @@ export default function PatientDetailsScreen() {
           <View style={styles.divider} />
           <View style={styles.infoRow}>
             <View style={styles.infoIcon}>
-              <FileText size={18} color={ACCENT} />
+              <FileText size={18} color={theme.colors.primary} />
             </View>
             <View style={styles.infoContent}>
               <Text style={[styles.infoLabel, css.textSecondary]}>Anamnese</Text>
@@ -420,7 +422,7 @@ export default function PatientDetailsScreen() {
               variant="outline"
               onPress={handleOpenAddRecord}
               style={styles.emptyBtn}
-              iconLeft={<Plus size={18} color={ACCENT} />}
+              iconLeft={<Plus size={18} color={theme.colors.primary} />}
             >
               Criar primeiro prontuário
             </Button>
@@ -471,7 +473,7 @@ export default function PatientDetailsScreen() {
             style={styles.actionCell}
             title="Editar paciente"
             description="Nome, contato e anamnese"
-            icon={<Edit2 size={18} color={ACCENT} />}
+            icon={<Edit2 size={18} color={theme.colors.primary} />}
             onPress={handleEditPatient}
             accessibilityLabel="Editar dados do paciente"
             accessibilityHint="Toque para editar nome, e-mail, telefone e anamnese"
@@ -481,7 +483,7 @@ export default function PatientDetailsScreen() {
             style={styles.actionCell}
             title="Nova sessão"
             description="Registrar atendimento"
-            icon={<Plus size={18} color={ACCENT} />}
+            icon={<Plus size={18} color={theme.colors.primary} />}
             onPress={handleOpenAddRecord}
             accessibilityLabel="Registrar nova sessão"
             accessibilityHint="Abre o formulário de nova sessão terapêutica"
@@ -491,7 +493,7 @@ export default function PatientDetailsScreen() {
             style={styles.actionCell}
             title={isAtivo ? 'Inativar' : 'Reativar'}
             description="Alterar o status"
-            icon={isAtivo ? <Pause size={18} color={ACCENT} /> : <CheckCircle2 size={18} color={ACCENT} />}
+            icon={isAtivo ? <Pause size={18} color={theme.colors.primary} /> : <CheckCircle2 size={18} color={theme.colors.primary} />}
             onPress={handleTogglePatientStatus}
             accessibilityLabel={isAtivo ? 'Marcar paciente como inativo' : 'Marcar paciente como ativo'}
           />
@@ -500,7 +502,7 @@ export default function PatientDetailsScreen() {
             style={styles.actionCell}
             title="Exportar PDF"
             description="Gerar arquivo do prontuário"
-            icon={<Download size={18} color={ACCENT} />}
+            icon={<Download size={18} color={theme.colors.primary} />}
             onPress={handleExportPdf}
             accessibilityLabel="Exportar prontuário em PDF"
             accessibilityHint="Gera um arquivo PDF com todos os prontuários do paciente"
@@ -510,7 +512,7 @@ export default function PatientDetailsScreen() {
             style={styles.actionCell}
             title={isArquivado ? 'Restaurar' : 'Arquivar'}
             description="Mover para arquivados"
-            icon={<Archive size={18} color={ACCENT} />}
+            icon={<Archive size={18} color={theme.colors.primary} />}
             onPress={handleArchivePatient}
             accessibilityLabel={isArquivado ? 'Restaurar paciente' : 'Arquivar paciente'}
           />
@@ -603,11 +605,14 @@ function RecordCard({
   onArchive: () => void;
   onDelete: () => void;
 }) {
+  const { theme } = useTheme();
+  const corPrimaria = theme.colors.primary;
+
   return (
     <View style={[styles.recordCard, archived && styles.recordCardArchived]}>
       <View style={styles.recordHeader}>
         <View style={[styles.recordIcon, archived && styles.recordIconArchived]}>
-          <FileText size={18} color={archived ? colors.textTertiary : ACCENT} />
+          <FileText size={18} color={archived ? colors.textTertiary : corPrimaria} />
         </View>
 
         {/*
@@ -642,9 +647,9 @@ function RecordCard({
             accessibilityLabel={archived ? 'Restaurar prontuário' : 'Arquivar prontuário'}
           >
             {archived ? (
-              <CheckIcon size={16} color={ACCENT} />
+              <CheckIcon size={16} color={corPrimaria} />
             ) : (
-              <Archive size={16} color={ACCENT} />
+              <Archive size={16} color={corPrimaria} />
             )}
           </TouchableOpacity>
 
