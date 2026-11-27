@@ -37,12 +37,13 @@ para todas as telas:
 | `/dashboard` | Visão geral do consultório | vazio (sem paciente ativo) | — |
 | `/patients` | Lista de pacientes | busca, 4 filtros, vazio, modal cadastro/edição | — |
 | `/patients/[id]/details` | Prontuário do paciente | vazio, hero, resumo, ações, modal registro | — |
-| `/patients/[id]/reports` | Sessões do paciente | vazio, ativos, arquivados, modal | — |
-| `/patients/[id]/export-pdf` | Exportação PDF | carregando,分享, erro, paciente inexistente | — |
-| `/profile` | Perfil do psicólogo | salvar, exportar JSON, sair | — |
+| `/patients/[id]/reports` | **Redirecionamento** para `details` (QA-6) | — | — |
+| `/patients/[id]/export-pdf` | Exportação PDF | carregando, compartilhando, erro, paciente inexistente | — |
+| `/profile` | Perfil do psicólogo | salvar, exportar JSON, sair | entrada para Aparência |
+| `/appearance` | **Temas e Aparência** (Etapa 6) | prévia, grade de presets, personalizado, fontes | a implementar |
 
-**Total: 7 rotas, 21 componentes de UI** (`src/components/`), **2 telas** com
-`SafeAreaView` e as demais com `useSafeAreaInsets` — ver item A5.
+**Total: 8 rotas, 21 componentes de UI** (`src/components/`). Nenhuma tela usa
+`SafeAreaView` — todas aplicam `useSafeAreaInsets()` explicitamente (A5).
 
 ---
 
@@ -168,8 +169,52 @@ para todas as telas:
 > Entra **após** a etapa 5. Estende `src/theme/tokens.ts`; não substitui o
 > design system. Análise de viabilidade: `ANALISE-ETAPA6.md`.
 >
-> **Status:** aguardando o architect fechar D1–D3 (ver `WORKFLOW_STATE.md`,
-> Ciclo 2). Nenhum item iniciado.
+> **Status do planner (Ciclo 2, etapa 1): `[APROVADO]`** — proposta validada
+> com 4 temas claros, 6 ajustes técnicos aceitos e 3 decisões de produto
+> fechadas abaixo. Aguardando o architect (etapa 2) fechar D1–D3.
+
+### ✅ Decisões de produto fechadas pelo planner
+
+| # | Decisão | Justificativa |
+|---|---------|---------------|
+| **DP1** | **4 presets claros, sem tema escuro** | Único ponto não verificável no Expo Go; 4 passam WCAG AA |
+| **DP2** | **Personalizado só com fundo claro suave** | Impede que o tema escuro volte pelo seletor (R14) |
+| **DP3** | **Prévia com `ThemeScope`, aplicação explícita** | O usuário testa antes de comprometer; evita arrependimento |
+
+### Escopo por marcos (milestones)
+
+| Marco | Itens | Entrega |
+|-------|-------|---------|
+| **M1 — Base** | P1 → P4 → P3 → P5 | `ThemeContext`, 4 presets, contraste, persistência, StatusBar fixa |
+| **M2 — Migração** | P2 | 21 componentes + 8 rotas consumindo `theme.colors.*` |
+| **M3 — Interface** | P6 → P7 → P9 | Tela `/appearance`, fontes, restaurar padrão |
+| **M4 — Personalização** | P8 | Seletor de cor com limites (último — depende de M1–M3 estáveis) |
+
+> **P8 por último:** é o item de maior risco de interação (picker + validação
+> + preview) e só faz sentido depois que a prévia for confiável. Se o picker
+> falhar no aparelho, M4 cai para o plano B (swatches) sem afetar M1–M3.
+
+### Regras de produto para o architect
+
+1. **Escala de fonte:** `Pequeno = 0,9×` · `Padrão = 1,0×` · `Grande = 1,125×`.
+   Limite superior conservador para não estourar headers em 360dp (R9).
+2. **"Fundo claro suave" precisa ser mensurável:** luminância WCAG ≥ 0,6 e
+   saturação HSL ≤ 25%. O architect traduz isso em validação no seletor —
+   não fica a critério visual.
+3. **`onPrimary` sempre calculado:** branco ou preto, escolhido por maior
+   contraste. Para qualquer cor, pelo menos um dos dois atinge ≥ 4,5:1.
+4. **Prévia fidedigna só após M2:** antes da migração ainda existem cores
+   fixas e a prévia pode mentir. O P6 deve incluir *"prévia conferida
+   contra uma tela real após a migração"*.
+5. **Entrada no `/profile`:** item "Aparência", `accessibilityRole="button"`
+   e área de toque ≥ 44px.
+
+### Ajustes ao inventário (corrigidos nesta etapa)
+
+- `/patients/[id]/reports` passou a **redirect** (QA-6 do ciclo 1) — o
+  inventário ainda o descrevia como tela com CRUD.
+- `/appearance` adicionado → **8 rotas**.
+- Removida a observação obsoleta sobre `SafeAreaView` (A5 eliminou todas).
 
 ### Objetivo
 

@@ -38,7 +38,7 @@
 
 | Etapa | Agente | Status | Ciclo | Observações |
 |-------|--------|--------|-------|-------------|
-| 1 | planner | [PENDENTE] | 2 | Validar proposta da Etapa 6 com a análise (`ANALISE-ETAPA6.md`) e aceitar os ajustes: D1 AsyncStorage, D2 verificar picker, presets corrigidos, tipo `StatusBarStyle`, restrição a fundos claros, gates evoluídos. **Tema escuro fora.** |
+| 1 | planner | [APROVADO] | 2 | Proposta validada (`ANALISE-ETAPA6.md` + `PLANO.md`): 6 ajustes técnicos aceitos, tema escuro fora, 3 decisões fechadas (DP1 4 presets claros, DP2 Personalizado só fundo claro, DP3 prévia com ThemeScope). Definidos 4 marcos (M1 base → M2 migração → M3 interface → M4 personalização) e 5 regras de produto (escala 0,9/1,0/1,125; fundo luminância ≥0,6 e saturação ≤25%; onPrimary calculado; prévia fidedigna só após M2; entrada no /profile com 44px). Inventário corrigido: 8 rotas, /reports é redirect. |
 | 2 | architect | [PENDENTE] | 2 | Fechar D1–D3. Ordem: P1 → P4 → P2 → P3 → P5 → P7 → P6 → P8 → P9. Definir `ThemeScope`, restrição de layout estático nos gates e extensão do `validate:contrast` para os 4 presets. |
 | 3 | mobile-ui | [PENDENTE] | 2 | Implementar P1–P9 na ordem acima, um commit por item, com `validate:layout`/`validate:touch` a cada grupo migrado. Carregar skill `mobile-designer`. |
 | 4 | qa-vision | [PENDENTE] | 2 | Validar **4 presets** × 3 tamanhos de fonte em 360dp e 430dp; fase 4c no aparelho (4 presets, persistência, StatusBar fixa). |
