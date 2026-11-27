@@ -18,7 +18,42 @@
 | 4     | qa-vision     | [APROVADO]  | 6     | Histórico: QA.md, AUDITORIA.md, QA-4B.md e fase 4c executada no aparelho. As aprovações anteriores foram revertidas enquanto havia bugs abertos; agora **zero bugs médios/alto** → `[APROVADO]` legítimo, com gate de release desbloqueado e 4 gates automáticos no CI. |
 | 5     | release-prep  | [APROVADO]  | 1     | eas.json restaurado (R1) e validado; app.json e 6 assets conferidos; expo-doctor 20/20; RELEASE.md com checklist de 5 etapas; EXPO_TOKEN e EAS_BUILD_ENABLED confirmados. **R4 (`android/` local) fica como observação — não é bug de build.** |
 
-## 🚦 Gate de release — **DESBLOQUEADO**
+---
+
+# ♻️ Ciclo 2 — Etapa 6: Temas e Aparência
+
+> Iniciado em 2026-11-27 após o Ciclo 1 fechar com gate **DESBLOQUEADO**.
+> Esta é a **mesma esteira de 5 etapas**, reaplicada à Etapa 6 do `PLANO.md`.
+> O histórico do Ciclo 1 acima fica intacto.
+>
+> Análise de viabilidade: `ANALISE-ETAPA6.md` — **viável com 6 correções**.
+> Decisões do architect (D1–D3) **pré-resolvidas pela análise**, mas sujeitas
+> a confirmação formal na etapa 2 deste ciclo.
+
+| Etapa | Agente | Status | Ciclo | Observações |
+|-------|--------|--------|-------|-------------|
+| 1 | planner | [PENDENTE] | 2 | Validar proposta da Etapa 6 com a análise (`ANALISE-ETAPA6.md`) e aceitar os 6 ajustes: D1 AsyncStorage, D2 verificar picker, presets corrigidos, tipo `StatusBarStyle`, `Appearance.setColorScheme`, gates evoluídos. |
+| 2 | architect | [PENDENTE] | 2 | Fechar D1–D3. Ordem: P1 → P4 → P2 → P3 → P5 → P7 → P6 → P8 → P9. Definir `ThemeScope`, restrição de layout estático nos gates e extensão do `validate:contrast`. |
+| 3 | mobile-ui | [PENDENTE] | 2 | Implementar P1–P9 na ordem acima, um commit por item, com `validate:layout`/`validate:touch` a cada grupo migrado. Carregar skill `mobile-designer`. |
+| 4 | qa-vision | [PENDENTE] | 2 | Validar 5 presets × 3 tamanhos de fonte em 360dp e 430dp; fase 4c no aparelho (5 presets, sem flash, StatusBar). |
+| 5 | release-prep | [PENDENTE] | 2 | `app.json`: `userInterfaceStyle: automatic`; conferir plugins nativos novos (D2); atualizar RELEASE.md com o preset Noite e a ressalva da splash no Expo Go. |
+
+### Gate do Ciclo 2 — **PENDENTE**
+
+| # | Verificação | Status |
+|---|-------------|--------|
+| G1 | `validate:contrast` estendido — 5 presets × fundo próprio × `onPrimary` | A criar |
+| G2 | `validate:layout` — 3 escalas de fonte em 360dp e 430dp (DOM) | A estender |
+| G3 | `validate:touch` — 44px | ✅ Reutilizar |
+| G4 | `validate:workflow` | ✅ Reutilizar |
+| G5 | Fase 4c — 5 presets × 3 fontes no aparelho real | A executar |
+
+**Regra:** se qualquer bug **médio/alto** deste ciclo ficar aberto, o gate volta a
+`BLOQUEADO` e nenhum item novo entra — mesma regra do Ciclo 1.
+
+---
+
+## 🚦 Gate de release (Ciclo 1) — **DESBLOQUEADO**
 
 > Todos os bugs de severidade alta e média foram resolvidos. Os itens
 > baixos seguem listados, mas não bloqueiam a esteira.

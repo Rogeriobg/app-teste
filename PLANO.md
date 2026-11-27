@@ -81,7 +81,9 @@ para todas as telas:
 
 ### Não-objetivos
 
-- **Dark mode** — `userInterfaceStyle: light` no `app.json`; não é prioridade da v1.
+- **Dark mode** — ~~não é prioridade da v1~~ **movido para a Etapa 6**
+  (ciclo 2 da esteira), apenas como preset "Noite Aconchegante", sem seguir
+  o tema do sistema na v1. Ver `ANALISE-ETAPA6.md`.
 - **Multi-perfil** (equipe, supervisão) — só `role: 'psicologo'` existe.
 - **Sincronização em nuvem / servidor** — o produto é local-first.
 - **Notificações push / lembretes de sessão** — fora do escopo da v1.
@@ -160,5 +162,104 @@ para todas as telas:
 
 ---
 
-Última atualização: Etapa 5 (release-prep) — 2026-11-26.
-Esteira concluída: A1–A5 implementados e verificados (142/142 testes, `tsc`/`lint` limpos, `expo-doctor` 20/20). Riscos R1, R2 e R3 resolvidos.
+## 🎨 Etapa 6 — Temas e Aparência (ciclo 2 da esteira)
+
+> Entra **após** a etapa 5. Estende `src/theme/tokens.ts`; não substitui o
+> design system. Análise de viabilidade: `ANALISE-ETAPA6.md`.
+>
+> **Status:** aguardando o architect fechar D1–D3 (ver `WORKFLOW_STATE.md`,
+> Ciclo 2). Nenhum item iniciado.
+
+### Objetivo
+
+Permitir que o psicólogo escolha a aparência do app (paleta, tamanho de
+fonte) com prévia em tempo real, sem "flash" de cor padrão na abertura e sem
+quebrar contraste.
+
+### Decisões de produto (ajustadas pela análise)
+
+1. **5 presets curados + "Personalizado" + "Restaurar padrão".**
+2. **Prévia antes de aplicar** — o tema só muda no app inteiro ao tocar em
+   "Aplicar tema". Implementar com `ThemeScope` (override local na prévia).
+3. **Personalização limitada** — o usuário não escolhe combinações
+   ilegíveis; pares abaixo de 4,5:1 são bloqueados ou corrigidos com aviso.
+4. **Tamanho de fonte** (`Pequeno`/`Padrão`/`Grande`) é acessibilidade.
+
+### Presets (com as correções de contraste aplicadas)
+
+| Tema | Fundo | Superfície | Primária | Texto | Contraste prim/superf | Sensação |
+|------|-------|------------|----------|-------|----------------------|----------|
+| **Acolhimento** (padrão) | `#FAF8F5` | `#FFFFFF` | `#7C6A96` | `#2D2A32` | 4,82:1 ✅ | Calma, introspecção |
+| **Jardim Calmo** | `#F4F7F4` | `#FFFFFF` | `#567C61` | `#233026` | 4,72:1 ✅ | Equilíbrio, natureza |
+| **Terracota Suave** | `#FDF6F3` | `#FFFFFF` | `#A85F4B` | `#382621` | 4,77:1 ✅ | Calor, empatia |
+| **Brisa Serena** | `#F3F7FA` | `#FFFFFF` | `#527999` | `#1E2B36` | 4,61:1 ✅ | Clareza, confiança |
+| **Noite Aconchegante** (dark) | `#18171C` | `#232129` | `#A594C2` | `#F0EEF5` | 5,76:1 ✅ | Conforto noturno |
+
+> Os valores originais `#5B8266` (4,35:1) e `#C07A65` (3,38:1) **falhavam
+> WCAG AA** e foram ajustados mantendo a família de cor.
+
+### Regras do plano (alterações)
+
+- **Não-objetivo "Dark mode" removido** — existe só como preset Noite, sem
+  seguir o tema do sistema na v1.
+- **`app.json`:** `userInterfaceStyle` de `light` → `automatic`, **mais**
+  `Appearance.setColorScheme(...)` para travar o scheme do app (senão o
+  sistema sobrescreve os presets claros em aparelho escuro).
+- **Regra 1 (zero literal):** única exceção permitida — os presets vivem em
+  `src/theme/presets.ts`. Cores de status continuam em `tokens.ts`; o tema
+  troca só `background`, `surface`, `primary`, `text` e derivados.
+- **Restrição dos gates:** layout continua em `StyleSheet.create` (estático).
+  Nunca converter para `createStyles(theme)` — os 3 gates leem estilos
+  estáticos. Padrão: `style={[styles.card, { backgroundColor: theme.colors.surface }]}`.
+
+### Arquitetura
+
+- `ThemeContext` tipado (`ThemeProvider`, `useTheme`, `ThemeScope`) em
+  `src/theme/context.tsx`.
+- Tipos em `src/theme/types.ts`: `Theme`, `ThemeColors`, `FontScale`.
+  `statusBar` usa `StatusBarStyle` de `expo-status-bar` (`'light' | 'dark'`),
+  **não** `'dark-content' | 'light-content'`.
+- `contrast.ts` — `luminance`, `contrastRatio`, `getReadableTextColor`.
+- `storage.ts` — **D1 resolvido**: AsyncStorage + `SplashScreen`.
+- `presets.ts` — os 5 temas (única exceção de hex literal).
+
+### Backlog P1–P9
+
+| # | Item | Critério de aceite | Status |
+|---|------|--------------------|--------|
+| **P1** | ThemeContext + tokens + `ThemeScope` + presets | `tsc` limpo; `useTheme()` devolve `colors`, `fontScale`, `setTheme`, `resetTheme`; teste de troca/restauração | Aberto |
+| **P2** | Migração dos componentes (base → dados → 7 rotas) | `grep` de `#` no `src/` retorna só `tokens.ts`/`presets.ts`; nenhum componente importa cor direto de `tokens` | Aberto |
+| **P3** | Persistência sem flash (AsyncStorage + SplashScreen) | Abrir com tema escuro salvo não mostra frame claro; ressalva: Expo Go não reproduz splash nativa (validar em release) | Aberto |
+| **P4** | Contraste automático + presets corrigidos | Todo par texto/fundo ≥ 4,5:1 (≥3:1 em ≥18px ou bold ≥14px); teste percorre os 5 presets | Aberto |
+| **P5** | StatusBar dinâmica | `'light'`/`'dark'` corretos nos 5 presets × 7 rotas | Aberto |
+| **P6** | Tela `/appearance` (via `/profile`) — prévia com `ThemeScope`, grade de temas, rodapé | "Aplicar tema" persiste; sair sem aplicar descarta; haptic de sucesso | Aberto |
+| **P7** | Tamanho de fonte (3 níveis) | 3 escalas sem truncar em 360dp e 430dp — extensão da fase 4b medindo no DOM | Aberto |
+| **P8** | Seletor de cor personalizado com limites | cor do botão livre; fundo restrito; combinações <4,5:1 bloqueadas/corrigidas | Aberto |
+| **P9** | Restaurar padrão | Volta a Acolhimento + fonte Padrão, com confirmação | Aberto |
+
+### Riscos (R7–R10 + novos)
+
+| # | Risco | Mitigação |
+|---|-------|-----------|
+| R7 | Terracota com texto branco (3,38:1) | Preset corrigido para `#A85F4B` + `getReadableTextColor` |
+| **R11** | Jardim Calmo 4,35:1 | Preset corrigido para `#567C61` |
+| **R12** | MMKV exigiria dev build (Expo Go) | D1: AsyncStorage + SplashScreen |
+| **R13** | `userInterfaceStyle: automatic` sozinho não trava o scheme | `Appearance.setColorScheme` no provider |
+| R8 | Migração reintroduzir transbordo | `validate:layout` em cada grupo migrado |
+| R9 | Fonte Grande estourar headers | medição DOM em 3 escalas × 2 larguras |
+| R10 | Cobertura não cobrir `ThemeContext` | estender `coverageThreshold` |
+
+### Ordem recomendada (architect)
+
+```
+P1 → P4 → P2 → P3 → P5 → P7 → P6 → P8 → P9
+```
+
+P4 antes de P2 para migrar já com os presets corrigidos e `onPrimary`
+calculado — não migrar para cor que depois muda.
+
+---
+
+Última atualização: Etapa 6 preparada (análise de viabilidade) — 2026-11-27.
+Ciclo 1 concluído: A1–A5 implementados e verificados, gate de release desbloqueado.
+Ciclo 2 (Etapa 6 — Temas e Aparência) aguardando architect fechar D1–D3.
