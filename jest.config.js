@@ -64,5 +64,18 @@ module.exports = {
       functions: 70,
       lines: 70,
     },
+    // Etapa 6 — base do tema (R10)
+    './src/theme/contrast.ts': {
+      statements: 90,
+      branches: 80,
+      functions: 90,
+      lines: 90,
+    },
+    './src/theme/context.tsx': {
+      statements: 70,
+      branches: 55,
+      functions: 70,
+      lines: 70,
+    },
   },
 };

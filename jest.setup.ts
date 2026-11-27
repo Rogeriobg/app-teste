@@ -146,6 +146,14 @@ jest.mock('expo-file-system', () => {
   };
 });
 
+/* ---------- expo-splash-screen (Etapa 6 / D1) ---------- */
+jest.mock('expo-splash-screen', () => ({
+  preventAutoHideAsync: jest.fn(async () => true),
+  hideAsync: jest.fn(async () => undefined),
+  hide: jest.fn(),
+  setOptions: jest.fn(),
+}));
+
 /* ---------- @react-native-community/datetimepicker ---------- */
 // expõe um testID para que os testes possam encontrar e acionar o picker
 jest.mock('@react-native-community/datetimepicker', () => {
