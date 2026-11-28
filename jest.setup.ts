@@ -45,7 +45,10 @@ jest.mock('expo-sharing', () => ({
 
 /* ---------- expo-print ---------- */
 jest.mock('expo-print', () => ({
-  printToFileAsync: jest.fn(async () => ({ uri: 'file:///tmp/psi-app-test.pdf' })),
+  printToFileAsync: jest.fn(async () => ({
+    uri: 'file:///tmp/psi-app-test.pdf',
+    base64: 'JVBERi0xLjQKJcTl8uXrp/Og0MTGjA==',
+  })),
   printAsync: jest.fn(async () => {}),
   selectPrinterAsync: jest.fn(async () => ({ name: 'Test Printer', url: 'mock://printer' })),
 }));

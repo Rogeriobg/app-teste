@@ -17,11 +17,14 @@ import {
 } from 'expo-haptics';
 import { router } from 'expo-router';
 import { useApp } from '@/context/AppContext';
+import { buildPatientsReportHtml } from '@/services/patientsReport';
+import { gerarPdf, compartilharPdf } from '@/services/pdf';
 import { Button, Input, Card, AppModal } from '@/components';
 import {
   Mail,
   ShieldCheck,
   Save,
+  FileText,
   Download,
   LogOut,
   Lock,
@@ -59,6 +62,7 @@ export default function ProfileScreen() {
   const email = emailEdit ?? currentUser?.email ?? '';
   const [saving, setSaving] = useState(false);
   const [exporting, setExporting] = useState(false);
+  const [exportingPdf, setExportingPdf] = useState(false);
 
   /* Segurança — troca de senha */
   const [mostrandoSenha, setMostrandoSenha] = useState(false);
@@ -164,6 +168,32 @@ export default function ProfileScreen() {
       Alert.alert('Erro', 'Não foi possível exportar os dados.');
     } finally {
       setExporting(false);
+    }
+  };
+
+  /**
+   * Relatório PDF de pacientes: lista + resumo, sem dados clínicos.
+   * Nenhum Alert antes da share sheet — o alerta de erro vem depois.
+   */
+  const handleExportPdf = async () => {
+    if (db.patients.length === 0) {
+      await Haptic.error();
+      Alert.alert('Atenção', 'Cadastre ao menos um paciente para gerar o relatório.');
+      return;
+    }
+
+    setExportingPdf(true);
+    try {
+      const html = buildPatientsReportHtml(db.patients, currentUser);
+      const nome = `pacientes-${new Date().toISOString().slice(0, 10)}.pdf`;
+      const arquivo = await gerarPdf(html, nome);
+      await compartilharPdf(arquivo, 'Relatório de pacientes - PsiApp');
+      await Haptic.success();
+    } catch {
+      await Haptic.error();
+      Alert.alert('Erro', 'Não foi possível gerar o PDF de pacientes.');
+    } finally {
+      setExportingPdf(false);
     }
   };
 
@@ -305,20 +335,38 @@ export default function ProfileScreen() {
         <View style={styles.section}>
           <Text style={[styles.sectionTitle, css.text]}>Exportar dados</Text>
           <Text style={[styles.sectionSub, css.textSecondary]}>
-            Gere um backup JSON com pacientes e prontuários para compartilhar ou salvar.
+            Gere um relatório em PDF com a lista e o resumo dos seus pacientes.
+            Não inclui anamneses nem prontuários.
           </Text>
 
           <Button
-            variant="outline"
+            variant="primary"
+            onPress={handleExportPdf}
+            disabled={exportingPdf}
+            loading={exportingPdf}
+            style={styles.exportButton}
+            iconLeft={<FileText size={18} color={colors.textOnBrand} />}
+            accessibilityLabel="Exportar relatório de pacientes em PDF"
+          >
+            {exportingPdf ? 'Gerando PDF...' : 'Exportar dados (PDF)'}
+          </Button>
+
+          <TouchableOpacity
+            style={styles.backupBtn}
             onPress={handleExport}
             disabled={exporting}
-            loading={exporting}
-            style={styles.exportButton}
-            iconLeft={<Download size={18} color={theme.colors.primary} />}
-            accessibilityLabel="Exportar dados do PsiApp"
+            activeOpacity={0.8}
+            accessibilityRole="button"
+            accessibilityLabel="Exportar backup técnico em JSON"
           >
-            {exporting ? 'Exportando...' : 'Exportar dados (JSON)'}
-          </Button>
+            <Download size={16} color={theme.colors.primary} />
+            <Text style={[styles.backupBtnText, css.primary]} numberOfLines={1} ellipsizeMode="tail">
+              {exporting ? 'Exportando backup...' : 'Backup técnico (JSON)'}
+            </Text>
+          </TouchableOpacity>
+          <Text style={[styles.backupHint, css.textSecondary]}>
+            O JSON é um backup técnico, para migração futura. Para ler e compartilhar, use o PDF.
+          </Text>
         </View>
 
         {/* Sair */}
@@ -491,6 +539,16 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.lg,
     marginTop: spacing.xs,
   },
+  backupBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: spacing.xs,
+    minHeight: 44,
+    marginTop: spacing.sm,
+  },
+  backupBtnText: { ...typography.label, flexShrink: 1, minWidth: 0 },
+  backupHint: { ...typography.caption, textAlign: 'center' },
   /** Botão de entrada para /appearance — 44px de toque (QA-3) */
   appearanceBtn: {
     flexDirection: 'row',

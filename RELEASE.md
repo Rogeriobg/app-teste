@@ -28,6 +28,18 @@
 - Trocar o e-mail em **Perfil** também atualiza o e-mail de login (antes, a
   troca valia só para a sessão e o usuário ficava sem conseguir entrar).
 
+## 📄 Relatório de pacientes (PDF)
+
+- Em **Perfil → Exportar dados**, o botão principal gera um **PDF com lista e
+  resumo dos pacientes** (nome, status, e-mail, telefone e data de cadastro),
+  com cabeçalho confidencial e rodapé informando que o documento foi gerado
+  localmente. **Não inclui** anamneses, prontuários nem notas privadas — esses
+  dados continuam apenas no PDF individual de cada paciente.
+- O gerador roda 100% no aparelho (`expo-print` → base64 → arquivo no diretório
+  de documentos → share sheet nativo), sem envio para servidor.
+- O antigo **backup JSON** permanece como item discreto "Backup técnico (JSON)"
+  para futura migração/importação. Para leitura e compartilhamento, use o PDF.
+
 ---
 
 ## 1. Antes do build

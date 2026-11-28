@@ -3,13 +3,15 @@ import { screen, fireEvent, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { shareAsync } from 'expo-sharing';
-import { writeAsStringAsync } from 'expo-file-system';
+import { writeAsStringAsync, File } from 'expo-file-system';
+import { printToFileAsync } from 'expo-print';
 import { renderWithProvider, mockAuthenticatedSession } from './helpers/renderWithProvider';
 import { spyOnAlert, pressAlertButton } from './helpers/alert';
 import ProfileScreen from '@/app/profile';
 
 const mockedShareAsync = shareAsync as jest.Mock;
 const mockedWriteAsStringAsync = writeAsStringAsync as jest.Mock;
+const mockedPrintToFileAsync = printToFileAsync as jest.Mock;
 
 describe('ProfileScreen — fluxos', () => {
   let alertSpy: jest.SpyInstance;
@@ -23,6 +25,15 @@ describe('ProfileScreen — fluxos', () => {
     mockAuthenticatedSession();
     mockedShareAsync.mockImplementation(async () => undefined);
     mockedWriteAsStringAsync.mockImplementation(async () => undefined);
+    mockedPrintToFileAsync.mockReset();
+    mockedPrintToFileAsync.mockImplementation(async () => ({
+      uri: 'file:///tmp/psi-app-test.pdf',
+      base64: 'JVBERi0xLjQKJcTl8uXrp/Og0MTGjA==',
+    }));
+    (File.canPreview as jest.Mock).mockResolvedValue(true);
+    (File.preview as jest.Mock).mockResolvedValue(undefined);
+    const fileComHistorico = File as unknown as { __writes: unknown[] };
+    if (fileComHistorico.__writes) fileComHistorico.__writes.length = 0;
     alertSpy = spyOnAlert();
   });
 
@@ -110,9 +121,9 @@ describe('ProfileScreen — fluxos', () => {
   it('deve exportar os dados como JSON e compartilhar o arquivo', async () => {
     await renderWithProvider(<ProfileScreen />);
 
-    await waitFor(() => expect(screen.getByText('Exportar dados (JSON)')).toBeTruthy());
+    await waitFor(() => expect(screen.getByText('Backup técnico (JSON)')).toBeTruthy());
 
-    await fireEvent.press(screen.getByText('Exportar dados (JSON)'));
+    await fireEvent.press(screen.getByText('Backup técnico (JSON)'));
 
     await waitFor(() => {
       expect(mockedWriteAsStringAsync).toHaveBeenCalledTimes(1);
@@ -137,13 +148,46 @@ describe('ProfileScreen — fluxos', () => {
     );
   });
 
+  it('deve gerar e compartilhar o relatório PDF de pacientes', async () => {
+    await renderWithProvider(<ProfileScreen />);
+
+    await waitFor(() =>
+      expect(screen.getByLabelText('Exportar relatório de pacientes em PDF')).toBeTruthy()
+    );
+    await fireEvent.press(screen.getByLabelText('Exportar relatório de pacientes em PDF'));
+
+    await waitFor(() => {
+      expect(mockedPrintToFileAsync).toHaveBeenCalledTimes(1);
+    });
+
+    const [opcoes] = mockedPrintToFileAsync.mock.calls[0];
+    expect(opcoes.base64).toBe(true);
+    expect(opcoes.html).toContain('Relatório de pacientes');
+    expect(opcoes.html).toContain('Maria Oliveira');
+    expect(opcoes.html).toContain('João Silva');
+    expect(opcoes.html).toContain('CONFIDENCIAL');
+    // não deve incluir dados clínicos sensíveis
+    expect(opcoes.html).not.toContain('Anamnese');
+
+    const arquivos = (File as unknown as { __writes: Array<{ uri: string }> }).__writes;
+    expect(arquivos).toHaveLength(1);
+    expect(arquivos[0].uri).toContain('pacientes-');
+
+    await waitFor(() => {
+      expect(mockedShareAsync).toHaveBeenCalledWith(
+        expect.stringContaining('pacientes-'),
+        expect.objectContaining({ mimeType: 'application/pdf' })
+      );
+    });
+  });
+
   it('deve informar erro quando a exportação falha', async () => {
     mockedShareAsync.mockRejectedValueOnce(new Error('falha ao compartilhar'));
 
     await renderWithProvider(<ProfileScreen />);
 
-    await waitFor(() => expect(screen.getByText('Exportar dados (JSON)')).toBeTruthy());
-    await fireEvent.press(screen.getByText('Exportar dados (JSON)'));
+    await waitFor(() => expect(screen.getByText('Backup técnico (JSON)')).toBeTruthy());
+    await fireEvent.press(screen.getByText('Backup técnico (JSON)'));
 
     await waitFor(() => {
       expect(alertSpy).toHaveBeenCalledWith('Erro', 'Não foi possível exportar os dados.');
