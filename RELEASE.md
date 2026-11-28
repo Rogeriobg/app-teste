@@ -5,6 +5,7 @@
 > e com a variable `EAS_BUILD_ENABLED = true`.
 >
 > Estado da esteira: `WORKFLOW_STATE.md`.
+> Distribuição interna de teste (APK Android, sem loja): `TESTE-ANDROID.md`.
 
 ---
 
