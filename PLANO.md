@@ -39,10 +39,13 @@ para todas as telas:
 | `/patients/[id]/details` | Prontuário do paciente | vazio, hero, resumo, ações, modal registro | — |
 | `/patients/[id]/reports` | **Redirecionamento** para `details` (QA-6) | — | — |
 | `/patients/[id]/export-pdf` | Exportação PDF | carregando, compartilhando, erro, paciente inexistente | — |
-| `/profile` | Perfil do psicólogo | salvar, exportar JSON, sair | entrada para Aparência |
-| `/appearance` | **Temas e Aparência** (Etapa 6) | prévia, grade de presets, personalizado, fontes | a implementar |
+| `/profile` | Perfil do psicólogo | salvar, PDF, backup JSON, senha, temas, sair | Lembretes (Etapa 7) |
+| `/appearance` | **Temas e Aparência** (Etapa 6) | prévia, grade de presets, personalizado, fontes | — |
+| `/agenda` | **Agenda** (Etapa 7) | dia, faixa semanal, vazio, FAB | a implementar |
+| `/agenda/new` | Novo atendimento (modal) | paciente, data/hora, conflito, duração, nível | a implementar |
+| `/agenda/[id]` | Detalhe do atendimento | status, reagendar, abrir prontuário | a implementar |
 
-**Total: 8 rotas, 21 componentes de UI** (`src/components/`). Nenhuma tela usa
+**Total: 11 rotas planejadas, 21 componentes de UI** (`src/components/`). Nenhuma tela usa
 `SafeAreaView` — todas aplicam `useSafeAreaInsets()` explicitamente (A5).
 
 ---
@@ -88,7 +91,8 @@ para todas as telas:
   `userInterfaceStyle: light`. Ver `ANALISE-ETAPA6.md`.
 - **Multi-perfil** (equipe, supervisão) — só `role: 'psicologo'` existe.
 - **Sincronização em nuvem / servidor** — o produto é local-first.
-- **Notificações push / lembretes de sessão** — fora do escopo da v1.
+- **Notificações push remotas** — fora do escopo da v1. **Lembretes locais**
+  entram na Etapa 7 (`ANALISE-ETAPA7.md`), sem servidor.
 - **Prontuário compartilhado com o paciente** — não existe na v1.
 - **Reescrever o design system do zero** — o BoardUI já está portado.
 
@@ -310,6 +314,25 @@ calculado — não migrar para cor que depois muda.
 
 ---
 
-Última atualização: Etapa 6 preparada (análise de viabilidade) — 2026-11-27.
-Ciclo 1 concluído: A1–A5 implementados e verificados, gate de release desbloqueado.
-Ciclo 2 (Etapa 6 — Temas e Aparência) aguardando architect fechar D1–D3.
+## 📅 Etapa 7 — Agenda do psicólogo (planejada)
+
+Análise completa em `ANALISE-ETAPA7.md`. Resumo das decisões fechadas:
+
+- **Um lembrete por atendimento**, 5 minutos antes; antecedência configurável
+  pelo psicólogo em `/profile`.
+- `Atenção` = **som de alerta + marcação visual** — sem notificação extra.
+- **Privacidade máxima:** nunca nome do paciente nem dado clínico na notificação;
+  sem opt-in.
+- Agenda entra no **backup técnico JSON**; o PDF de pacientes continua só com
+  lista/resumo.
+- Lembretes locais entram no escopo; push remoto permanece fora.
+
+Ordem de implementação: **G1 → G2/G3 → G7/G4/G5/G6 → G8/G9 → G10**.
+Regras 7 (confirmação) e 8 (haptic) do plano são reutilizadas, não renumeradas.
+
+---
+
+Última atualização: Etapa 7 planejada — 2026-11-28.
+Ciclo 1 concluído: A1–A5 implementados e verificados, gate desbloqueado.
+Ciclo 2 (Etapa 6 — Temas e Aparência) aprovado, gate desbloqueado.
+Ciclo 4 (bugs do APK: modais, botão do tema, logout) aprovado no aparelho.

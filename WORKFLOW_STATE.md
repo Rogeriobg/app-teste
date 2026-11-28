@@ -51,9 +51,9 @@ senha — fluxo de autenticação **aprovado no aparelho**. Três defeitos visua
 | BUG-8 | média | Botão "Cadastrar paciente" da dashboard com verde fixo, sem acompanhar o tema | `css.primaryBg` / `css.onPrimary` e seta com `c.onPrimary`; novo `css.onPrimary` em `useThemeStyles()` | Gate `validate:layout` estendido |
 | BUG-9 | média | Botão de saída do header não voltava ao login e o nome virava "Dr(a). Psicólogo(a)" | `logout()` agora chama `router.replace('/login')` **antes** de limpar `currentUser` (evita flash do placeholder). Em mobile não existe "fechar app": o botão encerra a sessão | Teste em `AppContext-test` (router.replace) |
 
-**Status: CORRIGIDO, aguardando reconfirmação do usuário no APK.** Não aprovar
-esta etapa enquanto o aparelho não confirmar os três itens. 163/163 testes,
-tsc/lint e 7 gates limpos.
+**Status: [APROVADO]** — usuário confirmou que os três itens foram resolvidos
+no último build instalado. Zero bugs alto/médio abertos: a esteira está livre
+para receber a Etapa 7. 163/163 testes, tsc/lint e 7 gates limpos.
 
 ---
 
