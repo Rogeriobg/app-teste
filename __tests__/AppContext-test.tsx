@@ -2,7 +2,7 @@ import { act, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { router } from 'expo-router';
 import { renderWithProvider, mockAuthenticatedSession, mockAsyncStorage } from './helpers/renderWithProvider';
-import { MedicalRecord, Patient } from '@/context/AppContext';
+import { Appointment, MedicalRecord, NewAppointment, Patient } from '@/context/AppContext';
 
 const DB_KEY = '@psi_app_db_json_v1';
 const USER_KEY = '@psi_app_current_user_v1';
@@ -486,6 +486,102 @@ describe('AppContext', () => {
 
       const records = current.getRecordsByPatient(patient.id);
       expect(records.every((r: MedicalRecord) => r.patientId === patient.id)).toBe(true);
+    });
+  });
+
+  describe('Agendamentos (Etapa 7 / G1)', () => {
+    const novoAtendimento = (patientId = 'p1'): NewAppointment => ({
+      patientId,
+      startsAt: '2026-12-10T14:00:00-03:00',
+      timeZone: 'America/Sao_Paulo',
+      durationMin: 50,
+      level: 'normal',
+      contactedAt: '2026-12-01T10:00:00Z',
+      notes: 'Sessao de teste G1',
+      reminderMinutesBefore: 5,
+    });
+
+    it('cria com id, createdAt e status agendado', async () => {
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+
+      let criado: Appointment | null = null;
+      await act(async () => {
+        criado = await current.addAppointment(novoAtendimento());
+      });
+
+      expect(criado).not.toBeNull();
+      expect(criado!.id).toMatch(/^a_\d+$/);
+      expect(criado!.createdAt).toEqual(expect.any(String));
+      expect(criado!.status).toBe('agendado');
+      expect(criado!.patientId).toBe('p1');
+      expect(criado!.reminderMinutesBefore).toBe(5);
+      expect(current.db.appointments).toHaveLength(1);
+    });
+
+    it('edita e exclui um atendimento', async () => {
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+
+      let criado: Appointment | null = null;
+      await act(async () => {
+        criado = await current.addAppointment(novoAtendimento());
+      });
+      const editado: Appointment = { ...criado!, status: 'realizado', notes: 'Concluida' };
+      await act(async () => {
+        await current.updateAppointment(editado);
+      });
+      expect(current.db.appointments[0].status).toBe('realizado');
+      expect(current.db.appointments[0].notes).toBe('Concluida');
+
+      await act(async () => {
+        await current.removeAppointment(criado!.id);
+      });
+      expect(current.db.appointments).toHaveLength(0);
+    });
+
+    it('persiste o atendimento no AsyncStorage', async () => {
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+
+      await act(async () => {
+        await current.addAppointment(novoAtendimento());
+      });
+
+      expect(AsyncStorage.setItem).toHaveBeenCalledWith(
+        DB_KEY,
+        expect.stringContaining('Sessao de teste G1')
+      );
+    });
+
+    it('migra bancos antigos sem o campo appointments', async () => {
+      const store = mockAsyncStorage();
+      store['@psi_app_db_json_v1'] = JSON.stringify({
+        users: [],
+        patients: [],
+        medicalRecords: [],
+      });
+
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+      expect(current.db.appointments).toEqual([]);
+    });
+
+    it('inclui a agenda no backup JSON exportado', async () => {
+      const { writeAsStringAsync } = require('expo-file-system');
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+
+      await act(async () => {
+        await current.addAppointment(novoAtendimento());
+      });
+      await act(async () => {
+        await current.exportData();
+      });
+
+      const conteudo = (writeAsStringAsync as jest.Mock).mock.calls[0][1];
+      expect(conteudo).toContain('Sessao de teste G1');
+      expect(JSON.parse(conteudo).appointments).toHaveLength(1);
     });
   });
 

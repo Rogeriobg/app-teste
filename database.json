@@ -1,5 +1,6 @@
 {
   "users": [],
   "patients": [],
-  "medicalRecords": []
+  "medicalRecords": [],
+  "appointments": []
 }

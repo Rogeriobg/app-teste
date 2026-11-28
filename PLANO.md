@@ -329,6 +329,8 @@ Análise completa em `ANALISE-ETAPA7.md`. Resumo das decisões fechadas:
 
 Ordem de implementação: **G1 → G2/G3 → G7/G4/G5/G6 → G8/G9 → G10**.
 Regras 7 (confirmação) e 8 (haptic) do plano são reutilizadas, não renumeradas.
+**G1 concluído** (modelo, persistência, migração, CRUD e backup — ver
+`WORKFLOW_STATE.md`); demais itens abertos.
 
 ---
 

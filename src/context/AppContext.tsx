@@ -42,13 +42,53 @@ export interface MedicalRecord {
   createdAt: string;
 }
 
+/** Etapa 7 — Agenda do psicólogo (G1). */
+export type AppointmentStatus = 'agendado' | 'realizado' | 'faltou' | 'cancelado';
+export type ReminderLevel = 'normal' | 'atencao';
+
+export interface Appointment {
+  id: string;
+  /** vínculo com um paciente existente */
+  patientId: string;
+  /** ISO 8601 com offset (data + horário) */
+  startsAt: string;
+  /** ex.: 'America/Sao_Paulo' — protege contra fuso/horário de verão */
+  timeZone: string;
+  durationMin: number;
+  status: AppointmentStatus;
+  level: ReminderLevel;
+  /** data em que o paciente pediu o agendamento */
+  contactedAt?: string;
+  /** observação curta — não substitui o prontuário */
+  notes?: string;
+  /** antecedência copiada da preferência no momento do cadastro */
+  reminderMinutesBefore: number;
+  /** id da notificação local (preenchido na Etapa 7 / G4) */
+  notificationId?: string;
+  createdAt: string;
+}
+
+/** Dados necessários para criar um atendimento; o resto é derivado. */
+export type NewAppointment = Omit<
+  Appointment,
+  'id' | 'createdAt' | 'status' | 'notificationId'
+>;
+
 export interface Database {
   users: User[];
   patients: Patient[];
   medicalRecords: MedicalRecord[];
+  appointments: Appointment[];
 }
 
-const defaultDb: Database = defaultDbData as unknown as Database;
+/**
+ * Banco padrão vazio. `appointments` é normalizado em `loadStorage()` para
+ * instalações antigas que não tinham o campo.
+ */
+const defaultDb: Database = {
+  ...(defaultDbData as unknown as Omit<Database, 'appointments'>),
+  appointments: [],
+};
 
 export interface AppContextData {
   db: Database;
@@ -87,6 +127,10 @@ export interface AppContextData {
   archivePatient: (id: string) => Promise<void>;
   restorePatient: (id: string) => Promise<void>;
   deletePatient: (id: string) => Promise<void>;
+  /* Agenda (Etapa 7 / G1) */
+  addAppointment: (dados: NewAppointment) => Promise<Appointment>;
+  updateAppointment: (appointment: Appointment) => Promise<void>;
+  removeAppointment: (id: string) => Promise<void>;
   /* Prontuários / Relatórios */
   addMedicalRecord: (rec: Omit<MedicalRecord, 'id' | 'createdAt' | 'archivedAt'>) => Promise<void>;
   updateMedicalRecord: (rec: MedicalRecord) => Promise<void>;
@@ -124,9 +168,16 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   const loadStorage = async () => {
     try {
       const storedDb = await AsyncStorage.getItem(STORAGE_KEY);
-      const db = storedDb ? JSON.parse(storedDb) : defaultDb;
+      const carregado = storedDb ? JSON.parse(storedDb) : defaultDb;
+      // Migração: bancos salvos antes da Etapa 7 não têm `appointments`.
+      const db: Database = {
+        ...carregado,
+        appointments: Array.isArray(carregado.appointments)
+          ? carregado.appointments
+          : [],
+      };
       if (!storedDb) {
-        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(defaultDb));
+        await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(db));
       }
 
       /**
@@ -289,6 +340,33 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     setSelectedPatientName(name);
   };
 
+  /* ---------- Agenda (Etapa 7 / G1) ---------- */
+
+  const addAppointment = async (dados: NewAppointment): Promise<Appointment> => {
+    const novo: Appointment = {
+      ...dados,
+      id: 'a_' + Date.now(),
+      status: 'agendado',
+      createdAt: new Date().toISOString(),
+    };
+    await saveDb({ ...db, appointments: [novo, ...(db.appointments ?? [])] });
+    return novo;
+  };
+
+  const updateAppointment = async (appointment: Appointment) => {
+    const atualizados = (db.appointments ?? []).map((a) =>
+      a.id === appointment.id ? appointment : a
+    );
+    await saveDb({ ...db, appointments: atualizados });
+  };
+
+  const removeAppointment = async (id: string) => {
+    await saveDb({
+      ...db,
+      appointments: (db.appointments ?? []).filter((a) => a.id !== id),
+    });
+  };
+
   /* ---------- Pacientes ---------- */
 
   const addPatient = async (patientData: Omit<Patient, 'id' | 'createdAt'>) => {
@@ -407,6 +485,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         archivePatient,
         restorePatient,
         deletePatient,
+        addAppointment,
+        updateAppointment,
+        removeAppointment,
         addMedicalRecord,
         updateMedicalRecord,
         archiveMedicalRecord,

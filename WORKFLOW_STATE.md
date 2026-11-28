@@ -57,6 +57,29 @@ para receber a Etapa 7. 163/163 testes, tsc/lint e 7 gates limpos.
 
 ---
 
+## 📅 Etapa 7 — Agenda do psicólogo (em execução)
+
+Planejamento em `ANALISE-ETAPA7.md`; decisões DP1–DP6 fechadas com o usuário.
+Esteira desbloqueada após o Ciclo 4 ser aprovado no APK.
+
+| Item | Status | Evidência |
+|---|---|---|
+| **G1 — Modelo + persistência** | **[APROVADO]** | `Appointment` + `NewAppointment` no `AppContext`; `appointments: []` no seed e no fixture; migração de bancos antigos sem o campo; CRUD (`addAppointment`, `updateAppointment`, `removeAppointment`); agenda exportada no backup JSON; 5 testes novos |
+| G2 — Tela `/agenda` | [PENDENTE] | — |
+| G3 — Formulário com `DateTimePicker` | [PENDENTE] | — |
+| G4 — Lembrete local (5 min, configurável) | [PENDENTE] | — |
+| G5 — Nível Atenção (som + visual) | [PENDENTE] | — |
+| G6 — Privacidade (texto genérico fixo) | [PENDENTE] | — |
+| G7 — Permissão no 1º agendamento | [PENDENTE] | — |
+| G8 — Integração com paciente | [PENDENTE] | — |
+| G9 — Status pós-sessão | [PENDENTE] | — |
+| G10 — Backup JSON | [PARCIAL] | G1 já inclui `appointments` no JSON exportado |
+
+Verificação do G1: 168/168 testes (13 suítes), tsc/lint limpos, 7 gates válidos.
+Nenhum módulo nativo novo foi tocado neste item — Fase 4c não se aplica ainda.
+
+---
+
 # ♻️ Ciclo 2 — Etapa 6: Temas e Aparência
 
 > Iniciado em 2026-11-27 após o Ciclo 1 fechar com gate **DESBLOQUEADO**.

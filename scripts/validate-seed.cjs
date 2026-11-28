@@ -14,7 +14,7 @@ const arquivo = path.join(__dirname, '..', 'database.json');
 const seed = JSON.parse(fs.readFileSync(arquivo, 'utf8'));
 const problemas = [];
 
-for (const chave of ['users', 'patients', 'medicalRecords']) {
+for (const chave of ['users', 'patients', 'medicalRecords', 'appointments']) {
   if (!Array.isArray(seed[chave])) {
     problemas.push(`database.json: "${chave}" não é um array`);
   } else if (seed[chave].length !== 0) {

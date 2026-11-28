@@ -104,18 +104,18 @@ Não entra no backup JSON (não é dado clínico) e não muda o formato do `db`.
 
 ## 6. Backlog adaptado
 
-| # | Item | Critério de aceite |
-|---|---|---|
-| **G1** | Modelo + persistência | `appointments` no seed vazio, CRUD no contexto, testes de criar/editar/excluir, `validate:seed` estendido |
-| **G2** | Tela `/agenda` | lista do dia ordenada por horário, faixa semanal, estado vazio com "Agendar sessão", `validate:layout` válido |
-| **G3** | Formulário | `DateTimePicker` nativo, validação inline, bloqueia data passada e sobreposição de horários |
-| **G4** | Lembrete local | 5 min antes por padrão (configurável no Perfil), **um por atendimento**, som padrão do sistema |
-| **G5** | Nível `Atenção` | alerta de som + marcação visual (canal HIGH no Android, `interruptionLevel: 'active'` no iOS), **sem segundo disparo** |
-| **G6** | Privacidade | texto sempre genérico; nenhum nome/dado clínico; sem opção na interface |
-| **G7** | Permissão | pedida no primeiro agendamento; se negada, app funciona e mostra aviso discreto com atalho para ajustes |
-| **G8** | Integração | atalhos no paciente; excluir paciente cancela atendimentos e notificações (confirmação, Regra 7) |
-| **G9** | Status pós-sessão | realizado / faltou / cancelado; "Criar prontuário desta sessão" |
-| **G10** | Backup | agenda incluída no backup técnico JSON; PDF de pacientes permanece sem agenda |
+| # | Item | Critério de aceite | Status |
+|---|---|---|---|
+| **G1** | Modelo + persistência | `appointments` no seed vazio, CRUD no contexto, testes de criar/editar/excluir, `validate:seed` estendido | ✅ **Concluído** (168/168 testes; migração de banco antigo e exportação no backup cobertas) |
+| **G2** | Tela `/agenda` | lista do dia ordenada por horário, faixa semanal, estado vazio com "Agendar sessão", `validate:layout` válido | Aberto |
+| **G3** | Formulário | `DateTimePicker` nativo, validação inline, bloqueia data passada e sobreposição de horários | Aberto |
+| **G4** | Lembrete local | 5 min antes por padrão (configurável no Perfil), **um por atendimento**, som padrão do sistema | Aberto |
+| **G5** | Nível `Atenção` | alerta de som + marcação visual (canal HIGH no Android, `interruptionLevel: 'active'` no iOS), **sem segundo disparo** | Aberto |
+| **G6** | Privacidade | texto sempre genérico; nenhum nome/dado clínico; sem opção na interface | Aberto |
+| **G7** | Permissão | pedida no primeiro agendamento; se negada, app funciona e mostra aviso discreto com atalho para ajustes | Aberto |
+| **G8** | Integração | atalhos no paciente; excluir paciente cancela atendimentos e notificações (confirmação, Regra 7) | Aberto |
+| **G9** | Status pós-sessão | realizado / faltou / cancelado; "Criar prontuário desta sessão" | Aberto |
+| **G10** | Backup | agenda incluída no backup técnico JSON; PDF de pacientes permanece sem agenda | Parcial (G1 já exporta) |
 
 ---
 
