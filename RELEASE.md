@@ -28,6 +28,21 @@
 - Trocar o e-mail em **Perfil** também atualiza o e-mail de login (antes, a
   troca valia só para a sessão e o usuário ficava sem conseguir entrar).
 
+## 🎨 Temas e aparência (Etapa 6)
+
+- Quatro presets **claros** (sem tema escuro na v1): **Acolhimento**, **Jardim
+  Calmo**, **Terracota Suave** e **Brisa Serena**.
+- Acesso em **Perfil → Temas e fonte**. A prévia é aplicada só na tela; o tema
+  muda de fato ao tocar em **Aplicar tema**. **Personalizado** só aceita fundos
+  claros suaves (luminância ≥ 0,6 e croma ≤ 0,12) e calcula `onPrimary` por
+  luminância para manter contraste AA.
+- Tamanho de fonte: **Pequeno (0,9x)**, **Padrão (1,0x)** e **Grande (1,125x)**.
+- O tema alcança fundo de página, botões, ícones, cards, bordas, barras de
+  prontuários e tipografia. Cores de **status** (Ativo/Inativo/Arquivado)
+  permanecem semânticas — não seguem a marca, por definição.
+- `app.json` permanece `userInterfaceStyle: light` (sem `Appearance`/StatusBar
+  dinâmica); nenhum plugin nativo novo foi necessário.
+
 ## 📄 Relatório de pacientes (PDF)
 
 - Em **Perfil → Exportar dados**, o botão principal gera um **PDF com lista e
@@ -46,11 +61,11 @@
 
 ### Esteira e qualidade
 
-- [x] **Etapas 1–4 `[APROVADO]`** em `WORKFLOW_STATE.md`
+- [x] **Etapas 1–5 do Ciclo 1 e 1–5 do Ciclo 2 `[APROVADO]`** em `WORKFLOW_STATE.md`
 - [x] `npx tsc --noEmit` → 0 erros
 - [x] `npx expo lint` → 0 erros, 0 warnings
-- [x] `npx jest --ci` → 142/142, 8/8 suítes
-- [x] `npx expo-doctor` → 20/20 checks passed
+- [x] `npx jest --ci` → 162/162, 13/13 suítes
+- [x] `npx expo-doctor` → 19/20 (restam apenas mismatches de versão 58.0.x preexistentes, não bloqueantes)
 - [x] `npm run validate:eas` → `eas.json` VÁLIDO (schema oficial do EAS CLI)
 - [x] `npm run validate:workflow` → `ci.yml` VÁLIDO (schema oficial do GitHub)
 

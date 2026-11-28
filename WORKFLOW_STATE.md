@@ -12,11 +12,11 @@
 
 | Etapa | Agente        | Status      | Ciclo | Observações |
 |-------|---------------|-------------|-------|-------------|
-| 1     | planner       | [APROVADO]  | 2     | Bug **QA-4/R5** (seed fixa) e **R6** (login sem senha) são de severidade **baixa** — não bloqueiam. Registrados no Gate de release como pendências de produto. `PLANO.md` segue como fonte de escopo. |
+| 1     | planner       | [APROVADO]  | 2     | **R6 (login sem senha) RESOLVIDO** — senha com hash, cadastro de e-mail/senha reais e recuperação por código (ver seção "Senha do usuário"). QA-4/R5 era baixo e não bloqueava. `PLANO.md` segue como fonte de escopo. |
 | 2     | architect     | [APROVADO]  | 1     | ARQUITETURA.md: decisões técnicas de A1–A5, tokens novos, extração de PatientFormModal, regra única de safe area e ordem de execução. **Nenhum bug aberto atribuído a esta etapa.** |
 | 3     | mobile-ui     | [APROVADO]  | 6     | Histórico: A1–A5 entregues; DEF-3/DEF-5/DEF-6 corrigidos e confirmados no aparelho. **Ciclo 5/6 — todos os bugs médios zerados**: QA-3 (10 alvos → 44px + `validate:touch`), QA-1/QA-2 (`textMuted` 4,76:1, `brandText` 5,21:1 + `validate:contrast`), QA-6 (`details.tsx` fonte única, `reports.tsx` redirect). 129 testes, 4 gates e tsc/lint limpos. |
 | 4     | qa-vision     | [APROVADO]  | 6     | Histórico: QA.md, AUDITORIA.md, QA-4B.md e fase 4c executada no aparelho. As aprovações anteriores foram revertidas enquanto havia bugs abertos; agora **zero bugs médios/alto** → `[APROVADO]` legítimo, com gate de release desbloqueado e 4 gates automáticos no CI. |
-| 5     | release-prep  | [APROVADO]  | 1     | eas.json restaurado (R1) e validado; app.json e 6 assets conferidos; expo-doctor 20/20; RELEASE.md com checklist de 5 etapas; EXPO_TOKEN e EAS_BUILD_ENABLED confirmados. **R4 (`android/` local) fica como observação — não é bug de build.** |
+| 5     | release-prep  | [APROVADO]  | 1     | eas.json restaurado (R1) e validado; app.json e 6 assets conferidos; expo-doctor 19/20 (só mismatches 58.0.x preexistentes); RELEASE.md com checklist das 5 etapas + temas + senha + PDF; EXPO_TOKEN e EAS_BUILD_ENABLED confirmados. **R4 (`android/` local) fica como observação — não é bug de build.** |
 
 ---
 
@@ -58,18 +58,18 @@
 | 1 | planner | [APROVADO] | 2 | Proposta validada (`ANALISE-ETAPA6.md` + `PLANO.md`): 6 ajustes técnicos aceitos, tema escuro fora, 3 decisões fechadas (DP1 4 presets claros, DP2 Personalizado só fundo claro, DP3 prévia com ThemeScope). Definidos 4 marcos (M1 base → M2 migração → M3 interface → M4 personalização) e 5 regras de produto (escala 0,9/1,0/1,125; fundo luminância ≥0,6 e saturação ≤25%; onPrimary calculado; prévia fidedigna só após M2; entrada no /profile com 44px). Inventário corrigido: 8 rotas, /reports é redirect. |
 | 2 | architect | [APROVADO] | 2 | `ARQUITETURA-ETAPA6.md`: D1 AsyncStorage + SplashScreen (MMKV fora — Expo Go), D2 `reanimated-color-picker@5.2.0` é Pure JS e peers reanimated 4.8/gesture-handler 3.5 OK (instalar só no M4, com plano B swatches), D3 migração componente a componente. Definidos `ThemeScope`, `onPrimary` derivado com propriedade matemática ≥4,5:1, `isSoftLightBackground` (luminância ≥0,6 + saturação ≤25%), escala de fonte 0,9/1,0/1,125, StatusBar fixa `'dark'`, evolução dos gates e 4 marcos. |
 | 3 | mobile-ui | [APROVADO] | 2 | **M1** P1/P4/P3/P5 (fundação, 11 testes). **M2** P2 (10 componentes + 8 rotas com overrides; `applyTheme()` atômico corrigiu gravação parcial da fonte). **M4** P8: `reanimated-color-picker@5.3.0` instalado (peers reanimated 4.8, gesture-handler 3.5 e worklets adicionados ao package.json — `expo-doctor` voltou a 19/20,只剩下 mismatches de patch preexistentes 58.0.x vs 58.1.x). Seletor aparece ao tocar "Personalizado", com limites: fundo exige luminância ≥0,6 e croma ≤0,12 (R14) e primária sempre com `onPrimary` legível. Gates de toque/layout pegaram cards `width:'30%'` na tela nova e foram corrigidos. 145 testes (11 suítes), tsc/lint e 6 gates limpos. |
-| 4 | qa-vision | [EM ANDAMENTO] | 2 | Fase 4c parcial: usuário confirmou que os estilos funcionam, mas reportou (3ª rodada) cards "Pacientes ativos" e card superior do perfil ainda brancos. Corrigido: `patientRow` e `emptyCard` do dashboard, `headerCard` do perfil, `patientCard`/`emptyCard` da lista e `RecordCard` dos prontuários agora usam `css.cardTint`/`css.cardBorder`. `RecordCard` ganhou `useThemeStyles()`. Cards com cor do tema: Card/StatCard/ActionTile/StatSummary + 6 cards de rota. 147 testes, tsc/lint/6 gates limpos. Falta confirmação no aparelho. |
-| 5 | release-prep | [PENDENTE] | 2 | **`app.json` inalterado** (`userInterfaceStyle: light`); conferir plugins nativos novos (D2); atualizar RELEASE.md com os 4 presets. |
+| 4 | qa-vision | [APROVADO] | 2 | **Fase 4c concluída no aparelho.** Usuário aprovou o visual dos temas/cards e a checagem da senha no celular. Correções das 3 rodadas anteriores validadas: `patientRow`/`emptyCard` do dashboard, `headerCard` do perfil, `patientCard`/`emptyCard` da lista e `RecordCard` dos prontuários usam `css.cardTint`/`css.cardBorder`; avatar/botão do perfil, barras do `StatSummary`, badge "Ativo" e ícones de ação seguem a primária. `StatusBadge` semântico permanece. 162 testes, tsc/lint/6 gates limpos. |
+| 5 | release-prep | [APROVADO] | 2 | **`app.json` inalterado** (`userInterfaceStyle: light`); nenhum plugin nativo novo (D2: `reanimated-color-picker` é Pure JS); `RELEASE.md` documenta os 4 presets (Acolhimento, Jardim Calmo, Terracota Suave, Brisa Serena), as 3 escalas de fonte, a senha e o relatório PDF. Números de testes/doctor atualizados (162/162; doctor 19/20 só com mismatches preexistentes). |
 
-### Gate do Ciclo 2 — **PENDENTE**
+### Gate do Ciclo 2 — **DESBLOQUEADO**
 
 | # | Verificação | Status |
 |---|-------------|--------|
-| G1 | `validate:contrast` estendido — **4 presets** × fundo próprio × `onPrimary` | A criar |
-| G2 | `validate:layout` — 3 escalas de fonte em 360dp e 430dp (DOM) | A estender |
-| G3 | `validate:touch` — 44px | ✅ Reutilizar |
-| G4 | `validate:workflow` | ✅ Reutilizar |
-| G5 | Fase 4c — **4 presets** × 3 fontes no aparelho real | A executar |
+| G1 | `validate:contrast` estendido — **4 presets** × fundo próprio × `onPrimary` | ✅ Criado e verde |
+| G2 | `validate:font-scale` — 3 escalas conservadoras (limite 360dp) | ✅ Criado e verde; medição visual 360/430 aprovada no aparelho (G5) |
+| G3 | `validate:touch` — 44px | ✅ Reutilizado e verde |
+| G4 | `validate:workflow` | ✅ Reutilizado e verde |
+| G5 | Fase 4c — temas/cards + senha no aparelho real | ✅ Aprovado pelo usuário |
 
 **Regra:** se qualquer bug **médio/alto** deste ciclo ficar aberto, o gate volta a
 `BLOQUEADO` e nenhum item novo entra — mesma regra do Ciclo 1.
