@@ -9,25 +9,28 @@
 
 ---
 
-## 🔑 Senha inicial (primeiro acesso)
+## 🔑 Primeiro acesso (sem dados de teste)
 
-- E-mail: `psicologo@psicowave.com`
-- Senha padrão: **`PsiApp2026`**
-- Ao entrar, abra **Perfil → Segurança → Alterar senha**. A troca gera um
-  **código de recuperação de 6 dígitos** exibido uma única vez — guarde-o em
-  local seguro. Sem servidor/e-mail, é o único caminho de recuperação.
-- A senha nunca é salva em texto puro: SHA-256 com salt, em chave separada
-  do banco (fora do backup JSON).
-- **Quem usava o app antes da senha:** ao atualizar, a sessão antiga é
-  descartada e o app abre no login (os dados de pacientes/prontuários ficam
-  intactos). Entre com a senha padrão acima.
-- **Cadastro com dados reais:** na tela de login, toque em
-  **Cadastrar meu acesso** (disponível enquanto a senha padrão estiver ativa)
-  e informe nome, e-mail e senha. O cadastro substitui o e-mail/senha padrão,
-  gera um novo código de recuperação exibido uma única vez e **volta ao login**
-  para conferir o acesso. O link de cadastro desaparece depois disso.
-- Trocar o e-mail em **Perfil** também atualiza o e-mail de login (antes, a
-  troca valia só para a sessão e o usuário ficava sem conseguir entrar).
+**O app é entregue vazio:** não há usuário, paciente nem prontuário de teste.
+O seed de produção (`database.json`) tem `users`, `patients` e `medicalRecords`
+vazios. Os dados usados nos testes automatizados ficam isolados em
+`__tests__/fixtures/database.json`.
+
+1. Na tela de login, toque em **Cadastrar meu acesso**.
+2. Informe **nome, e-mail e senha reais** (mínimo 6 caracteres).
+3. Guarde o **código de recuperação de 6 dígitos** exibido uma única vez —
+   sem servidor/e-mail, é o único caminho para recuperar a senha.
+4. O app volta ao login: entre com o e-mail e a senha recém-cadastrados.
+5. Depois, em **Perfil → Segurança → Alterar senha**, você pode trocar a senha
+   (a troca gera um novo código de recuperação).
+
+A senha nunca é salva em texto puro: SHA-256 com salt, em chave separada do
+banco (fora do backup JSON). Trocar o e-mail em **Perfil** também atualiza o
+e-mail de login.
+
+> Instalações antigas que tinham sessão salva antes da senha são descartadas;
+> os dados de pacientes/prontuários são preservados. Para **zerar tudo**,
+> limpe os dados do app no celular (ver `TESTE-ANDROID.md`).
 
 ## 🎨 Temas e aparência (Etapa 6)
 
@@ -65,7 +68,8 @@
 - [x] **Etapas 1–5 do Ciclo 1 e 1–5 do Ciclo 2 `[APROVADO]`** em `WORKFLOW_STATE.md`
 - [x] `npx tsc --noEmit` → 0 erros
 - [x] `npx expo lint` → 0 erros, 0 warnings
-- [x] `npx jest --ci` → 162/162, 13/13 suítes
+- [x] `npx jest --ci` → 163/163, 13/13 suítes
+- [x] `npm run validate:seed` → `database.json` sem dados de teste
 - [x] `npx expo-doctor` → 19/20 (restam apenas mismatches de versão 58.0.x preexistentes, não bloqueantes)
 - [x] `npm run validate:eas` → `eas.json` VÁLIDO (schema oficial do EAS CLI)
 - [x] `npm run validate:workflow` → `ci.yml` VÁLIDO (schema oficial do GitHub)

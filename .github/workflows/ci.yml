@@ -49,6 +49,9 @@ jobs:
       - name: Gate de escala de fonte (P7)
         run: npm run validate:font
 
+      - name: Gate de seed vazio (sem dados de teste)
+        run: npm run validate:seed
+
       - name: Testes (Jest) + cobertura
         run: npm run test:coverage
 

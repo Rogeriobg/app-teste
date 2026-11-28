@@ -60,6 +60,7 @@
     "eas:build:prod": "npx eas-cli@latest build --profile production --platform all",
     "eas:submit": "npx eas-cli@latest submit --profile production --platform android",
     "validate:eas": "node scripts/validate-eas-json.cjs",
+    "validate:seed": "node scripts/validate-seed.cjs",
     "validate:workflow": "node scripts/validate-workflow.cjs",
     "validate:layout": "node scripts/validate-layout.mjs",
     "validate:touch": "node scripts/validate-touch-targets.mjs",

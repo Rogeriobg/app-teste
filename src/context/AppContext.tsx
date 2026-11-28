@@ -209,12 +209,24 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     const emailLimpo = email.trim().toLowerCase();
     const usuarios = db.users.length ? db.users : defaultDb.users;
     const primeiro = usuarios[0];
-    const atualizado: User = {
-      ...primeiro,
-      name: name.trim() || primeiro.name,
-      email: emailLimpo,
-    };
-    await saveDb({ ...db, users: [atualizado, ...usuarios.slice(1)] });
+    /**
+     * O seed de produção é vazio: na primeira instalação não existe usuário.
+     * Nesse caso o cadastro CRIA o psicólogo, em vez de substituir um seed.
+     */
+    const atualizado: User = primeiro
+      ? { ...primeiro, name: name.trim() || primeiro.name, email: emailLimpo }
+      : {
+          id: 'u_' + Date.now(),
+          name: name.trim(),
+          email: emailLimpo,
+          role: 'psicologo',
+        };
+    await saveDb({
+      ...db,
+      users: primeiro
+        ? [atualizado, ...usuarios.slice(1)]
+        : [atualizado, ...usuarios],
+    });
     const { recoveryCode } = await salvarSenha(senha);
     return { recoveryCode };
   };
@@ -242,7 +254,9 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
     // deixaria o usuário sem conseguir entrar novamente
     await saveDb({
       ...db,
-      users: db.users.map((u) => (u.id === updatedUser.id ? updatedUser : u)),
+      users: db.users.some((u) => u.id === updatedUser.id)
+        ? db.users.map((u) => (u.id === updatedUser.id ? updatedUser : u))
+        : [...db.users, updatedUser],
     });
   };
 

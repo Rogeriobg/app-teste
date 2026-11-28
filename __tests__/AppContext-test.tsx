@@ -191,6 +191,43 @@ describe('AppContext', () => {
       expect(novo).toBe(true);
     });
 
+    it('cria o usuário do zero quando o banco está vazio (instalação limpa)', async () => {
+      // instalação nova: seed vazio, nenhum usuário para substituir
+      const store = mockAsyncStorage();
+      store['@psi_app_db_json_v1'] = JSON.stringify({
+        users: [],
+        patients: [],
+        medicalRecords: [],
+      });
+
+      const { current } = await renderWithProvider(<></>);
+      await waitFor(() => expect(current.authReady).toBe(true));
+      expect(current.db.users).toHaveLength(0);
+
+      await act(async () => {
+        await current.registerUser({
+          name: 'Dra. Real Usuária',
+          email: 'real@consultorio.com',
+          senha: 'SenhaVerdadeira123',
+        });
+      });
+
+      expect(current.db.users).toHaveLength(1);
+      expect(current.db.users[0]).toEqual(
+        expect.objectContaining({
+          name: 'Dra. Real Usuária',
+          email: 'real@consultorio.com',
+          role: 'psicologo',
+        })
+      );
+
+      let ok = false;
+      await act(async () => {
+        ok = await current.login('real@consultorio.com', 'SenhaVerdadeira123');
+      });
+      expect(ok).toBe(true);
+    });
+
     it('rejeita a senha antiga após o cadastro', async () => {
       const { current } = await renderWithProvider(<></>);
 

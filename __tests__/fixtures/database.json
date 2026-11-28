@@ -1,0 +1,71 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Dr(a). Psicólogo(a)",
+      "email": "psicologo@psicowave.com",
+      "role": "psicologo",
+      "avatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150"
+    }
+  ],
+  "patients": [
+    {
+      "id": "p1",
+      "name": "Maria Oliveira",
+      "email": "maria.oliveira@email.com",
+      "phone": "(11) 98888-7777",
+      "birthDate": "1994-05-12",
+      "anamnesis": "Queixa principal: Ansiedade generalizada e insônia há 6 meses. Relata pressão no trabalho e episódios de pânico leves.",
+      "status": "Ativo",
+      "createdAt": "2026-10-01T10:00:00Z"
+    },
+    {
+      "id": "p2",
+      "name": "João Silva",
+      "email": "joao.silva@email.com",
+      "phone": "(11) 97777-6666",
+      "birthDate": "1988-09-23",
+      "anamnesis": "Queixa principal: Sintomas depressivos, baixa autoestima e dificuldade de concentração. Luto não elaborado.",
+      "status": "Inativo",
+      "createdAt": "2026-09-15T14:30:00Z"
+    }
+  ],
+  "medicalRecords": [
+    {
+      "id": "m1",
+      "patientId": "p1",
+      "patientName": "Maria Oliveira",
+      "date": "2026-11-13",
+      "title": "Sessão Inicial - Anamnese",
+      "content": "Paciente relatou ansiedade generalizada e insônia. Pressão no trabalho e episódios de pânico leves. Sessão focada em acolhimento e levantamento de histórico.",
+      "privateNotes": "Paciente demonstrou boa adesão ao primeiro atendimento. Necessário explorar gatilhos do pânico nas próximas sessões.",
+      "status": "Ativo",
+      "archivedAt": null,
+      "createdAt": "2026-11-13T14:00:00Z"
+    },
+    {
+      "id": "m2",
+      "patientId": "p1",
+      "patientName": "Maria Oliveira",
+      "date": "2026-11-20",
+      "title": "Sessão de Acompanhamento",
+      "content": "Evolução positiva na respiração diafragmática. Redução nas crises noturnas. Trabalhando técnicas de grounding e reestruturação cognitiva.",
+      "privateNotes": "Paciente colaborativa e engajada com os exercícios propostos. Manter acompanhamento semanal.",
+      "status": "Arquivado",
+      "archivedAt": "2026-11-21T09:00:00Z",
+      "createdAt": "2026-11-20T10:30:00Z"
+    },
+    {
+      "id": "m3",
+      "patientId": "p2",
+      "patientName": "João Silva",
+      "date": "2026-09-15",
+      "title": "Primeira Sessão",
+      "content": "Apresentou sintomas depressivos, baixa autoestima e dificuldade de concentração. Luto não elaborado. Iniciando trabalho de acolhimento.",
+      "privateNotes": "Paciente em luto, necessário abordagem delicada e gradual. Acompanhar risco.",
+      "status": "Ativo",
+      "archivedAt": null,
+      "createdAt": "2026-09-15T15:00:00Z"
+    }
+  ]
+}

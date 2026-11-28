@@ -164,7 +164,7 @@ export default function LoginScreen() {
             )}
           </TouchableOpacity>
 
-          {podeCadastrar ? (
+          {(podeCadastrar || db.users.length === 0) ? (
             <TouchableOpacity
               style={styles.cadastrarBtn}
               onPress={() => router.push('/register')}

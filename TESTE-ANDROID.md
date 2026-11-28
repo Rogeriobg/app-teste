@@ -75,6 +75,32 @@ Envie o link ou o arquivo por WhatsApp, e-mail, Drive, etc.
 
 ---
 
+## 🧹 Zerar os dados de teste no celular
+
+O app é **local-first**: tudo fica no AsyncStorage do próprio app. Não existe
+botão "limpar banco" na interface — para começar do zero:
+
+**Se você usa Expo Go:**
+
+1. Android: **Configurações → Apps → Expo Go → Armazenamento → Limpar dados**
+   (ou desinstale e reinstale o Expo Go).
+2. iPhone: desinstale o Expo Go e reinstale (não há "limpar dados" por app no iOS).
+3. Abra o app de novo: a tela de login aparece com **Cadastrar meu acesso**.
+
+> Isso apaga **todos** os projetos salvos no Expo Go, não só o PsiApp.
+
+**Se você instalou o APK standalone:**
+
+1. **Configurações → Apps → PsiApp → Armazenamento → Limpar dados**; ou
+2. desinstale e reinstale o APK.
+3. O próximo acesso é o cadastro do seu e-mail/senha reais.
+
+⚠️ Isso apaga **pacientes e prontuários** que você cadastrou nos testes.
+Se quiser guardar algo antes, use **Perfil → Exportar dados (PDF)** ou o
+backup JSON.
+
+---
+
 ## Solução de problemas
 
 - **`expo-doctor` acusa versões desatualizadas** (situação atual: 19/20, apenas

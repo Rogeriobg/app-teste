@@ -12,6 +12,9 @@ module.exports = {
   testTimeout: 30000,
   moduleNameMapper: {
     '^@/(.*)$': '<rootDir>/src/$1',
+    // O seed de producao (database.json) é vazio. Os testes usam um fixture
+    // com usuario/pacientes/prontuarios para nao depender de dados reais.
+    '^\\.\\./\\.\\./database\\.json$': '<rootDir>/__tests__/fixtures/database.json',
     // lucide-react-native resolve para .mjs (ESM) sob a condição "react-native",
     // o que o Jest (CJS) não consegue carregar. Forçamos o build CommonJS.
     '^lucide-react-native$': '<rootDir>/node_modules/lucide-react-native/dist/cjs/lucide-react-native.js',
