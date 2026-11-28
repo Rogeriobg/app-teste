@@ -181,11 +181,15 @@ export default function PsychologistDashboard() {
             <Text style={[styles.emptySub, css.textSecondary]}>
               Cadastre o primeiro paciente para começar o prontuário.
             </Text>
-            <TouchableOpacity style={styles.emptyAction} onPress={openPatients} activeOpacity={0.85}>
-              <Text style={styles.emptyActionText} numberOfLines={1}>
+            <TouchableOpacity
+              style={[styles.emptyAction, css.primaryBg]}
+              onPress={openPatients}
+              activeOpacity={0.85}
+            >
+              <Text style={[styles.emptyActionText, css.onPrimary]} numberOfLines={1}>
                 Cadastrar paciente
               </Text>
-              <ArrowRight size={14} color={colors.textOnBrand} />
+              <ArrowRight size={14} color={c.onPrimary} />
             </TouchableOpacity>
           </View>
         ) : (

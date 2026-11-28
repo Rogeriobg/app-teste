@@ -517,8 +517,55 @@ function checkFixedWidthContent(file) {
   return problems;
 }
 
+/**
+ * Regressões encontradas no aparelho (fase 4c) que a análise de `row`
+ * não detecta. Cada item aqui nasceu de um bug real reportado pelo usuário.
+ */
+function checkDeviceBugs() {
+  const encontrados = [];
+  const ler = (relativo) => {
+    const arquivo = path.join(SRC, relativo);
+    return fs.existsSync(arquivo) ? fs.readFileSync(arquivo, 'utf8') : '';
+  };
+
+  // Modal descia para o centro ao abrir o teclado (senha e novo paciente).
+  const modal = ler('components/Modal.tsx');
+  if (modal && !modal.includes("justifyContent: 'flex-start'")) {
+    encontrados.push({
+      file: 'src/components/Modal.tsx',
+      line: 0,
+      message:
+        "overlay do modal precisa de justifyContent: 'flex-start' — com 'center' o KeyboardAvoidingView encolhe e o form desce para o meio da tela",
+    });
+  }
+  if (modal && !modal.includes('<ScrollView')) {
+    encontrados.push({
+      file: 'src/components/Modal.tsx',
+      line: 0,
+      message:
+        'conteúdo do modal precisa estar dentro de ScrollView para alcançar os últimos campos com o teclado aberto',
+    });
+  }
+
+  // Botão "Cadastrar paciente" da dashboard estava fixo no verde do brand.
+  const dashboard = ler('app/dashboard.tsx');
+  if (dashboard && !dashboard.includes('styles.emptyAction, css.primaryBg')) {
+    encontrados.push({
+      file: 'src/app/dashboard.tsx',
+      line: 0,
+      message:
+        'botão "Cadastrar paciente" precisa aplicar css.primaryBg/css.onPrimary para acompanhar o tema',
+    });
+  }
+
+  return encontrados;
+}
+
 const files = walk(SRC);
-const problems = files.flatMap(analyseFile).concat(files.flatMap(checkFixedWidthContent));
+const problems = files
+  .flatMap(analyseFile)
+  .concat(files.flatMap(checkFixedWidthContent))
+  .concat(checkDeviceBugs());
 
 console.log('=== Gate de layout: transbordo horizontal ===');
 console.log(`arquivos analisados: ${files.length}`);

@@ -40,6 +40,8 @@ export function useThemeStyles() {
         primary: { color: c.primary },
         /** cor primária como fundo */
         primaryBg: { backgroundColor: c.primary },
+        /** texto sobre a primária (legibilidade calculada por luminância) */
+        onPrimary: { color: c.onPrimary },
         /** tom de card do tema */
         cardTint: { backgroundColor: c.cardTint },
         /** borda de card do tema */
@@ -70,6 +72,7 @@ export function useThemeStyles() {
       c.text,
       c.textSecondary,
       c.primary,
+      c.onPrimary,
       c.primarySoft,
       c.primaryBorder,
       c.cardTint,

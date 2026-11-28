@@ -28,6 +28,10 @@ A senha nunca é salva em texto puro: SHA-256 com salt, em chave separada do
 banco (fora do backup JSON). Trocar o e-mail em **Perfil** também atualiza o
 e-mail de login.
 
+> **Botão de saída do cabeçalho:** em Android/iOS não é possível "fechar" um
+> app por código. O ícone de saída **encerra a sessão e volta ao login** — os
+> dados locais são preservados. Para encerrar o app, use o gesto do sistema.
+
 > Instalações antigas que tinham sessão salva antes da senha são descartadas;
 > os dados de pacientes/prontuários são preservados. Para **zerar tudo**,
 > limpe os dados do app no celular (ver `TESTE-ANDROID.md`).

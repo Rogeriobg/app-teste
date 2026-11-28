@@ -1,5 +1,6 @@
 import { act, waitFor } from '@testing-library/react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { router } from 'expo-router';
 import { renderWithProvider, mockAuthenticatedSession, mockAsyncStorage } from './helpers/renderWithProvider';
 import { MedicalRecord, Patient } from '@/context/AppContext';
 
@@ -75,6 +76,8 @@ describe('AppContext', () => {
 
       expect(current.currentUser).toBeNull();
       expect(AsyncStorage.removeItem).toHaveBeenCalledWith(USER_KEY);
+      // o botão de saída do header deve voltar ao login (não só limpar a sessão)
+      expect(router.replace).toHaveBeenCalledWith('/login');
     });
   });
 

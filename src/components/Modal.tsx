@@ -6,10 +6,12 @@ import {
   Text,
   TouchableOpacity,
   KeyboardAvoidingView,
+  ScrollView,
   Platform,
   ViewStyle,
   TextStyle,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { colors as statusColors, radius, spacing, typography } from '@/theme/tokens';
 import { useTheme } from '@/theme/context';
 
@@ -56,15 +58,26 @@ export function AppModal({
 }: ModalProps) {
   const { theme } = useTheme();
   const c = theme.colors;
+  const insets = useSafeAreaInsets();
 
   return (
     <Modal
       visible={visible}
-      animationType="slide"
+      animationType="fade"
       transparent
       onDismiss={onDismiss}
     >
-      <View style={[styles.overlay, { backgroundColor: statusColors.overlay }]}>
+      <View
+        style={[
+          styles.overlay,
+          {
+            backgroundColor: statusColors.overlay,
+            // Safe area explícita por borda — nunca SafeAreaView + inset manual
+            paddingTop: insets.top + spacing.sm,
+            paddingBottom: insets.bottom + spacing.sm,
+          },
+        ]}
+      >
         <TouchableOpacity
           style={styles.backdrop}
           onPress={backdropPressToClose ? onDismiss : undefined}
@@ -79,7 +92,18 @@ export function AppModal({
                 <Text style={[styles.title, { color: c.text }, titleStyle]}>{title}</Text>
               </View>
             )}
-            {children}
+            {/*
+             * Conteúdo rolável: com o teclado aberto o form continua fixo no
+             * topo e o usuário consegue alcançar os últimos campos.
+             */}
+            <ScrollView
+              style={styles.body}
+              contentContainerStyle={styles.bodyContent}
+              keyboardShouldPersistTaps="handled"
+              showsVerticalScrollIndicator={false}
+            >
+              {children}
+            </ScrollView>
             <View style={styles.actions}>
               <TouchableOpacity
                 style={[styles.btn, styles.btnCancel, { backgroundColor: statusColors.mutedSurface }]}
@@ -114,25 +138,37 @@ const styles = StyleSheet.create({
   overlay: {
     flex: 1,
     backgroundColor: statusColors.overlay,
-    justifyContent: 'center',
-    padding: spacing.xxl,
+    // âncora no topo: o KeyboardAvoidingView encolhe com o teclado e, se
+    // estivesse centralizado, o form desceria para o meio da tela (bug do
+    // aparelho). flex-start mantém o card exatamente onde abriu.
+    justifyContent: 'flex-start',
+    paddingHorizontal: spacing.lg,
   },
   backdrop: {
     ...StyleSheet.absoluteFill,
   },
   keyboard: {
     flex: 1,
+    width: '100%',
   },
   content: {
     backgroundColor: statusColors.card,
     borderRadius: radius.xxl,
-    padding: spacing.xxl,
+    padding: spacing.xl,
     shadowColor: statusColors.shadowNeutral,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.25,
     shadowRadius: 12,
     elevation: 8,
-    maxHeight: '85%',
+    width: '100%',
+    maxHeight: '100%',
+    flexShrink: 1,
+  },
+  body: {
+    flexShrink: 1,
+  },
+  bodyContent: {
+    paddingVertical: spacing.xs,
   },
   header: {
     marginBottom: spacing.lg,
@@ -147,6 +183,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: spacing.lg,
     marginTop: spacing.sm,
+    flexShrink: 0,
   },
   btn: {
     flex: 1,

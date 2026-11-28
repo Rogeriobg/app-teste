@@ -38,6 +38,25 @@
 
 ---
 
+## 📱 Ciclo 4 — bugs do APK instalado (aparelho real)
+
+Usuário gerou o APK (`eas build --profile preview`), instalou, fez o cadastro,
+testou "Esqueci minha senha" com o código de recuperação e entrou com a nova
+senha — fluxo de autenticação **aprovado no aparelho**. Três defeitos visuais
+/ funcionais foram reportados e corrigidos:
+
+| ID | Severidade | Defeito | Correção | Verificação |
+|---|---|---|---|---|
+| BUG-7 | **alta** | Modais ("Alterar senha" e "Novo Paciente") abriam no topo e desciam para o centro ao abrir o teclado; últimos campos ficavam cobertos | `AppModal`: overlay `justifyContent: 'flex-start'`, safe area explícita por borda, `animationType: 'fade'`, conteúdo em `ScrollView` com `keyboardShouldPersistTaps` | Gate `validate:layout` estendido (testado com regressão: reprova `center`) |
+| BUG-8 | média | Botão "Cadastrar paciente" da dashboard com verde fixo, sem acompanhar o tema | `css.primaryBg` / `css.onPrimary` e seta com `c.onPrimary`; novo `css.onPrimary` em `useThemeStyles()` | Gate `validate:layout` estendido |
+| BUG-9 | média | Botão de saída do header não voltava ao login e o nome virava "Dr(a). Psicólogo(a)" | `logout()` agora chama `router.replace('/login')` **antes** de limpar `currentUser` (evita flash do placeholder). Em mobile não existe "fechar app": o botão encerra a sessão | Teste em `AppContext-test` (router.replace) |
+
+**Status: CORRIGIDO, aguardando reconfirmação do usuário no APK.** Não aprovar
+esta etapa enquanto o aparelho não confirmar os três itens. 163/163 testes,
+tsc/lint e 7 gates limpos.
+
+---
+
 # ♻️ Ciclo 2 — Etapa 6: Temas e Aparência
 
 > Iniciado em 2026-11-27 após o Ciclo 1 fechar com gate **DESBLOQUEADO**.

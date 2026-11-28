@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { shareAsync } from 'expo-sharing';
 import { writeAsStringAsync, Paths } from 'expo-file-system';
+import { router } from 'expo-router';
 import defaultDbData from '../../database.json';
 import {
   ensureAuth,
@@ -232,13 +233,18 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    setCurrentUser(null);
-    setActiveScreen('login');
-    setSelectedPatient(null, null);
     try {
       await AsyncStorage.removeItem(SESSION_KEY);
       await AsyncStorage.removeItem(CURRENT_USER_KEY);
     } catch {}
+    setActiveScreen('login');
+    setSelectedPatient(null, null);
+    // Navega ANTES de limpar o usuário: sem isso a tela atual continuava
+    // montada e mostrava o nome placeholder "Dr(a). Psicólogo(a)".
+    // Em mobile não existe "fechar app" — o comportamento correto do botão
+    // de saída é encerrar a sessão e voltar ao login.
+    router.replace('/login');
+    setCurrentUser(null);
   };
 
   const updateUser = async (updates: Partial<Pick<User, 'name' | 'email'>>) => {
